@@ -3,23 +3,28 @@
 
 import sys
 import os
-import argparse
+import click
+import argparse  # FIXME: remove this
 import re
 import locale
 
-from tmathics.term_background import is_dark_background
 from colorama import init as colorama_init
 
 from mathics.core.definitions import Definitions
 from mathics.core.expression import strip_context
 from mathics.core.evaluation import Evaluation, Output
 from mathics.core.parser import LineFeeder, FileLineFeeder
-from mathics import version_string, license_string, __version__
+from mathics import version_string, license_string
 from mathics import settings
+
+from tmathics.term_background import is_dark_background
+from tmathics.version import VERSION
 
 
 class TerminalShell(LineFeeder):
-    def __init__(self, definitions, colors, want_readline, want_completion):
+    def __init__(
+        self, definitions, style: str, want_readline: bool, want_completion: bool
+    ):
         super(TerminalShell, self).__init__("<stdin>")
         self.input_encoding = locale.getpreferredencoding()
         self.lineno = 0
@@ -47,18 +52,16 @@ class TerminalShell(LineFeeder):
         except ImportError:
             pass
 
-        # Try importing colorama to escape ansi sequences for cross platform
-        # colors
         colorama_init()
-        if colors is None:
-            terminal_supports_color = (
-                sys.stdout.isatty() and os.getenv("TERM") != "dumb"
-            )
-            colors = "Linux" if terminal_supports_color else "NoColor"
+        if style is None:
+            if is_dark_background():
+                style = "DARGKBG"
+            else:
+                style = "LIGHTBG"
 
         color_schemes = {
             "NOCOLOR": (["", "", "", ""], ["", "", "", ""]),
-            "LINUX": (
+            "DARKBG": (
                 ["\033[32m", "\033[1m", "\033[22m", "\033[39m"],
                 ["\033[31m", "\033[1m", "\033[22m", "\033[39m"],
             ),
@@ -68,13 +71,11 @@ class TerminalShell(LineFeeder):
             ),
         }
 
-        dark_backround = is_dark_background()
-
         # Handle any case by using .upper()
-        term_colors = color_schemes.get(colors.upper())
+        term_colors = color_schemes.get(style.upper())
         if term_colors is None:
             out_msg = f"The 'colors' argument must be {repr(list(color_schemes.keys()))} or None"
-            quit()
+            quit(out_msg)
 
         self.incolors, self.outcolors = term_colors
         self.definitions = definitions
@@ -170,97 +171,100 @@ class TerminalOutput(Output):
         return self.shell.out_callback(out)
 
 
-def main():
-    argparser = argparse.ArgumentParser(
-        prog="mathics",
-        usage="%(prog)s [options] [FILE]",
-        add_help=False,
-        description="Mathics is a general-purpose computer algebra system.",
-        epilog="""Please feel encouraged to contribute to Mathics! Create
-            your own fork, make the desired changes, commit, and make a pull
-            request.""",
-    )
+@click.command()
+@click.version_option(version=VERSION)
+@click.option(
+    "--full-form",
+    "-f",
+    "full_form",
+    flag_value="full_form",
+    default=False,
+    required=False,
+    help="Show how input was parsed to FullForm",
+)
+@click.option(
+    "--persist",
+    default=False,
+    required=False,
+    help="go to interactive shell after evaluating FILE or -e",
+)
+@click.option(
+    "--quiet",
+    "-q",
+    default=False,
+    required=False,
+    help="don't print message at startup",
+)
+@click.option(
+    "--readline/--no-readline",
+    default=True,
+    help="GNU Readline line editing. " "If this is off completion is turned off too",
+)
+@click.option(
+    "--completion/--no-completion",
+    default=True,
+    help="GNU Readline line editing. " "enable tab completion",
+)
+@click.option(
+    "--script", default=True, required=False, help="run a mathics file in script mode"
+)
+@click.option(
+    "--pyextensions",
+    "-l",
+    required=False,
+    multiple=True,
+    help="directory to load extensions in Python",
+)
+@click.option(
+    "-e",
+    "--execute",
+    help="evaluate EXPR before processing any input files (may be given "
+    "multiple times)",
+    multiple=True,
+    required=False,
+)
+@click.option(
+    "--initfile",
+    type=click.Path(readable=True),
+    help=(
+        "go to interactive shell after evaluating INITFILE but leave "
+        "history empty and set $LINE to 1"
+    ),
+)
+@click.option(
+    "-s",
+    "--style",
+    type=click.Choice(
+        ["none", "lightbg", "darkbg", "NoColor"], case_sensitive=False
+    ),
+    required=False,
+)
+@click.argument(
+    "file", nargs=1, type=click.Path(readable=True), required=False,
+)
+def main(
+    full_form,
+    persist,
+    quiet,
+    readline,
+    completion,
+    script,
+    pyextensions,
+    execute,
+    initfile,
+    style,
+    file,
+):
+    """A command-line interface to Mathics.
 
-    argparser.add_argument(
-        "FILE",
-        nargs="?",
-        type=argparse.FileType("r"),
-        help="execute commands from FILE",
-    )
-
-    argparser.add_argument(
-        "--help", "-h", help="show this help message and exit", action="help"
-    )
-
-    argparser.add_argument(
-        "--full-form",
-        "-F",
-        help="Show how input was parsed to FullForm",
-        action="store_true",
-    )
-
-    argparser.add_argument(
-        "--pyextensions",
-        "-l",
-        action="append",
-        metavar="PYEXT",
-        help="directory to load extensions in python",
-    )
-
-    argparser.add_argument(
-        "--persist",
-        help="go to interactive shell after evaluating FILE or -e",
-        action="store_true",
-    )
-
-    # --initfile is different from the combination FILE --persist since the first one
-    # leaves the history empty and sets the current $Line to 1.
-    argparser.add_argument(
-        "--initfile",
-        help="the same that FILE and --persist together",
-        type=argparse.FileType("r"),
-    )
-
-    argparser.add_argument(
-        "--quiet", "-q", help="don't print message at startup", action="store_true"
-    )
-
-    argparser.add_argument(
-        "-script", help="run a mathics file in script mode", action="store_true"
-    )
-
-    argparser.add_argument(
-        "--execute",
-        "-e",
-        action="append",
-        metavar="EXPR",
-        help="evaluate EXPR before processing any input files (may be given "
-        "multiple times)",
-    )
-
-    argparser.add_argument("--colors", nargs="?", help="interactive shell colors")
-
-    argparser.add_argument(
-        "--no-completion", help="disable tab completion", action="store_true"
-    )
-
-    argparser.add_argument(
-        "--no-readline",
-        help="disable line editing (implies --no-completion)",
-        action="store_true",
-    )
-
-    argparser.add_argument(
-        "--version", "-v", action="version", version="%(prog)s " + __version__
-    )
-
-    args, script_args = argparser.parse_known_args()
+    Mathics is a general-purpose computer algebra system
+    """
 
     quit_command = "CTRL-BREAK" if sys.platform == "win32" else "CONTROL-D"
 
     extension_modules = []
-    if args.pyextensions:
-        for ext in args.pyextensions:
+    if pyextensions:
+        for ext in pyextensions:
             extension_modules.append(ext)
     else:
         from mathics.settings import default_pymathics_modules
@@ -270,15 +274,10 @@ def main():
     definitions = Definitions(add_builtin=True, extension_modules=extension_modules)
     definitions.set_line_no(0)
 
-    shell = TerminalShell(
-        definitions,
-        args.colors,
-        want_readline=not (args.no_readline),
-        want_completion=not (args.no_completion),
-    )
+    shell = TerminalShell(definitions, style, readline, completion,)
 
-    if args.initfile:
-        feeder = FileLineFeeder(args.initfile)
+    if initfile:
+        feeder = FileLineFeeder(initfile)
         try:
             while not feeder.empty():
                 evaluation = Evaluation(
@@ -295,18 +294,18 @@ def main():
 
         definitions.set_line_no(0)
 
-    if args.execute:
-        for expr in args.execute:
+    if execute:
+        for expr in execute:
             print(shell.get_in_prompt() + expr)
             evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
             result = evaluation.parse_evaluate(expr, timeout=settings.TIMEOUT)
             shell.print_result(result)
 
-        if not args.persist:
+        if not persist:
             return
 
-    if args.FILE is not None:
-        feeder = FileLineFeeder(args.FILE)
+    if file is not None:
+        feeder = FileLineFeeder(file)
         try:
             while not feeder.empty():
                 evaluation = Evaluation(
@@ -321,12 +320,12 @@ def main():
         except (KeyboardInterrupt):
             print("\nKeyboardInterrupt")
 
-        if args.persist:
+        if persist:
             definitions.set_line_no(0)
         else:
             return
 
-    if not args.quiet:
+    if not quiet:
         print()
         print(version_string + "\n")
         print(license_string + "\n")
@@ -338,7 +337,7 @@ def main():
             query = evaluation.parse_feeder(shell)
             if query is None:
                 continue
-            if args.full_form:
+            if full_form:
                 print(query)
             result = evaluation.evaluate(query, timeout=settings.TIMEOUT)
             if result is not None:
