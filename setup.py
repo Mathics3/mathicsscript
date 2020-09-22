@@ -47,7 +47,7 @@ setup(
     name="tmathics",
     version=VERSION,  # noqa
     packages=find_packages(),
-    install_requires=["mathics", "click", "colorama"],
+    install_requires=["mathics", "click", "colorama", "pygments"],
     entry_points={"console_scripts": ["tmathics = tmathics.__main__:main",],},
     # don't pack Mathics in egg because of media files, etc.
     zip_safe=False,

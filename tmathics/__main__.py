@@ -2,13 +2,41 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import os
 import click
-import argparse  # FIXME: remove this
 import re
 import locale
 
 from colorama import init as colorama_init
+
+from pygments import highlight
+from pygments.lexers import MathematicaLexer
+
+mma_lexer = MathematicaLexer()
+
+from pygments.formatters.terminal import TERMINAL_COLORS
+from pygments.formatters import TerminalFormatter, Terminal256Formatter
+
+from pygments.token import (
+    # Comment,
+    # Generic,
+    # Keyword,
+    Name,
+    Literal,
+    # Operator,
+    # String,
+    Token,
+)
+
+color_scheme = TERMINAL_COLORS.copy()
+color_scheme[Token.Name] = ("brown", "yellow")
+color_scheme[Name.Function] = ("green", "green")
+color_scheme[Literal.Number]  = ('darkblue', 'blue')
+
+dark_terminal_formatter = TerminalFormatter(bg="dark")
+dark_terminal_formatter.colorscheme = color_scheme
+
+light_terminal_formatter = TerminalFormatter(bg="light")
+terminal_256_formatter = Terminal256Formatter()
 
 from mathics.core.definitions import Definitions
 from mathics.core.expression import strip_context
@@ -28,6 +56,7 @@ class TerminalShell(LineFeeder):
         super(TerminalShell, self).__init__("<stdin>")
         self.input_encoding = locale.getpreferredencoding()
         self.lineno = 0
+        self.terminal_formatter = None
 
         # Try importing readline to enable arrow keys support etc.
         self.using_readline = False
@@ -55,9 +84,17 @@ class TerminalShell(LineFeeder):
         colorama_init()
         if style is None:
             if is_dark_background():
-                style = "DARGKBG"
+                style = "DARKBG"
+                self.terminal_formatter = dark_terminal_formatter
             else:
                 style = "LIGHTBG"
+                self.terminal_formatter = light_terminal_formatter
+        else:
+            ustyle = style.upper()
+            if ustyle == "DARKBG":
+                self.terminal_formatter = dark_terminal_formatter
+            elif ustyle == "LIGHTBG":
+                self.terminal_formatter = light_terminal_formatter
 
         color_schemes = {
             "NOCOLOR": (["", "", "", ""], ["", "", "", ""]),
@@ -74,7 +111,7 @@ class TerminalShell(LineFeeder):
         # Handle any case by using .upper()
         term_colors = color_schemes.get(style.upper())
         if term_colors is None:
-            out_msg = f"The 'colors' argument must be {repr(list(color_schemes.keys()))} or None"
+            out_msg = f"The 'style' {style} argument must be {repr(list(color_schemes.keys()))} or None"
             quit(out_msg)
 
         self.incolors, self.outcolors = term_colors
@@ -109,7 +146,10 @@ class TerminalShell(LineFeeder):
 
     def print_result(self, result):
         if result is not None and result.result is not None:
-            output = self.to_output(str(result.result))
+            out_str = str(result.result)
+            if self.terminal_formatter:  # pygmentize
+                out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
+            output = self.to_output(out_str)
             print(self.get_out_prompt() + output + "\n")
 
     def rl_read_line(self, prompt):
@@ -331,14 +371,17 @@ def main(
         print(license_string + "\n")
         print(f"Quit by pressing {quit_command}\n")
 
+    if style and shell.terminal_formatter:
+        fmt = lambda x: highlight(str(query), mma_lexer, shell.terminal_formatter)
+    else:
+        fmt = lambda x: highlight(str(query), mma_lexer, shell.terminal_formatter)
     while True:
         try:
             evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
             query = evaluation.parse_feeder(shell)
             if query is None:
                 continue
-            if full_form:
-                print(query)
+            print(fmt(query))
             result = evaluation.evaluate(query, timeout=settings.TIMEOUT)
             if result is not None:
                 shell.print_result(result)
