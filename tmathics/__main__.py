@@ -1,12 +1,32 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
+import atexit
 import click
-import re
 import locale
+import re
+import sys
+
+import os
+import os.path as osp
 
 from colorama import init as colorama_init
+
+
+from readline import (
+    read_history_file,
+    set_completer,
+    set_completer_delims,
+    set_history_length,
+    write_history_file,
+    parse_and_bind,
+)
+
+HISTFILE = osp.expanduser("~/.tmathics_hist")
+try:
+    HISTSIZE = int(os.environ.get("TMATHICS_HISTSIZE", 50))
+except:
+    HISTSIZE = 50
 
 from pygments import highlight
 from pygments.lexers import MathematicaLexer
@@ -30,7 +50,7 @@ from pygments.token import (
 color_scheme = TERMINAL_COLORS.copy()
 color_scheme[Token.Name] = ("brown", "yellow")
 color_scheme[Name.Function] = ("green", "green")
-color_scheme[Literal.Number]  = ('darkblue', 'blue')
+color_scheme[Literal.Number] = ("darkblue", "blue")
 
 dark_terminal_formatter = TerminalFormatter(bg="dark")
 dark_terminal_formatter.colorscheme = color_scheme
@@ -62,22 +82,34 @@ class TerminalShell(LineFeeder):
         self.using_readline = False
         try:
             if want_readline:
-                import readline
 
                 self.using_readline = sys.stdin.isatty() and sys.stdout.isatty()
                 self.ansi_color_re = re.compile("\033\\[[0-9;]+m")
                 if want_completion:
-                    readline.set_completer(
+                    set_completer(
                         lambda text, state: self.complete_symbol_name(text, state)
                     )
 
                     # Make _ a delimiter, but not $ or `
-                    readline.set_completer_delims(
+                    set_completer_delims(
                         " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
                     )
 
-                    readline.parse_and_bind("tab: complete")
+                    parse_and_bind("tab: complete")
                     self.completion_candidates = []
+
+                # History
+                try:
+                    read_history_file(HISTFILE)
+                except IOError:
+                    pass
+                except:
+                    # PyPy read_history_file fails
+                    return
+                set_history_length(HISTSIZE)
+                atexit.register(self.user_write_history_file)
+                pass
+
         except ImportError:
             pass
 
@@ -199,6 +231,12 @@ class TerminalShell(LineFeeder):
     def empty(self):
         return False
 
+    def user_write_history_file(self):
+        try:
+            write_history_file(HISTFILE)
+        except:
+            pass
+
 
 class TerminalOutput(Output):
     def max_stored_size(self, settings):
@@ -226,24 +264,26 @@ class TerminalOutput(Output):
     "--persist",
     default=False,
     required=False,
+    is_flag = True,
     help="go to interactive shell after evaluating FILE or -e",
 )
 @click.option(
     "--quiet",
     "-q",
     default=False,
+    is_flag = True,
     required=False,
     help="don't print message at startup",
 )
 @click.option(
     "--readline/--no-readline",
     default=True,
-    help="GNU Readline line editing. " "If this is off completion is turned off too",
+    help="GNU Readline line editing. If this is off completion and command history are also turned off",
 )
 @click.option(
     "--completion/--no-completion",
     default=True,
-    help="GNU Readline line editing. " "enable tab completion",
+    help="GNU Readline line editing. enable tab completion",
 )
 @click.option(
     "--script", default=True, required=False, help="run a mathics file in script mode"
@@ -274,13 +314,14 @@ class TerminalOutput(Output):
 @click.option(
     "-s",
     "--style",
-    type=click.Choice(
-        ["none", "lightbg", "darkbg", "NoColor"], case_sensitive=False
-    ),
+    type=click.Choice(["none", "lightbg", "darkbg", "NoColor"], case_sensitive=False),
     required=False,
 )
 @click.argument(
-    "file", nargs=1, type=click.Path(readable=True), required=False,
+    "file",
+    nargs=1,
+    type=click.Path(readable=True),
+    required=False,
 )
 def main(
     full_form,
@@ -314,7 +355,12 @@ def main(
     definitions = Definitions(add_builtin=True, extension_modules=extension_modules)
     definitions.set_line_no(0)
 
-    shell = TerminalShell(definitions, style, readline, completion,)
+    shell = TerminalShell(
+        definitions,
+        style,
+        readline,
+        completion,
+    )
 
     if initfile:
         feeder = FileLineFeeder(initfile)
@@ -381,7 +427,8 @@ def main(
             query = evaluation.parse_feeder(shell)
             if query is None:
                 continue
-            print(fmt(query))
+            if full_form:
+                print(fmt(query))
             result = evaluation.evaluate(query, timeout=settings.TIMEOUT)
             if result is not None:
                 shell.print_result(result)
