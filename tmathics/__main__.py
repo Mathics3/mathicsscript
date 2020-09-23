@@ -33,8 +33,9 @@ from pygments.lexers import MathematicaLexer
 
 mma_lexer = MathematicaLexer()
 
+from pygments.styles import get_style_by_name
 from pygments.formatters.terminal import TERMINAL_COLORS
-from pygments.formatters import TerminalFormatter, Terminal256Formatter
+from pygments.formatters import Terminal256Formatter
 
 from pygments.token import (
     # Comment,
@@ -48,15 +49,16 @@ from pygments.token import (
 )
 
 color_scheme = TERMINAL_COLORS.copy()
-color_scheme[Token.Name] = ("brown", "yellow")
-color_scheme[Name.Function] = ("green", "green")
-color_scheme[Literal.Number] = ("darkblue", "blue")
+color_scheme[Token.Name] = "yellow"
+color_scheme[Name.Function] = "green"
+color_scheme[Name.NameSpace] = "brown"
+color_scheme[Literal.Number] = "blue"
 
-dark_terminal_formatter = TerminalFormatter(bg="dark")
+dark_terminal_formatter = Terminal256Formatter(bg="dark")
 dark_terminal_formatter.colorscheme = color_scheme
 
-light_terminal_formatter = TerminalFormatter(bg="light")
-terminal_256_formatter = Terminal256Formatter()
+light_terminal_formatter = Terminal256Formatter(bg="light")
+light_terminal_formatter.colorscheme = color_scheme
 
 from mathics.core.definitions import Definitions
 from mathics.core.expression import strip_context
@@ -77,6 +79,7 @@ class TerminalShell(LineFeeder):
         self.input_encoding = locale.getpreferredencoding()
         self.lineno = 0
         self.terminal_formatter = None
+        self.history_length = definitions.get_config_value('$HistoryLength', HISTSIZE)
 
         # Try importing readline to enable arrow keys support etc.
         self.using_readline = False
@@ -106,7 +109,7 @@ class TerminalShell(LineFeeder):
                 except:
                     # PyPy read_history_file fails
                     return
-                set_history_length(HISTSIZE)
+                set_history_length(self.history_length)
                 atexit.register(self.user_write_history_file)
                 pass
 
@@ -180,6 +183,8 @@ class TerminalShell(LineFeeder):
         if result is not None and result.result is not None:
             out_str = str(result.result)
             if self.terminal_formatter:  # pygmentize
+                # from pygments import lex
+                # print(list(lex(out_str, mma_lexer)))
                 out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
             output = self.to_output(out_str)
             print(self.get_out_prompt() + output + "\n")
@@ -233,6 +238,7 @@ class TerminalShell(LineFeeder):
 
     def user_write_history_file(self):
         try:
+            set_history_length(self.history_length)
             write_history_file(HISTFILE)
         except:
             pass
@@ -308,7 +314,7 @@ class TerminalOutput(Output):
     type=click.Path(readable=True),
     help=(
         "go to interactive shell after evaluating INITFILE but leave "
-        "history empty and set $LINE to 1"
+        "history empty and set $Line to 1"
     ),
 )
 @click.option(
