@@ -11,6 +11,10 @@ from mathics.core.evaluation import Evaluation, Output
 from mathics import version_string, license_string
 from mathics import settings
 
+from pygments import highlight
+from pygments.lexers import MathematicaLexer
+mma_lexer = MathematicaLexer()
+
 from tmathics.version import VERSION
 
 def format_output(obj, expr, format=None):
@@ -21,6 +25,17 @@ def format_output(obj, expr, format=None):
         return dict((k, obj.format_output(expr, f)) for k, f in format.items())
 
     from mathics.core.expression import Expression, BoxError
+
+    if expr.get_head_name() == "System`MathMLForm":
+        format = "xml"
+        leaves = expr.get_leaves()
+        if len(leaves) == 1:
+            expr = leaves[0]
+    elif expr.get_head_name() == "System`TeXForm":
+        format = "tex"
+        leaves = expr.get_leaves()
+        if len(leaves) == 1:
+            expr = leaves[0]
 
     if format == 'text':
         result = expr.format(obj, 'System`OutputForm')

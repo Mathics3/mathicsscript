@@ -9,7 +9,6 @@ from mathics.core.expression import strip_context
 
 from pygments import highlight
 from pygments.lexers import MathematicaLexer
-
 mma_lexer = MathematicaLexer()
 
 from pygments.styles import get_style_by_name
