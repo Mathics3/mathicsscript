@@ -14,6 +14,7 @@ from mathics import settings
 from pygments import highlight
 from pygments.lexers import MathematicaLexer
 mma_lexer = MathematicaLexer()
+from IPython.display import display_svg
 
 from tmathics.version import VERSION
 
@@ -26,16 +27,24 @@ def format_output(obj, expr, format=None):
 
     from mathics.core.expression import Expression, BoxError
 
-    if expr.get_head_name() == "System`MathMLForm":
+    expr_type = expr.get_head_name()
+    if  expr_type == "System`MathMLForm":
         format = "xml"
         leaves = expr.get_leaves()
         if len(leaves) == 1:
             expr = leaves[0]
-    elif expr.get_head_name() == "System`TeXForm":
+    elif expr_type == "System`TeXForm":
         format = "tex"
         leaves = expr.get_leaves()
         if len(leaves) == 1:
             expr = leaves[0]
+    elif expr_type == "System`Graphics":
+        result = Expression(
+            'StandardForm', expr).format(obj, 'System`MathMLForm')
+        ml_str = result.leaves[0].leaves[0]
+        # FIXME: not quite right. Need to parse out strings
+        display_svg(str(ml_str))
+
 
     if format == 'text':
         result = expr.format(obj, 'System`OutputForm')
