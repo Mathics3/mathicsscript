@@ -39,7 +39,7 @@ light_terminal_formatter = Terminal256Formatter(bg="light")
 light_terminal_formatter.colorscheme = color_scheme
 
 from colorama import init as colorama_init
-from tmathics.term_background import is_dark_background
+from mathicsscript.term_background import is_dark_background
 
 from readline import (
     read_history_file,
@@ -51,11 +51,11 @@ from readline import (
 )
 
 try:
-    HISTSIZE = int(os.environ.get("TMATHICS_HISTSIZE", 50))
+    HISTSIZE = int(os.environ.get("MATHICSSCRIPT_HISTSIZE", 50))
 except:
     HISTSIZE = 50
 
-HISTFILE = osp.expanduser("~/.tmathics_hist")
+HISTFILE = osp.expanduser("~/.mathicsscript_hist")
 
 
 

@@ -35,20 +35,20 @@ import platform
 
 # Ensure user has the correct Python version
 if sys.version_info < (3, 6):
-    print("tmathics does not support Python %d.%d" % sys.version_info[:2])
+    print("mathicsscript does not support Python %d.%d" % sys.version_info[:2])
     sys.exit(-1)
 
 # stores VERSION in the current namespace
-exec(compile(read("tmathics/version.py"), "tmathics/version.py", "exec"))
+exec(compile(read("mathicsscript/version.py"), "mathicsscript/version.py", "exec"))
 
 is_PyPy = platform.python_implementation() == "PyPy"
 
 setup(
-    name="tmathics",
+    name="mathicsscript",
     version=VERSION,  # noqa
     packages=find_packages(),
     install_requires=["mathics", "click", "colorama", "pygments"],
-    entry_points={"console_scripts": ["tmathics = tmathics.__main__:main",],},
+    entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main",],},
     # don't pack Mathics in egg because of media files, etc.
     zip_safe=False,
     # metadata for upload to PyPI

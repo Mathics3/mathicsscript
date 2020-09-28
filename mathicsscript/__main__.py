@@ -4,7 +4,7 @@
 import click
 import sys
 
-from tmathics.termshell import TerminalShell
+from mathicsscript.termshell import TerminalShell
 
 from mathics.core.definitions import Definitions
 from mathics.core.evaluation import Evaluation, Output
@@ -14,9 +14,8 @@ from mathics import settings
 from pygments import highlight
 from pygments.lexers import MathematicaLexer
 mma_lexer = MathematicaLexer()
-from IPython.display import display_svg
 
-from tmathics.version import VERSION
+from mathicsscript.version import VERSION
 
 def format_output(obj, expr, format=None):
     if format is None:
@@ -117,9 +116,9 @@ class TerminalOutput(Output):
     default=True,
     help="GNU Readline line editing. enable tab completion",
 )
-@click.option(
-    "--script", default=True, required=False, help="run a mathics file in script mode"
-)
+# @click.option(
+#     "--script", default=True, required=False, help="run a mathics file in script mode"
+# )
 @click.option(
     "--pyextensions",
     "-l",
@@ -161,7 +160,7 @@ def main(
     quiet,
     readline,
     completion,
-    script,
+    # script,
     pyextensions,
     execute,
     initfile,
@@ -258,6 +257,7 @@ def main(
         fmt = lambda x: highlight(str(query), mma_lexer, shell.terminal_formatter)
     while True:
         try:
+
             evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
             query = evaluation.parse_feeder(shell)
             if query is None:

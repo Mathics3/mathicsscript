@@ -33,6 +33,7 @@
 /__pkginfo__.pyc
 /dist
 /how-to-make-a-release.txt
+/mathicsscript.egg-info
 /nose-*.egg
 /out/
 /pytest/**/*.got
