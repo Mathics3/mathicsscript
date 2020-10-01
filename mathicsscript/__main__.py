@@ -257,11 +257,20 @@ def main(
         fmt = lambda x: highlight(str(query), mma_lexer, shell.terminal_formatter)
     while True:
         try:
-
+            if shell.using_readline:
+                import readline as GNU_readline
+                last_pos = GNU_readline.get_current_history_length()
             evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
-            query = evaluation.parse_feeder(shell)
+            query, source_code = evaluation.parse_feeder_returning_code(shell)
+            if shell.using_readline:
+                current_pos = GNU_readline.get_current_history_length()
+                for pos in range(last_pos, current_pos-1):
+                    GNU_readline.remove_history_item(pos)
+                GNU_readline.add_history(source_code.rstrip())
+
             if query is None:
                 continue
+
             if full_form:
                 print(fmt(query))
             result = evaluation.evaluate(query, timeout=settings.TIMEOUT)
