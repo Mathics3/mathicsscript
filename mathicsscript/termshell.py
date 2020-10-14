@@ -2,9 +2,9 @@ import atexit
 import os
 import os.path as osp
 import locale
+import pathlib
 import sys
 import re
-
 from mathics.core.expression import strip_context
 
 from pygments import highlight
@@ -43,11 +43,12 @@ from mathicsscript.term_background import is_dark_background
 
 from readline import (
     read_history_file,
+    read_init_file,
     set_completer,
     set_completer_delims,
     set_history_length,
     write_history_file,
-    parse_and_bind,
+    # parse_and_bind,
 )
 
 try:
@@ -87,7 +88,10 @@ class TerminalShell(LineFeeder):
                         " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
                     )
 
-                    parse_and_bind("tab: complete")
+                    inputrc = pathlib.Path(__file__).parent.absolute() / "inputrc"
+                    read_init_file(inputrc)
+                    # parse_and_bind('"\ep\e": "\u03C0"')
+                    # parse_and_bind("tab: complete")
                     self.completion_candidates = []
 
                 # History
