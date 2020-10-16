@@ -1,4 +1,4 @@
-# GNU Readline imput translations
+# GNU Readline input translations
 
 # Lowercase TeX Greek symbols
 "\e\\alpha\e": "α"
@@ -27,6 +27,32 @@
 "\e\\psi\e": "ψ"
 "\e\\omega\e": "ω"
 
+# Lowercase named characters
+"\ea\e": "α"
+"\eb\e": "β"
+"\eg\e": "γ"
+"\ed\e": "δ"
+"\ee\e": "ε"
+"\ez\e": "ζ"
+"\ee\e": "η"
+"\et\e": "θ"
+"\ei\e": "ι"
+"\ek\e": "κ"
+"\el\e": "λ"
+"\em\e": "μ"
+"\en\e": "ν"
+"\ex\e": "ξ"
+"\eo\e": "ω"
+"\ep\e": "π"
+"\er\e": "ρ"
+"\ev\e": "ς"
+"\es\e": "σ"
+"\et\e": "τ"
+"\eu\e": "υ"
+# "\e\\phi\e": "φ" # ?
+# "\e\\chi\e": "χ" # ?
+# "\e\\psi\e": "ψ" # ?
+
 # Uppercase TeX Greek symbols
 "\e\\Gamma\e": "Γ"
 "\e\\Delta\e": "Δ"
@@ -41,7 +67,6 @@
 "\e\\Omega\e": "Ω"
 
 # Things we have Unicode symbols for
-"\ep\e": "π"
 "\einf\e": "∞"
 "\edeg\e": "°"
 "\e&&\e": "∧"

@@ -6,6 +6,7 @@ import pathlib
 import sys
 import re
 from mathics.core.expression import strip_context
+from mathics.core.characters import named_characters
 
 from pygments import highlight
 from pygments.lexers import MathematicaLexer
@@ -83,9 +84,15 @@ class TerminalShell(LineFeeder):
                         lambda text, state: self.complete_symbol_name(text, state)
                     )
 
+                    self.named_character_names = set(named_characters.keys())
+
+
                     # Make _ a delimiter, but not $ or `
+                    # set_completer_delims(
+                    #     " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
+                    # )
                     set_completer_delims(
-                        " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
+                        " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
                     )
 
                     inputrc = pathlib.Path(__file__).parent.absolute() / "inputrc"
@@ -165,7 +172,7 @@ class TerminalShell(LineFeeder):
         return newline.join(text.splitlines())
 
     def out_callback(self, out):
-        print(self.to_output(str(out)))
+        print(self.to_output(str(out)))\
 
     def read_line(self, prompt):
         if self.using_readline:
@@ -191,11 +198,25 @@ class TerminalShell(LineFeeder):
 
     def complete_symbol_name(self, text, state):
         try:
+            match = re.match(r"^.*\\\[([A-Z][a-z]*)$", text)
+            if match:
+                return self._complete_named_characters(match.group(1), state)
             return self._complete_symbol_name(text, state)
         except Exception:
             # any exception thrown inside the completer gets silently
             # thrown away otherwise
             print("Unhandled error in readline completion")
+
+    def _complete_named_characters(self, prefix, state):
+        """prefix is the text after \[. Return a list of named character names.
+        """
+        if state == 0:
+            self.completion_candidates = ["\\[" + name + "]" for name in self.named_character_names if name.startswith(prefix)]
+        try:
+            return self.completion_candidates[state]
+        except IndexError:
+            return None
+
 
     def _complete_symbol_name(self, text, state):
         # The readline module calls this function repeatedly,
