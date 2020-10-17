@@ -1,0 +1,8 @@
+include README.rst
+include NEWS.rst
+include ChangeLog
+include COPYING
+include Makefile
+include mathicsscript/inputrc
+recursive-include mathicsscript *.py
+recursive-exclude __pycache__
