@@ -106,8 +106,8 @@
 "\escv\e": "\\[ScriptV]"
 "\escw\e": "\\[ScriptW]"
 "\escx\e": "\\[ScriptX]"
-"\escy\e": "\\[ScriptY]
-"\escz\e": "\\[ScriptZ]
+"\escy\e": "\\[ScriptY]"
+"\escz\e": "\\[ScriptZ]"
 "\escA\e": "\\[ScriptCapitalA]"
 "\escB\e": "\\[ScriptCapitalB]"
 "\escC\e": "\\[ScriptCapitalC]"
@@ -132,6 +132,6 @@
 "\escV\e": "\\[ScriptCapitalV]"
 "\escW\e": "\\[ScriptCapitalW]"
 "\escX\e": "\\[ScriptCapitalX]"
-"\esCy\e": "\\[ScripCapitaltY]
-"\esCz\e": "\\[ScripCapitaltZ]
+"\esCy\e": "\\[ScriptCapitalY]"
+"\esCz\e": "\\[ScriptCapitalZ]"
 tab: complete
