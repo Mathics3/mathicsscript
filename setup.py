@@ -47,6 +47,7 @@ setup(
     name="mathicsscript",
     version=VERSION,  # noqa
     packages=find_packages(),
+    data_files=["mathicsscript/inputrc"],
     install_requires=["mathics", "click", "colorama", "pygments"],
     entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main",],},
     # don't pack Mathics in egg because of media files, etc.
