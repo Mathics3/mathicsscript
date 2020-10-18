@@ -158,13 +158,13 @@ class TerminalShell(LineFeeder):
     def get_in_prompt(self):
         next_line_number = self.get_last_line_number() + 1
         if self.lineno > 0:
-            return " " * len("In[{0}]:= ".format(next_line_number))
+            return " " * len(f"In[{next_line_number}]:= ")
         else:
             return "{1}In[{2}{0}{3}]:= {4}".format(next_line_number, *self.incolors)
 
-    def get_out_prompt(self):
+    def get_out_prompt(self, output_style=""):
         line_number = self.get_last_line_number()
-        return "{1}Out[{2}{0}{3}]= {4}".format(line_number, *self.outcolors)
+        return "{2}Out[{3}{0}{4}]{1}= {5}".format(line_number, output_style, *self.outcolors)
 
     def to_output(self, text):
         line_number = self.get_last_line_number()
@@ -179,7 +179,7 @@ class TerminalShell(LineFeeder):
             return self.rl_read_line(prompt)
         return input(prompt)
 
-    def print_result(self, result):
+    def print_result(self, result, output_style=""):
         if result is not None and result.result is not None:
             out_str = str(result.result)
             if self.terminal_formatter:  # pygmentize
@@ -187,7 +187,7 @@ class TerminalShell(LineFeeder):
                 # print(list(lex(out_str, mma_lexer)))
                 out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
             output = self.to_output(out_str)
-            print(self.get_out_prompt() + output + "\n")
+            print(self.get_out_prompt(output_style) + output + "\n")
 
     def rl_read_line(self, prompt):
         # Wrap ANSI colour sequences in \001 and \002, so readline

@@ -7,6 +7,7 @@ import sys
 from mathicsscript.termshell import TerminalShell
 
 from mathics.core.definitions import Definitions
+from mathics.core.expression import Symbol
 from mathics.core.evaluation import Evaluation, Output
 from mathics import version_string, license_string
 from mathics import settings
@@ -255,6 +256,10 @@ def main(
         fmt = lambda x: highlight(str(query), mma_lexer, shell.terminal_formatter)
     else:
         fmt = lambda x: highlight(str(query), mma_lexer, shell.terminal_formatter)
+
+    TeXForm = Symbol("System`TeXForm")
+
+
     while True:
         try:
             if shell.using_readline:
@@ -271,11 +276,17 @@ def main(
             if query is None:
                 continue
 
+
+            if query.head == TeXForm:
+                output_style = "//TeXForm"
+            else:
+                output_style = ""
+
             if full_form:
                 print(fmt(query))
             result = evaluation.evaluate(query, timeout=settings.TIMEOUT)
             if result is not None:
-                shell.print_result(result)
+                shell.print_result(result, output_style)
         except (KeyboardInterrupt):
             print("\nKeyboardInterrupt")
         except EOFError:
