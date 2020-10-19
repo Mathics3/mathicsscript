@@ -96,8 +96,8 @@ class TerminalShell(LineFeeder):
                     )
 
                     inputrc = pathlib.Path(__file__).parent.absolute() / "inputrc"
+                    import pdb
                     read_init_file(inputrc)
-                    # parse_and_bind('"\ep\e": "\u03C0"')
                     # parse_and_bind("tab: complete")
                     self.completion_candidates = []
 

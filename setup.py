@@ -44,10 +44,13 @@ exec(compile(read("mathicsscript/version.py"), "mathicsscript/version.py", "exec
 is_PyPy = platform.python_implementation() == "PyPy"
 
 setup(
+    maintainer="Rocky Bernstein",
+    author_email="rb@dustyfeet.com",
     name="mathicsscript",
     version=VERSION,  # noqa
     packages=find_packages(),
-    data_files=["mathicsscript/inputrc"],
+    include_package_data=True,
+    package_data={"": ["inputrc"]},
     install_requires=["mathics", "click", "colorama", "pygments"],
     entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main",],},
     # don't pack Mathics in egg because of media files, etc.

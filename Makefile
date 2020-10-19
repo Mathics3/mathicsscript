@@ -32,7 +32,7 @@ check:
 
 # Check StructuredText long description formatting
 check-rst:
-	$(PYTHON) setup.py --long-description | ./rst2html.py > python3-trepan.html
+	$(PYTHON) setup.py --long-description | ./rst2html.py > mathicsscript.html
 
 #: Remove derived files
 clean:
