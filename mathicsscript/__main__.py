@@ -277,7 +277,7 @@ def main(
                 continue
 
 
-            if query.head == TeXForm:
+            if hasattr(query, "head") and query.head == TeXForm:
                 output_style = "//TeXForm"
             else:
                 output_style = ""
