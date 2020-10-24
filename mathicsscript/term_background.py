@@ -42,28 +42,34 @@ def is_dark_rgb(r, g, b):
     """Pass as parameters R G B values in hex
     On return, variable is_dark_bg is set
     """
+    def scale(v):
+        return (v * 16)
 
     try:
         midpoint = int(environ.get("TERMINAL_COLOR_MIDPOINT", None))
     except:
+        midpoint = None
         pass
     if not midpoint:
         term = environ.get("TERM", None)
-        # 117963 = (* .6 (+ 65535 65535 65535))
-        # 382.5 = (* .6 (+ 65535 65535 65535))
-        print("midpoint", midpoint, "vs", (16 * 5 + 16 * g + 16 * b))
-        midpoint = 383 if term and term == "xterm-256color" else 117963
+        # 16-bit values:
+        #   117963 = (* .6 (+ 65535 65535 65535))
+        # 8-bit values:
+        #   382.5 = (* .5 (+ 255 255 255))
+        midpoint = 117963 if term and term == "xterm-256color" else 383
 
-    if (16 * 5 + 16 * g + 16 * b) < midpoint:
+    # Each r,g or b are is scalledmulitplied by 16, e.g.
+    # 0..15 -> 0..240
+    if (scale(r) + scale(g) + scale(b)) < midpoint:
         return True
     else:
         return False
 
 
 def is_dark_color_fg_bg():
-    """Consult (environment) variables DARK_BG and COLORFGB
+    """Consult (environment) variables LC_DARK_BG and COLORFGB
     On return, variable is_dark_bg is set"""
-    dark_bg = environ.get("DARK_BG", None)
+    dark_bg = environ.get("LC_DARK_BG", None)
     if dark_bg is not None:
         return dark_bg != "0"
     color_fg_bg = environ.get("COLORFGBG", None)

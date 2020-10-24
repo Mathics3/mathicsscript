@@ -47,11 +47,11 @@ setup(
     maintainer="Rocky Bernstein",
     author_email="rb@dustyfeet.com",
     name="mathicsscript",
-    version=VERSION,  # noqa
+    version=__version__,  # noqa
     packages=find_packages(),
     include_package_data=True,
     package_data={"": ["inputrc"]},
-    install_requires=["mathics", "click", "colorama", "pygments"],
+    install_requires=["mathics >= 1.0", "click", "colorama", "pygments"],
     entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main",],},
     # don't pack Mathics in egg because of media files, etc.
     zip_safe=False,
@@ -66,6 +66,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Scientific/Engineering",
