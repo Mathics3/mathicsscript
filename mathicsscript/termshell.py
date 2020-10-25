@@ -29,10 +29,10 @@ from pygments.token import (
 )
 
 color_scheme = TERMINAL_COLORS.copy()
-color_scheme[Token.Name] = "yellow"
-color_scheme[Name.Function] = "green"
-color_scheme[Name.NameSpace] = "brown"
-color_scheme[Literal.Number] = "blue"
+color_scheme[Token.Name] = ("yellow", "ansibrightyellow")
+color_scheme[Name.Function] = ("ansigreen", "ansibrightgreen")
+color_scheme[Name.NameSpace] = ("magenta", "ansibrightmagenta")
+color_scheme[Literal.Number] = ("ansiblue", "ansibrightblue")
 
 from colorama import init as colorama_init
 from term_background import is_dark_background
@@ -54,6 +54,12 @@ except:
 
 HISTFILE = osp.expanduser("~/.mathicsscript_hist")
 
+RL_COMPLETER_DELIMS_WITH_BRACE = (
+    " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
+    )
+RL_COMPLETER_DELIMS = (
+    " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
+    )
 
 
 from mathics.core.parser import LineFeeder, FileLineFeeder
@@ -83,12 +89,8 @@ class TerminalShell(LineFeeder):
 
 
                     # Make _ a delimiter, but not $ or `
-                    # set_completer_delims(
-                    #     " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
-                    # )
-                    set_completer_delims(
-                        " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
-                    )
+                    # set_completer_delims(RL_COMPLETER_DELIMS)
+                    set_completer_delims(RL_COMPLETER_DELIMS_WITH_BRACE)
 
                     inputrc = pathlib.Path(__file__).parent.absolute() / "inputrc"
                     read_init_file(inputrc)
@@ -178,44 +180,56 @@ class TerminalShell(LineFeeder):
 
     def complete_symbol_name(self, text, state):
         try:
-            match = re.match(r"^.*\\\[([A-Z][a-z]*)$", text)
+            match = re.match(r"^(.*\\\[)([A-Z][a-z]*)$", text)
             if match:
-                return self._complete_named_characters(match.group(1), state)
+                return self._complete_named_characters(match.group(1), match.group(2), state)
             return self._complete_symbol_name(text, state)
-        except Exception:
+
+        except Exception as e:
             # any exception thrown inside the completer gets silently
             # thrown away otherwise
             print("Unhandled error in readline completion")
+        except:
+            raise
 
-    def _complete_named_characters(self, prefix, state):
+    def _complete_named_characters(self, prefix, text, state):
         """prefix is the text after \[. Return a list of named character names.
         """
         if state == 0:
-            self.completion_candidates = ["\\[" + name + "]" for name in self.named_character_names if name.startswith(prefix)]
+            self.completion_candidates = [prefix + name + "]" for name in self.named_character_names if name.startswith(text)]
+            # self.completion_candidates = self.get_completion_symbol_candidates(prefix, text)
         try:
             return self.completion_candidates[state]
         except IndexError:
             return None
 
-
     def _complete_symbol_name(self, text, state):
         # The readline module calls this function repeatedly,
         # increasing 'state' each time and expecting one string to be
         # returned per call.
-
         if state == 0:
             self.completion_candidates = self.get_completion_candidates(text)
-
         try:
             return self.completion_candidates[state]
         except IndexError:
             return None
 
     def get_completion_candidates(self, text):
-        matches = self.definitions.get_matching_names(text + "*")
+
+        brace_pos = text.rfind("[")
+        if brace_pos >= 0:
+            suffix = text[brace_pos+1:]
+            prefix = text[:brace_pos+1]
+        else:
+            prefix = ""
+            suffix = text
+        try:
+            matches = self.definitions.get_matching_names(suffix + "*")
+        except Exception as e:
+            return []
         if "`" not in text:
             matches = [strip_context(m) for m in matches]
-        return matches
+        return [prefix + m for m in matches]
 
     def reset_lineno(self):
         self.lineno = 0
