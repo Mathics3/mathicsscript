@@ -36,10 +36,7 @@ check-rst:
 
 #: Remove derived files
 clean:
-	rm mathics/*/*.so; \
-	for dir in mathics/doc ; do \
-	   ($(MAKE) -C "$$dir" clean); \
-	done;
+	@find . -name "*.pyc" -type f -delete
 
 #: Remove ChangeLog
 rmChangeLog:

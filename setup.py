@@ -38,8 +38,21 @@ if sys.version_info < (3, 6):
     print("mathicsscript does not support Python %d.%d" % sys.version_info[:2])
     sys.exit(-1)
 
-# stores VERSION in the current namespace
+
+def get_srcdir():
+    filename = osp.normcase(osp.dirname(osp.abspath(__file__)))
+    return osp.realpath(filename)
+
+
+def read(*rnames):
+    return open(osp.join(get_srcdir(), *rnames)).read()
+
+
+# stores __version__ in the current namespace
 exec(compile(read("mathicsscript/version.py"), "mathicsscript/version.py", "exec"))
+
+long_description = read("README.rst") + "\n"
+exec(read("mathicsscript/version.py"))
 
 is_PyPy = platform.python_implementation() == "PyPy"
 
@@ -51,8 +64,16 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     package_data={"": ["inputrc"]},
-    install_requires=["mathics >= 1.0", "click", "colorama", "pygments", "term-background >= 1.0.1"],
-    entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main",],},
+    install_requires=[
+        "mathics >= 1.0",
+        "click",
+        "colorama",
+        "pygments",
+        "term-background >= 1.0.1",
+    ],
+    entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main"]},
+    long_description=long_description,
+    long_description_content_type="text/x-rst",
     # don't pack Mathics in egg because of media files, etc.
     zip_safe=False,
     # metadata for upload to PyPI

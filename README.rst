@@ -32,8 +32,8 @@ To install from git shources so that you run from the git source tree:
     $ make develop
 
 
-Why not IPython via Jupyter
----------------------------
+Why not IPython via Jupyter?
+----------------------------
 
 There will always be a need for simple terminal-like
 interaction. Although there is IPython support via Jupyter all of this

@@ -13,6 +13,7 @@ from mathics.core.characters import named_characters
 
 from pygments import highlight
 from mathicsscript.mmalexer import MathematicaLexer
+
 mma_lexer = MathematicaLexer()
 
 from pygments.formatters.terminal import TERMINAL_COLORS
@@ -47,7 +48,6 @@ from readline import (
     set_completer_delims,
     set_history_length,
     write_history_file,
-    # parse_and_bind,
 )
 
 try:
@@ -57,15 +57,13 @@ except:
 
 HISTFILE = osp.expanduser("~/.mathicsscript_hist")
 
-RL_COMPLETER_DELIMS_WITH_BRACE = (
-    " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
-    )
-RL_COMPLETER_DELIMS = (
-    " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
-    )
+RL_COMPLETER_DELIMS_WITH_BRACE = " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
+RL_COMPLETER_DELIMS = " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
 
 
 from mathics.core.parser import LineFeeder, FileLineFeeder
+
+
 class TerminalShell(LineFeeder):
     def __init__(
         self, definitions, style: str, want_readline: bool, want_completion: bool
@@ -74,7 +72,7 @@ class TerminalShell(LineFeeder):
         self.input_encoding = locale.getpreferredencoding()
         self.lineno = 0
         self.terminal_formatter = None
-        self.history_length = definitions.get_config_value('$HistoryLength', HISTSIZE)
+        self.history_length = definitions.get_config_value("$HistoryLength", HISTSIZE)
 
         # Try importing readline to enable arrow keys support etc.
         self.using_readline = False
@@ -89,7 +87,6 @@ class TerminalShell(LineFeeder):
                     )
 
                     self.named_character_names = set(named_characters.keys())
-
 
                     # Make _ a delimiter, but not $ or `
                     # set_completer_delims(RL_COMPLETER_DELIMS)
@@ -118,7 +115,7 @@ class TerminalShell(LineFeeder):
         colorama_init()
         if style == "None":
             self.terminal_formatter = None
-            self.incolors =  self.outcolors = ["", "", "", ""]
+            self.incolors = self.outcolors = ["", "", "", ""]
         else:
             # self.incolors = ["\033[34m", "\033[1m", "\033[22m", "\033[39m"]
             self.incolors = ["\033[32m", "\033[1m", "\033[22m", "\033[39m"]
@@ -132,7 +129,9 @@ class TerminalShell(LineFeeder):
             try:
                 self.terminal_formatter = Terminal256Formatter(style=style)
             except ClassNotFound:
-                print("Pygments style name '%s' not found; No pygments style set" % style)
+                print(
+                    "Pygments style name '%s' not found; No pygments style set" % style
+                )
 
         self.definitions = definitions
 
@@ -148,7 +147,9 @@ class TerminalShell(LineFeeder):
 
     def get_out_prompt(self, output_style=""):
         line_number = self.get_last_line_number()
-        return "{2}Out[{3}{0}{4}]{1}= {5}".format(line_number, output_style, *self.outcolors)
+        return "{2}Out[{3}{0}{4}]{1}= {5}".format(
+            line_number, output_style, *self.outcolors
+        )
 
     def to_output(self, text):
         line_number = self.get_last_line_number()
@@ -156,7 +157,7 @@ class TerminalShell(LineFeeder):
         return newline.join(text.splitlines())
 
     def out_callback(self, out):
-        print(self.to_output(str(out)))\
+        print(self.to_output(str(out)))
 
     def read_line(self, prompt):
         if self.using_readline:
@@ -168,6 +169,7 @@ class TerminalShell(LineFeeder):
             out_str = str(result.result)
             if self.terminal_formatter:  # pygmentize
                 from pygments import lex
+
                 if debug_pygments:
                     print(list(lex(out_str, mma_lexer)))
                 out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
@@ -185,7 +187,9 @@ class TerminalShell(LineFeeder):
         try:
             match = re.match(r"^(.*\\\[)([A-Z][a-z]*)$", text)
             if match:
-                return self._complete_named_characters(match.group(1), match.group(2), state)
+                return self._complete_named_characters(
+                    match.group(1), match.group(2), state
+                )
             return self._complete_symbol_name(text, state)
 
         except Exception as e:
@@ -196,10 +200,13 @@ class TerminalShell(LineFeeder):
             raise
 
     def _complete_named_characters(self, prefix, text, state):
-        """prefix is the text after \[. Return a list of named character names.
-        """
+        """prefix is the text after \[. Return a list of named character names."""
         if state == 0:
-            self.completion_candidates = [prefix + name + "]" for name in self.named_character_names if name.startswith(text)]
+            self.completion_candidates = [
+                prefix + name + "]"
+                for name in self.named_character_names
+                if name.startswith(text)
+            ]
             # self.completion_candidates = self.get_completion_symbol_candidates(prefix, text)
         try:
             return self.completion_candidates[state]
@@ -221,8 +228,8 @@ class TerminalShell(LineFeeder):
 
         brace_pos = text.rfind("[")
         if brace_pos >= 0:
-            suffix = text[brace_pos+1:]
-            prefix = text[:brace_pos+1]
+            suffix = text[brace_pos + 1 :]
+            prefix = text[: brace_pos + 1]
         else:
             prefix = ""
             suffix = text
