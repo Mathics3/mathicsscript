@@ -9,12 +9,13 @@ from mathics.core.expression import strip_context
 from mathics.core.characters import named_characters
 
 from pygments import highlight
-from pygments.lexers import MathematicaLexer
+from mathicsscript.mmalexer import MathematicaLexer
 mma_lexer = MathematicaLexer()
 
-from pygments.styles import get_style_by_name
 from pygments.formatters.terminal import TERMINAL_COLORS
 from pygments.formatters import Terminal256Formatter
+from pygments.styles import get_style_by_name
+from pygments.util import ClassNotFound
 
 from pygments.token import (
     # Comment,
@@ -33,14 +34,8 @@ color_scheme[Name.Function] = "green"
 color_scheme[Name.NameSpace] = "brown"
 color_scheme[Literal.Number] = "blue"
 
-dark_terminal_formatter = Terminal256Formatter(bg="dark")
-dark_terminal_formatter.colorscheme = color_scheme
-
-light_terminal_formatter = Terminal256Formatter(bg="light")
-light_terminal_formatter.colorscheme = color_scheme
-
 from colorama import init as colorama_init
-from mathicsscript.term_background import is_dark_background
+from term_background import is_dark_background
 
 from readline import (
     read_history_file,
@@ -116,39 +111,24 @@ class TerminalShell(LineFeeder):
             pass
 
         colorama_init()
-        if style is None:
-            if is_dark_background():
-                style = "DARKBG"
-                self.terminal_formatter = dark_terminal_formatter
-            else:
-                style = "LIGHTBG"
-                self.terminal_formatter = light_terminal_formatter
+        if style == "None":
+            self.terminal_formatter = None
+            self.incolors =  self.outcolors = ["", "", "", ""]
         else:
-            ustyle = style.upper()
-            if ustyle == "DARKBG":
-                self.terminal_formatter = dark_terminal_formatter
-            elif ustyle == "LIGHTBG":
-                self.terminal_formatter = light_terminal_formatter
+            # self.incolors = ["\033[34m", "\033[1m", "\033[22m", "\033[39m"]
+            self.incolors = ["\033[32m", "\033[1m", "\033[22m", "\033[39m"]
+            self.outcolors = ["\033[31m", "\033[1m", "\033[22m", "\033[39m"]
+            if style is None:
+                dark_background = is_dark_background()
+                if dark_background:
+                    style = "paraiso-dark"
+                else:
+                    style = "paraiso-light"
+            try:
+                self.terminal_formatter = Terminal256Formatter(style=style)
+            except ClassNotFound:
+                print("Pygments style name '%s' not found; No pygments style set" % style)
 
-        color_schemes = {
-            "NOCOLOR": (["", "", "", ""], ["", "", "", ""]),
-            "DARKBG": (
-                ["\033[32m", "\033[1m", "\033[22m", "\033[39m"],
-                ["\033[31m", "\033[1m", "\033[22m", "\033[39m"],
-            ),
-            "LIGHTBG": (
-                ["\033[34m", "\033[1m", "\033[22m", "\033[39m"],
-                ["\033[31m", "\033[1m", "\033[22m", "\033[39m"],
-            ),
-        }
-
-        # Handle any case by using .upper()
-        term_colors = color_schemes.get(style.upper())
-        if term_colors is None:
-            out_msg = f"The 'style' {style} argument must be {repr(list(color_schemes.keys()))} or None"
-            quit(out_msg)
-
-        self.incolors, self.outcolors = term_colors
         self.definitions = definitions
 
     def get_last_line_number(self):
@@ -178,18 +158,19 @@ class TerminalShell(LineFeeder):
             return self.rl_read_line(prompt)
         return input(prompt)
 
-    def print_result(self, result, output_style=""):
+    def print_result(self, result, output_style="", debug_pygments=False):
         if result is not None and result.result is not None:
             out_str = str(result.result)
             if self.terminal_formatter:  # pygmentize
-                # from pygments import lex
-                # print(list(lex(out_str, mma_lexer)))
+                from pygments import lex
+                if debug_pygments:
+                    print(list(lex(out_str, mma_lexer)))
                 out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
             output = self.to_output(out_str)
             print(self.get_out_prompt(output_style) + output + "\n")
 
     def rl_read_line(self, prompt):
-        # Wrap ANSI colour sequences in \001 and \002, so readline
+        # Wrap ANSI color sequences in \001 and \002, so readline
         # knows that they're nonprinting.
         prompt = self.ansi_color_re.sub(lambda m: "\001" + m.group(0) + "\002", prompt)
 

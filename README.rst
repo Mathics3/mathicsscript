@@ -1,5 +1,10 @@
 mathicsscript is a command-line interface to Mathics.
 
+|screenshot|
+
+See the `screenshot directory <https://github.com/Mathics3/mathicsscript/tree/master/screenshots>`_ for a description and another example.
+
+
 Features
 --------
 
@@ -37,3 +42,6 @@ write a kernel, and use a wire protocol and this adds complexity not
 only for the person developing this package, but also for the user who
 needs to load the extra layers that aren't used. And when something
 goes wrong, it is harder to track down problems.
+
+
+.. |screenshot| image:: https://github.com/Mathics3/mathicsscript/blob/master/screenshots/mathicsscript1.gif

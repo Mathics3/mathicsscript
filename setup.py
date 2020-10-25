@@ -51,7 +51,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     package_data={"": ["inputrc"]},
-    install_requires=["mathics >= 1.0", "click", "colorama", "pygments"],
+    install_requires=["mathics >= 1.0", "click", "colorama", "pygments", "term-background >= 1.0.1"],
     entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main",],},
     # don't pack Mathics in egg because of media files, etc.
     zip_safe=False,

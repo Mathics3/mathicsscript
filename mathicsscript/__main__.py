@@ -16,7 +16,7 @@ from pygments import highlight
 from pygments.lexers import MathematicaLexer
 mma_lexer = MathematicaLexer()
 
-from mathicsscript.version import VERSION
+from mathicsscript.version import __version__
 
 def format_output(obj, expr, format=None):
     if format is None:
@@ -82,7 +82,7 @@ class TerminalOutput(Output):
 
 
 @click.command()
-@click.version_option(version=VERSION)
+@click.version_option(version=__version__)
 @click.option(
     "--full-form",
     "-f",
@@ -146,7 +146,19 @@ class TerminalOutput(Output):
 @click.option(
     "-s",
     "--style",
-    type=click.Choice(["none", "lightbg", "darkbg", "NoColor"], case_sensitive=False),
+    metavar="PYGMENTS-STYLE",
+    type=str,
+    help=(
+        "Set pygments style. Use 'None' if you do not want any pygments styling."
+    ),
+    required=False,
+)
+@click.option(
+    "--pygments-tokens/--no-pygments-tokens",
+    default=False,
+    help=(
+        "Show pygments tokenization of output."
+    ),
     required=False,
 )
 @click.argument(
@@ -166,6 +178,7 @@ def main(
     execute,
     initfile,
     style,
+    pygments_tokens,
     file,
 ):
     """A command-line interface to Mathics.
@@ -219,7 +232,7 @@ def main(
             evaluation = Evaluation(shell.definitions,
                                     output=TerminalOutput(shell), format = "text")
             result = evaluation.parse_evaluate(expr, timeout=settings.TIMEOUT)
-            shell.print_result(result)
+            shell.print_result(result, debug_pygments=pygments_tokens)
 
         if not persist:
             return
@@ -286,7 +299,7 @@ def main(
                 print(fmt(query))
             result = evaluation.evaluate(query, timeout=settings.TIMEOUT)
             if result is not None:
-                shell.print_result(result, output_style)
+                shell.print_result(result, output_style, debug_pygments=pygments_tokens)
         except (KeyboardInterrupt):
             print("\nKeyboardInterrupt")
         except EOFError:
