@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+#   Copyright (C) 2020 Rocky Bernstein <rb@dustyfeet.com>
+
 import atexit
 import os
 import os.path as osp
