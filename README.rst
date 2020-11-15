@@ -1,3 +1,5 @@
+|Pypi Installs| |Latest Version| |Supported Python Versions|
+
 mathicsscript is a command-line interface to Mathics.
 
 |screenshot|
@@ -45,3 +47,7 @@ goes wrong, it is harder to track down problems.
 
 
 .. |screenshot| image:: https://github.com/Mathics3/mathicsscript/blob/master/screenshots/mathicsscript1.gif
+.. |Latest Version| image:: https://badge.fury.io/py/mathicsscript.svg
+		 :target: https://badge.fury.io/py/mathicsscript
+.. |Pypi Installs| image:: https://pepy.tech/badge/mathicsscript
+.. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/mathicsscript.svg
