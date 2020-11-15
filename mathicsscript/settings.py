@@ -1,44 +1,37 @@
 from mathics.builtin import builtins
-from mathics.builtin.base import Predefined
+from mathics.builtin.base import Builtin
 from mathics.builtin.assignment import Set
 from mathics.core.definitions import Definitions
-from mathics.core.expression import (Expression, Symbol)
-from mathics.core.expression import (Expression, Symbol)
+from mathics.core.expression import Expression, Symbol
 
-# FullFormInput = Definition("Global`$FullFormInput", defaultvalues=[True],
-#                            ownvalues=[True], builtin=True)
+from mathicsscript.version import __version__
 
-FullFormInput = Symbol("Global`$FullFormInput")
-true = Symbol("System`True")
-xx = Set(FullFormInput, true, expression=False)
-definitions = Definitions(add_builtin=True)
-from trepan.api import debug; debug()
-xx.apply(FullFormInput, true, definitions)
-print(xx)
+pymathics_version_data = {
+    "author": "The Mathics Team",
+    "version": __version__,
+    "requires": [],
+}
 
 
-# class FullFormInput(Predefined):
-#     """
-#     <dl>
-#     <dt>'$FullFormInput'
-#         <dd>
-#     </dl>
+class ShowFullFormInput(Builtin):
+    """
+    <dl>
+      <dt>$ShowFullFormInput'
+      <dd> If True, show the FullForm parse of terminal input
+    </dl>
+    """
 
-#     Example:
-#     <pre>
-#     In[1] = $FullFormInput
-#     Out[1] = False
-#     </pre>
+    name = "$ShowFullFormInput"
+    attributes = ("Unprotected",)
 
-#     >> Head[$FullFormInteger] == Boolean
-#      = True
-#     """
+    def apply(self, lhs, rhs, evaluation):
+        "lhs_ = rhs_"
 
-#     name = "$FullFormInput"
+        self.assign(lhs, rhs, evaluation)
+        return rhs
 
-#     def evaluate(self, evaluation) -> Expression:
-#         return True
+    def evaluate(self, evaluation) -> Symbol:
+        return self.value
 
-# instance = FullFormInput()
-# builtins['$FullFormInput'] = instance
+
 # definitions.get_attributes(').clear()

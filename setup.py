@@ -65,7 +65,7 @@ setup(
     include_package_data=True,
     package_data={"": ["inputrc"]},
     install_requires=[
-        "mathics >= 1.0",
+        "Mathics3 >= 1.0",
         "click",
         "colorama",
         "pygments",
