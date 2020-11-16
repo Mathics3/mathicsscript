@@ -263,7 +263,7 @@ def main(
                 last_pos = GNU_readline.get_current_history_length()
             evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
             query, source_code = evaluation.parse_feeder_returning_code(shell)
-            if shell.using_readline:
+            if shell.using_readline and hasattr(GNU_readline, "remove_history_item"):
                 current_pos = GNU_readline.get_current_history_length()
                 for pos in range(last_pos, current_pos - 1):
                     GNU_readline.remove_history_item(pos)

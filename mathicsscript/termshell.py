@@ -18,7 +18,7 @@ mma_lexer = MathematicaLexer()
 
 from pygments.formatters.terminal import TERMINAL_COLORS
 from pygments.formatters import Terminal256Formatter
-from pygments.styles import get_style_by_name
+from pygments.styles import get_style_by_name, get_all_styles
 from pygments.util import ClassNotFound
 
 from pygments.token import (
@@ -120,12 +120,19 @@ class TerminalShell(LineFeeder):
             # self.incolors = ["\033[34m", "\033[1m", "\033[22m", "\033[39m"]
             self.incolors = ["\033[32m", "\033[1m", "\033[22m", "\033[39m"]
             self.outcolors = ["\033[31m", "\033[1m", "\033[22m", "\033[39m"]
+            styles = list(get_all_styles())
+            if style is not None and style not in styles:
+                print("Pygments style name '%s' not found." % style)
+                print("Style names are: %s" % ", ".join(styles))
+                print("A default will be used.")
+                style = None
+
             if style is None:
                 dark_background = is_dark_background()
                 if dark_background:
-                    style = "paraiso-dark"
+                    style = "inkpot"
                 else:
-                    style = "paraiso-light"
+                    style = "colorful"
             try:
                 self.terminal_formatter = Terminal256Formatter(style=style)
             except ClassNotFound:
