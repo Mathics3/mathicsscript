@@ -3,9 +3,12 @@
 
 import click
 import sys
-
+import os
+from pathlib import Path
+    
 from mathicsscript.termshell import TerminalShell
 
+from mathics.core.parser import LineFeeder, FileLineFeeder
 from mathics.core.definitions import Definitions
 from mathics.core.expression import Symbol
 from mathics.core.evaluation import Evaluation, Output
@@ -20,6 +23,55 @@ mma_lexer = MathematicaLexer()
 
 from mathicsscript.version import __version__
 
+
+def ensure_settings():
+    home = str(Path.home())
+    settings_file = home + "/.config/mathicsscript/settings.m"
+    if not os.path.isdir(os.path.dirname("~/.config/mathicsscript")):
+        if not os.path.isdir(os.path.dirname(home + "/.config")):
+            os.mkdir(home + "/.config")
+        if not os.path.isdir(home + "/.config/mathicsscript"):
+            os.mkdir(home + "/.config/mathicsscript")
+
+    if not os.path.isfile(settings_file):
+        import mathicsscript
+        srcfn = os.path.dirname(mathicsscript.__file__) + "/settings.m"
+        try:
+            with open(srcfn, 'r') as src:
+                buffer = src.readlines()
+        except:
+            print(f"'{srcfn}' was not found.")
+            return ""
+        try:
+            with open(settings_file, 'w') as dst:
+                for l in buffer:
+                    dst.write(l)
+        except:
+            print(f" '{settings_file}'  cannot be written.")
+            return ""
+    return settings_file
+
+def load_settings(shell):
+    settings_file = ensure_settings()
+    if settings_file == "":
+        return
+    with open(settings_file, "r") as src:
+        feeder = FileLineFeeder(src)
+        try:
+            while not feeder.empty():
+                evaluation = Evaluation(
+                    shell.definitions,
+                    output=TerminalOutput(shell),
+                    catch_interrupt=False,
+                    format="text",
+                )
+                query = evaluation.parse_feeder(feeder)
+                if query is None:
+                    continue
+                evaluation.evaluate(query)
+        except (KeyboardInterrupt):
+            print("\nKeyboardInterrupt")
+    return True
 
 def format_output(obj, expr, format=None):
     if format is None:
@@ -192,23 +244,24 @@ def main(
     # and overwritten by the command line parameter. 
     definitions.set_ownvalue("Settings`$ShowFullForm", from_python(False))
     shell = TerminalShell(definitions, style, readline, completion)
-
+    load_settings(shell)
     if initfile:
-        feeder = FileLineFeeder(initfile)
-        try:
-            while not feeder.empty():
-                evaluation = Evaluation(
-                    shell.definitions,
-                    output=TerminalOutput(shell),
-                    catch_interrupt=False,
-                    format="text",
-                )
-                query = evaluation.parse_feeder(feeder)
-                if query is None:
-                    continue
-                evaluation.evaluate(query, timeout=settings.TIMEOUT)
-        except (KeyboardInterrupt):
-            print("\nKeyboardInterrupt")
+        with open(initfile,"r") as ifile:
+            feeder = FileLineFeeder(ifile)
+            try:
+                while not feeder.empty():
+                    evaluation = Evaluation(
+                        shell.definitions,
+                        output=TerminalOutput(shell),
+                        catch_interrupt=False,
+                        format="text",
+                    )
+                    query = evaluation.parse_feeder(feeder)
+                    if query is None:
+                        continue
+                    evaluation.evaluate(query, timeout=settings.TIMEOUT)
+            except (KeyboardInterrupt):
+                print("\nKeyboardInterrupt")
 
         definitions.set_line_no(0)
 
