@@ -241,7 +241,7 @@ def main(
     definitions.set_line_no(0)
     # Set a default value for $ShowFullForm to False.
     # Then, it can be changed by the settings file (in WL)
-    # and overwritten by the command line parameter. 
+    # and overwritten by the command line parameter.
     definitions.set_ownvalue("Settings`$ShowFullForm", from_python(False))
     shell = TerminalShell(definitions, style, readline, completion)
     load_settings(shell)
@@ -309,8 +309,9 @@ def main(
     if full_form:
         definitions.set_ownvalue("Settings`$ShowFullForm", from_python(full_form))
 
-    if style:
-        definitions.set_ownvalue("Settings`$PygmentsStyle", from_python(style))
+    definitions.set_ownvalue(
+        "Settings`$PygmentsStyle", from_python(shell.pygments_style)
+    )
 
     TeXForm = Symbol("System`TeXForm")
 
@@ -320,14 +321,17 @@ def main(
                 import readline as GNU_readline
 
                 last_pos = GNU_readline.get_current_history_length()
-            full_form = definitions.get_ownvalue("Settings`$ShowFullForm").replace.is_true()
+            full_form = definitions.get_ownvalue(
+                "Settings`$ShowFullForm"
+            ).replace.get_int_value()
             style = definitions.get_ownvalue("Settings`$PygmentsStyle")
             fmt = lambda x: x
             if style:
                 style = style.replace.get_string_value()
                 if shell.terminal_formatter:
-                    fmt = lambda x: highlight(str(query), mma_lexer,
-                                              shell.terminal_formatter)  
+                    fmt = lambda x: highlight(
+                        str(query), mma_lexer, shell.terminal_formatter
+                    )
 
             evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
             query, source_code = evaluation.parse_feeder_returning_code(shell)
@@ -345,7 +349,7 @@ def main(
             else:
                 output_style = ""
 
-            if full_form:
+            if full_form != 0:
                 print(fmt(query))
             result = evaluation.evaluate(query, timeout=settings.TIMEOUT)
             if result is not None:

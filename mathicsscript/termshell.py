@@ -140,7 +140,11 @@ class TerminalShell(LineFeeder):
                     "Pygments style name '%s' not found; No pygments style set" % style
                 )
 
+        self.pygments_style = style
         self.definitions = definitions
+
+    def change_pygments_style(self, style):
+        self.terminal_formatter = Terminal256Formatter(style=style)
 
     def get_last_line_number(self):
         return self.definitions.get_line_no()
@@ -179,6 +183,13 @@ class TerminalShell(LineFeeder):
 
                 if debug_pygments:
                     print(list(lex(out_str, mma_lexer)))
+
+                pygments_style = self.definitions.get_ownvalue(
+                    "Settings`$PygmentsStyle"
+                ).replace.get_string_value()
+                if pygments_style != self.pygments_style:
+                    self.change_pygments_style(pygments_style)
+
                 out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
             output = self.to_output(out_str)
             print(self.get_out_prompt(output_style) + output + "\n")
