@@ -9,7 +9,7 @@ from mathicsscript.termshell import TerminalShell
 from mathics.core.definitions import Definitions
 from mathics.core.expression import Symbol
 from mathics.core.evaluation import Evaluation, Output
-from mathics.core.expression from_python
+from mathics.core.expression import from_python
 from mathics import version_string, license_string
 from mathics import settings
 
@@ -187,7 +187,10 @@ def main(
 
     definitions = Definitions(add_builtin=True)
     definitions.set_line_no(0)
-
+    # Set a default value for $ShowFullForm to False.
+    # Then, it can be changed by the settings file (in WL)
+    # and overwritten by the command line parameter. 
+    definitions.set_ownvalue("Settings`$ShowFullForm", from_python(False))
     shell = TerminalShell(definitions, style, readline, completion)
 
     if initfile:
@@ -249,6 +252,7 @@ def main(
         print(license_string + "\n")
         print(f"Quit by pressing {quit_command}\n")
 
+    # If defined, full_form and style overwrite the predefined values.
     if full_form:
         definitions.set_ownvalue("Settings`$ShowFullForm", from_python(full_form))
 
@@ -263,14 +267,14 @@ def main(
                 import readline as GNU_readline
 
                 last_pos = GNU_readline.get_current_history_length()
-                
-            full_form = definitions.get_ownvalue("Settings`$ShowFullForm").is_true()
-            style = definitions.get_ownvalue("Settings`$PygmentsStyle").get_string_value()
-            
-            if style and shell.terminal_formatter:
-                fmt = lambda x: highlight(str(query), mma_lexer, shell.terminal_formatter)
-            else:
-                fmt = lambda x: x
+            full_form = definitions.get_ownvalue("Settings`$ShowFullForm").replace.is_true()
+            style = definitions.get_ownvalue("Settings`$PygmentsStyle")
+            fmt = lambda x: x
+            if style:
+                style = style.replace.get_string_value()
+                if shell.terminal_formatter:
+                    fmt = lambda x: highlight(str(query), mma_lexer,
+                                              shell.terminal_formatter)  
 
             evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
             query, source_code = evaluation.parse_feeder_returning_code(shell)
