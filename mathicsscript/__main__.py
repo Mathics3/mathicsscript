@@ -9,6 +9,7 @@ from mathicsscript.termshell import TerminalShell
 from mathics.core.definitions import Definitions
 from mathics.core.expression import Symbol
 from mathics.core.evaluation import Evaluation, Output
+from mathics.core.expression from_python
 from mathics import version_string, license_string
 from mathics import settings
 
@@ -248,10 +249,11 @@ def main(
         print(license_string + "\n")
         print(f"Quit by pressing {quit_command}\n")
 
-    if style and shell.terminal_formatter:
-        fmt = lambda x: highlight(str(query), mma_lexer, shell.terminal_formatter)
-    else:
-        fmt = lambda x: highlight(str(query), mma_lexer, shell.terminal_formatter)
+    if full_form:
+        definitions.set_ownvalue("Settings`$ShowFullForm", from_python(full_form))
+
+    if style:
+        definitions.set_ownvalue("Settings`$PygmentsStyle", from_python(style))
 
     TeXForm = Symbol("System`TeXForm")
 
@@ -261,6 +263,15 @@ def main(
                 import readline as GNU_readline
 
                 last_pos = GNU_readline.get_current_history_length()
+                
+            full_form = definitions.get_ownvalue("Settings`$ShowFullForm").is_true()
+            style = definitions.get_ownvalue("Settings`$PygmentsStyle").get_string_value()
+            
+            if style and shell.terminal_formatter:
+                fmt = lambda x: highlight(str(query), mma_lexer, shell.terminal_formatter)
+            else:
+                fmt = lambda x: x
+
             evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
             query, source_code = evaluation.parse_feeder_returning_code(shell)
             if shell.using_readline and hasattr(GNU_readline, "remove_history_item"):
