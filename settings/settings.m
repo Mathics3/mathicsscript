@@ -1,4 +1,4 @@
 
 
 Settings`$PygmentsStyle=None
-Settings`$ShowFullForm=False
+Settings`$ShowFullForm=InpFalse

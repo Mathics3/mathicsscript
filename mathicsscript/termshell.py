@@ -8,7 +8,8 @@ import locale
 import pathlib
 import sys
 import re
-from mathics.core.expression import strip_context
+from columnize import columnize
+from mathics.core.expression import strip_context, String
 from mathics.core.characters import named_characters
 
 from pygments import highlight
@@ -31,6 +32,8 @@ from pygments.token import (
     # String,
     Token,
 )
+
+ALL_PYGMENTS_STYLES = list(get_all_styles())
 
 color_scheme = TERMINAL_COLORS.copy()
 color_scheme[Token.Name] = ("yellow", "ansibrightyellow")
@@ -62,6 +65,14 @@ RL_COMPLETER_DELIMS = " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
 
 
 from mathics.core.parser import LineFeeder, FileLineFeeder
+
+
+def is_pygments_style(style):
+    if style not in ALL_PYGMENTS_STYLES:
+        print("Pygments style name '%s' not found." % style)
+        print("Style names are:\n%s" % columnize(ALL_PYGMENTS_STYLES))
+        return False
+    return True
 
 
 class TerminalShell(LineFeeder):
@@ -120,11 +131,7 @@ class TerminalShell(LineFeeder):
             # self.incolors = ["\033[34m", "\033[1m", "\033[22m", "\033[39m"]
             self.incolors = ["\033[32m", "\033[1m", "\033[22m", "\033[39m"]
             self.outcolors = ["\033[31m", "\033[1m", "\033[22m", "\033[39m"]
-            styles = list(get_all_styles())
-            if style is not None and style not in styles:
-                print("Pygments style name '%s' not found." % style)
-                print("Style names are: %s" % ", ".join(styles))
-                print("A default will be used.")
+            if style is not None and not is_pygments_style(style):
                 style = None
 
             if style is None:
@@ -144,7 +151,10 @@ class TerminalShell(LineFeeder):
         self.definitions = definitions
 
     def change_pygments_style(self, style):
-        self.terminal_formatter = Terminal256Formatter(style=style)
+        if is_pygments_style(style):
+            self.terminal_formatter = Terminal256Formatter(style=style)
+        else:
+            print("Pygments style not changed")
 
     def get_last_line_number(self):
         return self.definitions.get_line_no()
@@ -188,7 +198,10 @@ class TerminalShell(LineFeeder):
                     "Settings`$PygmentsStyle"
                 ).replace.get_string_value()
                 if pygments_style != self.pygments_style:
-                    self.change_pygments_style(pygments_style)
+                    if not self.change_pygments_style(pygments_style):
+                        self.definitions.set_ownvalue(
+                            "Settings`$PygmentsStyle", String(self.pygments_style)
+                        )
 
                 out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
             output = self.to_output(out_str)

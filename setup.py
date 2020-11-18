@@ -68,6 +68,7 @@ setup(
         "Mathics3 >= 1.0",
         "click",
         "colorama",
+        "columnize",
         "pygments",
         "term-background >= 1.0.1",
     ],

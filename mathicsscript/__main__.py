@@ -5,7 +5,7 @@ import click
 import sys
 import os
 from pathlib import Path
-    
+
 from mathicsscript.termshell import TerminalShell
 
 from mathics.core.parser import LineFeeder, FileLineFeeder
@@ -35,21 +35,23 @@ def ensure_settings():
 
     if not os.path.isfile(settings_file):
         import mathicsscript
+
         srcfn = os.path.dirname(mathicsscript.__file__) + "/settings.m"
         try:
-            with open(srcfn, 'r') as src:
+            with open(srcfn, "r") as src:
                 buffer = src.readlines()
         except:
             print(f"'{srcfn}' was not found.")
             return ""
         try:
-            with open(settings_file, 'w') as dst:
+            with open(settings_file, "w") as dst:
                 for l in buffer:
                     dst.write(l)
         except:
             print(f" '{settings_file}'  cannot be written.")
             return ""
     return settings_file
+
 
 def load_settings(shell):
     settings_file = ensure_settings()
@@ -72,6 +74,7 @@ def load_settings(shell):
         except (KeyboardInterrupt):
             print("\nKeyboardInterrupt")
     return True
+
 
 def format_output(obj, expr, format=None):
     if format is None:
@@ -246,7 +249,7 @@ def main(
     shell = TerminalShell(definitions, style, readline, completion)
     load_settings(shell)
     if initfile:
-        with open(initfile,"r") as ifile:
+        with open(initfile, "r") as ifile:
             feeder = FileLineFeeder(ifile)
             try:
                 while not feeder.empty():
@@ -307,7 +310,7 @@ def main(
 
     # If defined, full_form and style overwrite the predefined values.
     if full_form:
-        definitions.set_ownvalue("Settings`$ShowFullForm", from_python(full_form))
+        definitions.set_ownvalue("Settings`$ShowFullFormInput", from_python(full_form))
 
     definitions.set_ownvalue(
         "Settings`$PygmentsStyle", from_python(shell.pygments_style)
@@ -322,7 +325,7 @@ def main(
 
                 last_pos = GNU_readline.get_current_history_length()
             full_form = definitions.get_ownvalue(
-                "Settings`$ShowFullForm"
+                "Settings`$ShowFullFormInput"
             ).replace.get_int_value()
             style = definitions.get_ownvalue("Settings`$PygmentsStyle")
             fmt = lambda x: x

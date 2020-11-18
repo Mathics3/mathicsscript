@@ -1,14 +1,11 @@
+Settings`$ShowFullFormInput::usage = "If this variable is set nonzero, mathicsscript shows the input in FullForm before evaluation.
 
+Note this is for input entered, not the output of the evaluated result.
+"
+Settings`$ShowFullFormInput = 0
 
-Settings`$ShowFullForm::usage = "If this variable is set to True, it makes that mathicsscript shows the FullForm of the input before evaluate"
+Settings`$PygmentsStyle::usage = "This sets the Pygments style used to colorize output. The value should be a string.
 
-Settings`$PygmentsStyle::usage = "When ShowFullForm is True, and PygmentsStyle is set, makes that mathicsscript shows the FullForm using highlight with pygments"
+The default value changes background depending on whether the terminal has a light or dark background. You can also set the color style used on the command with the ``--style`` option. Or it can be set in a settings file."
 
-Settings`$ShowFullForm = False
-
-Settings`$PygmentsStyle = False
-
-
-
-
-
+(* Settings`$PygmentsStyle = False *)
