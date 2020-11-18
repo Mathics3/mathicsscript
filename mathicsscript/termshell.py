@@ -158,7 +158,8 @@ class TerminalShell(LineFeeder):
                                                      Symbol("Settings`PygmentsStylesAvailable"),
                                                      from_python("usage")),
                                           from_python("Lists the available styles for Pygment")))
-
+        self.definitions.set_attribute("Settings`PygmentsStylesAvailable", "System`Protected")
+        self.definitions.set_attribute("Settings`PygmentsStylesAvailable", "System`Locked")
 
 
     def change_pygments_style(self, style):
