@@ -9,7 +9,9 @@ import pathlib
 import sys
 import re
 from columnize import columnize
-from mathics.core.expression import strip_context, String
+from mathics.core.expression import Expression, String, Symbol
+from mathics.core.expression import strip_context, from_python
+from mathics.core.rules import Rule
 from mathics.core.characters import named_characters
 
 from pygments import highlight
@@ -84,7 +86,7 @@ class TerminalShell(LineFeeder):
         self.lineno = 0
         self.terminal_formatter = None
         self.history_length = definitions.get_config_value("$HistoryLength", HISTSIZE)
-
+        
         # Try importing readline to enable arrow keys support etc.
         self.using_readline = False
         try:
@@ -149,12 +151,26 @@ class TerminalShell(LineFeeder):
 
         self.pygments_style = style
         self.definitions = definitions
+        self.definitions.set_ownvalue("Settings`$PygmentsStyle", from_python(style))
+        self.definitions.set_ownvalue("Settings`PygmentsStylesAvailable", from_python(ALL_PYGMENTS_STYLES))
+        self.definitions.add_message("Settings`PygmentsStylesAvailable",
+                                     Rule(Expression("System`MessageName",
+                                                     Symbol("Settings`PygmentsStylesAvailable"),
+                                                     from_python("usage")),
+                                          from_python("Lists the available styles for Pygment")))
+
+
 
     def change_pygments_style(self, style):
+        if style == self.pygments_style:
+            return False
         if is_pygments_style(style):
             self.terminal_formatter = Terminal256Formatter(style=style)
+            self.pygments_style = style
+            return True
         else:
             print("Pygments style not changed")
+            return False
 
     def get_last_line_number(self):
         return self.definitions.get_line_no()

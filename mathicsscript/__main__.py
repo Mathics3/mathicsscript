@@ -242,10 +242,10 @@ def main(
 
     definitions = Definitions(add_builtin=True)
     definitions.set_line_no(0)
-    # Set a default value for $ShowFullForm to False.
+    # Set a default value for $ShowFullFormInput to False.
     # Then, it can be changed by the settings file (in WL)
     # and overwritten by the command line parameter.
-    definitions.set_ownvalue("Settings`$ShowFullForm", from_python(False))
+    definitions.set_ownvalue("Settings`$ShowFullFormInput", from_python(False))
     shell = TerminalShell(definitions, style, readline, completion)
     load_settings(shell)
     if initfile:
@@ -297,10 +297,8 @@ def main(
         except (KeyboardInterrupt):
             print("\nKeyboardInterrupt")
 
-        if persist:
-            definitions.set_line_no(0)
-        else:
-            return
+        if not persist:
+            return 
 
     if not quiet:
         print()
@@ -318,15 +316,16 @@ def main(
 
     TeXForm = Symbol("System`TeXForm")
 
+    definitions.set_line_no(0)
     while True:
         try:
             if shell.using_readline:
                 import readline as GNU_readline
 
                 last_pos = GNU_readline.get_current_history_length()
+            
             full_form = definitions.get_ownvalue(
-                "Settings`$ShowFullFormInput"
-            ).replace.get_int_value()
+                "Settings`$ShowFullFormInput").replace.get_int_value()
             style = definitions.get_ownvalue("Settings`$PygmentsStyle")
             fmt = lambda x: x
             if style:
