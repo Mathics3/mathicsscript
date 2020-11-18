@@ -86,7 +86,7 @@ class TerminalShell(LineFeeder):
         self.lineno = 0
         self.terminal_formatter = None
         self.history_length = definitions.get_config_value("$HistoryLength", HISTSIZE)
-        
+
         # Try importing readline to enable arrow keys support etc.
         self.using_readline = False
         try:
@@ -117,9 +117,10 @@ class TerminalShell(LineFeeder):
                     pass
                 except:
                     # PyPy read_history_file fails
-                    return
-                set_history_length(self.history_length)
-                atexit.register(self.user_write_history_file)
+                    pass
+                else:
+                    set_history_length(self.history_length)
+                    atexit.register(self.user_write_history_file)
                 pass
 
         except ImportError:
@@ -152,15 +153,26 @@ class TerminalShell(LineFeeder):
         self.pygments_style = style
         self.definitions = definitions
         self.definitions.set_ownvalue("Settings`$PygmentsStyle", from_python(style))
-        self.definitions.set_ownvalue("Settings`PygmentsStylesAvailable", from_python(ALL_PYGMENTS_STYLES))
-        self.definitions.add_message("Settings`PygmentsStylesAvailable",
-                                     Rule(Expression("System`MessageName",
-                                                     Symbol("Settings`PygmentsStylesAvailable"),
-                                                     from_python("usage")),
-                                          from_python("Lists the available styles for Pygment")))
-        self.definitions.set_attribute("Settings`PygmentsStylesAvailable", "System`Protected")
-        self.definitions.set_attribute("Settings`PygmentsStylesAvailable", "System`Locked")
-
+        self.definitions.set_ownvalue(
+            "Settings`PygmentsStylesAvailable", from_python(ALL_PYGMENTS_STYLES)
+        )
+        self.definitions.add_message(
+            "Settings`PygmentsStylesAvailable",
+            Rule(
+                Expression(
+                    "System`MessageName",
+                    Symbol("Settings`PygmentsStylesAvailable"),
+                    from_python("usage"),
+                ),
+                from_python("Lists the available styles for Pygment"),
+            ),
+        )
+        self.definitions.set_attribute(
+            "Settings`PygmentsStylesAvailable", "System`Protected"
+        )
+        self.definitions.set_attribute(
+            "Settings`PygmentsStylesAvailable", "System`Locked"
+        )
 
     def change_pygments_style(self, style):
         if style == self.pygments_style:

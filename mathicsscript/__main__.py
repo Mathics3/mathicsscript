@@ -25,18 +25,19 @@ from mathicsscript.version import __version__
 
 
 def ensure_settings():
-    home = str(Path.home())
-    settings_file = home + "/.config/mathicsscript/settings.m"
-    if not os.path.isdir(os.path.dirname("~/.config/mathicsscript")):
-        if not os.path.isdir(os.path.dirname(home + "/.config")):
-            os.mkdir(home + "/.config")
-        if not os.path.isdir(home + "/.config/mathicsscript"):
-            os.mkdir(home + "/.config/mathicsscript")
+    home = Path.home()
+    base_config_dir = home / ".config"
+    if not base_config_dir.is_dir():
+        os.mkdir(str(base_config_dir))
+    config_dir = base_config_dir / "mathicsscript"
+    if not config_dir.is_dir():
+        os.mkdir(str(config_dir))
 
-    if not os.path.isfile(settings_file):
+    settings_file = config_dir / "settings.m"
+    if not settings_file.is_file():
         import mathicsscript
 
-        srcfn = os.path.dirname(mathicsscript.__file__) + "/settings.m"
+        srcfn = Path(mathicsscript.__file__).parent / "settings.m"
         try:
             with open(srcfn, "r") as src:
                 buffer = src.readlines()
@@ -298,7 +299,7 @@ def main(
             print("\nKeyboardInterrupt")
 
         if not persist:
-            return 
+            return
 
     if not quiet:
         print()
@@ -323,9 +324,10 @@ def main(
                 import readline as GNU_readline
 
                 last_pos = GNU_readline.get_current_history_length()
-            
+
             full_form = definitions.get_ownvalue(
-                "Settings`$ShowFullFormInput").replace.get_int_value()
+                "Settings`$ShowFullFormInput"
+            ).replace.get_int_value()
             style = definitions.get_ownvalue("Settings`$PygmentsStyle")
             fmt = lambda x: x
             if style:
