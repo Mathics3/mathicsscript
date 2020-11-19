@@ -8,7 +8,10 @@ import locale
 import pathlib
 import sys
 import re
-from mathics.core.expression import strip_context
+from columnize import columnize
+from mathics.core.expression import Expression, String, Symbol
+from mathics.core.expression import strip_context, from_python
+from mathics.core.rules import Rule
 from mathics.core.characters import named_characters
 
 from pygments import highlight
@@ -31,6 +34,8 @@ from pygments.token import (
     # String,
     Token,
 )
+
+ALL_PYGMENTS_STYLES = list(get_all_styles())
 
 color_scheme = TERMINAL_COLORS.copy()
 color_scheme[Token.Name] = ("yellow", "ansibrightyellow")
@@ -62,6 +67,14 @@ RL_COMPLETER_DELIMS = " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
 
 
 from mathics.core.parser import LineFeeder, FileLineFeeder
+
+
+def is_pygments_style(style):
+    if style not in ALL_PYGMENTS_STYLES:
+        print("Pygments style name '%s' not found." % style)
+        print("Style names are:\n%s" % columnize(ALL_PYGMENTS_STYLES))
+        return False
+    return True
 
 
 class TerminalShell(LineFeeder):
@@ -104,9 +117,10 @@ class TerminalShell(LineFeeder):
                     pass
                 except:
                     # PyPy read_history_file fails
-                    return
-                set_history_length(self.history_length)
-                atexit.register(self.user_write_history_file)
+                    pass
+                else:
+                    set_history_length(self.history_length)
+                    atexit.register(self.user_write_history_file)
                 pass
 
         except ImportError:
@@ -120,11 +134,7 @@ class TerminalShell(LineFeeder):
             # self.incolors = ["\033[34m", "\033[1m", "\033[22m", "\033[39m"]
             self.incolors = ["\033[32m", "\033[1m", "\033[22m", "\033[39m"]
             self.outcolors = ["\033[31m", "\033[1m", "\033[22m", "\033[39m"]
-            styles = list(get_all_styles())
-            if style is not None and style not in styles:
-                print("Pygments style name '%s' not found." % style)
-                print("Style names are: %s" % ", ".join(styles))
-                print("A default will be used.")
+            if style is not None and not is_pygments_style(style):
                 style = None
 
             if style is None:
@@ -140,7 +150,40 @@ class TerminalShell(LineFeeder):
                     "Pygments style name '%s' not found; No pygments style set" % style
                 )
 
+        self.pygments_style = style
         self.definitions = definitions
+        self.definitions.set_ownvalue("Settings`$PygmentsStyle", from_python(style))
+        self.definitions.set_ownvalue(
+            "Settings`PygmentsStylesAvailable", from_python(ALL_PYGMENTS_STYLES)
+        )
+        self.definitions.add_message(
+            "Settings`PygmentsStylesAvailable",
+            Rule(
+                Expression(
+                    "System`MessageName",
+                    Symbol("Settings`PygmentsStylesAvailable"),
+                    from_python("usage"),
+                ),
+                from_python("Lists the available styles for Pygment"),
+            ),
+        )
+        self.definitions.set_attribute(
+            "Settings`PygmentsStylesAvailable", "System`Protected"
+        )
+        self.definitions.set_attribute(
+            "Settings`PygmentsStylesAvailable", "System`Locked"
+        )
+
+    def change_pygments_style(self, style):
+        if style == self.pygments_style:
+            return False
+        if is_pygments_style(style):
+            self.terminal_formatter = Terminal256Formatter(style=style)
+            self.pygments_style = style
+            return True
+        else:
+            print("Pygments style not changed")
+            return False
 
     def get_last_line_number(self):
         return self.definitions.get_line_no()
@@ -179,6 +222,16 @@ class TerminalShell(LineFeeder):
 
                 if debug_pygments:
                     print(list(lex(out_str, mma_lexer)))
+
+                pygments_style = self.definitions.get_ownvalue(
+                    "Settings`$PygmentsStyle"
+                ).replace.get_string_value()
+                if pygments_style != self.pygments_style:
+                    if not self.change_pygments_style(pygments_style):
+                        self.definitions.set_ownvalue(
+                            "Settings`$PygmentsStyle", String(self.pygments_style)
+                        )
+
                 out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
             output = self.to_output(out_str)
             print(self.get_out_prompt(output_style) + output + "\n")

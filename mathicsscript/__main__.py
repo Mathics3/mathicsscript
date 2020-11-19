@@ -3,12 +3,16 @@
 
 import click
 import sys
+import os
+from pathlib import Path
 
 from mathicsscript.termshell import TerminalShell
 
+from mathics.core.parser import LineFeeder, FileLineFeeder
 from mathics.core.definitions import Definitions
 from mathics.core.expression import Symbol
 from mathics.core.evaluation import Evaluation, Output
+from mathics.core.expression import from_python
 from mathics import version_string, license_string
 from mathics import settings
 
@@ -18,6 +22,59 @@ from pygments.lexers import MathematicaLexer
 mma_lexer = MathematicaLexer()
 
 from mathicsscript.version import __version__
+
+
+def ensure_settings():
+    home = Path.home()
+    base_config_dir = home / ".config"
+    if not base_config_dir.is_dir():
+        os.mkdir(str(base_config_dir))
+    config_dir = base_config_dir / "mathicsscript"
+    if not config_dir.is_dir():
+        os.mkdir(str(config_dir))
+
+    settings_file = config_dir / "settings.m"
+    if not settings_file.is_file():
+        import mathicsscript
+
+        srcfn = Path(mathicsscript.__file__).parent / "settings.m"
+        try:
+            with open(srcfn, "r") as src:
+                buffer = src.readlines()
+        except:
+            print(f"'{srcfn}' was not found.")
+            return ""
+        try:
+            with open(settings_file, "w") as dst:
+                for l in buffer:
+                    dst.write(l)
+        except:
+            print(f" '{settings_file}'  cannot be written.")
+            return ""
+    return settings_file
+
+
+def load_settings(shell):
+    settings_file = ensure_settings()
+    if settings_file == "":
+        return
+    with open(settings_file, "r") as src:
+        feeder = FileLineFeeder(src)
+        try:
+            while not feeder.empty():
+                evaluation = Evaluation(
+                    shell.definitions,
+                    output=TerminalOutput(shell),
+                    catch_interrupt=False,
+                    format="text",
+                )
+                query = evaluation.parse_feeder(feeder)
+                if query is None:
+                    continue
+                evaluation.evaluate(query)
+        except (KeyboardInterrupt):
+            print("\nKeyboardInterrupt")
+    return True
 
 
 def format_output(obj, expr, format=None):
@@ -186,25 +243,29 @@ def main(
 
     definitions = Definitions(add_builtin=True)
     definitions.set_line_no(0)
-
+    # Set a default value for $ShowFullFormInput to False.
+    # Then, it can be changed by the settings file (in WL)
+    # and overwritten by the command line parameter.
+    definitions.set_ownvalue("Settings`$ShowFullFormInput", from_python(False))
     shell = TerminalShell(definitions, style, readline, completion)
-
+    load_settings(shell)
     if initfile:
-        feeder = FileLineFeeder(initfile)
-        try:
-            while not feeder.empty():
-                evaluation = Evaluation(
-                    shell.definitions,
-                    output=TerminalOutput(shell),
-                    catch_interrupt=False,
-                    format="text",
-                )
-                query = evaluation.parse_feeder(feeder)
-                if query is None:
-                    continue
-                evaluation.evaluate(query, timeout=settings.TIMEOUT)
-        except (KeyboardInterrupt):
-            print("\nKeyboardInterrupt")
+        with open(initfile, "r") as ifile:
+            feeder = FileLineFeeder(ifile)
+            try:
+                while not feeder.empty():
+                    evaluation = Evaluation(
+                        shell.definitions,
+                        output=TerminalOutput(shell),
+                        catch_interrupt=False,
+                        format="text",
+                    )
+                    query = evaluation.parse_feeder(feeder)
+                    if query is None:
+                        continue
+                    evaluation.evaluate(query, timeout=settings.TIMEOUT)
+            except (KeyboardInterrupt):
+                print("\nKeyboardInterrupt")
 
         definitions.set_line_no(0)
 
@@ -237,9 +298,7 @@ def main(
         except (KeyboardInterrupt):
             print("\nKeyboardInterrupt")
 
-        if persist:
-            definitions.set_line_no(0)
-        else:
+        if not persist:
             return
 
     if not quiet:
@@ -248,19 +307,36 @@ def main(
         print(license_string + "\n")
         print(f"Quit by pressing {quit_command}\n")
 
-    if style and shell.terminal_formatter:
-        fmt = lambda x: highlight(str(query), mma_lexer, shell.terminal_formatter)
-    else:
-        fmt = lambda x: highlight(str(query), mma_lexer, shell.terminal_formatter)
+    # If defined, full_form and style overwrite the predefined values.
+    if full_form:
+        definitions.set_ownvalue("Settings`$ShowFullFormInput", from_python(full_form))
+
+    definitions.set_ownvalue(
+        "Settings`$PygmentsStyle", from_python(shell.pygments_style)
+    )
 
     TeXForm = Symbol("System`TeXForm")
 
+    definitions.set_line_no(0)
     while True:
         try:
             if shell.using_readline:
                 import readline as GNU_readline
 
                 last_pos = GNU_readline.get_current_history_length()
+
+            full_form = definitions.get_ownvalue(
+                "Settings`$ShowFullFormInput"
+            ).replace.get_int_value()
+            style = definitions.get_ownvalue("Settings`$PygmentsStyle")
+            fmt = lambda x: x
+            if style:
+                style = style.replace.get_string_value()
+                if shell.terminal_formatter:
+                    fmt = lambda x: highlight(
+                        str(query), mma_lexer, shell.terminal_formatter
+                    )
+
             evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
             query, source_code = evaluation.parse_feeder_returning_code(shell)
             if shell.using_readline and hasattr(GNU_readline, "remove_history_item"):
@@ -277,7 +353,7 @@ def main(
             else:
                 output_style = ""
 
-            if full_form:
+            if full_form != 0:
                 print(fmt(query))
             result = evaluation.evaluate(query, timeout=settings.TIMEOUT)
             if result is not None:
