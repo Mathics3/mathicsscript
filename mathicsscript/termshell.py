@@ -260,7 +260,7 @@ class TerminalShell(LineFeeder):
             raise
 
     def _complete_named_characters(self, prefix, text, state):
-        """prefix is the text after \[. Return a list of named character names."""
+        r"""prefix is the text after \[. Return a list of named character names."""
         if state == 0:
             self.completion_candidates = [
                 prefix + name + "]"
