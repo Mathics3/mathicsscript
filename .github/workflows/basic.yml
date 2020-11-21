@@ -25,7 +25,7 @@ jobs:
     - name: Install mathicsscript
       run: |
         make
-    - name: Test Mathics
+    - name: Test mathicsscript
       run: |
         pip install pytest
         make check
