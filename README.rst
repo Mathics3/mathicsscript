@@ -51,4 +51,4 @@ goes wrong, it is harder to track down problems.
 		 :target: https://badge.fury.io/py/mathicsscript
 .. |Pypi Installs| image:: https://pepy.tech/badge/mathicsscript
 .. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/mathicsscript.svg
-.. |CI status| image::https://github.com/Mathics3/mathicsscript/workflows/mathicsscript%20(basic)/badge.svg
+.. |CI status| image:: https://github.com/Mathics3/mathicsscript/workflows/mathicsscript%20(basic)/badge.svg
