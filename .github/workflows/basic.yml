@@ -22,7 +22,7 @@ jobs:
       run: |
         sudo apt-get update -qq && sudo apt-get install -qq liblapack-dev llvm-dev
         python -m pip install --upgrade pip
-    - name: Install maticsscript
+    - name: Install mathicsscript
       run: |
         make
     - name: Test Mathics
