@@ -228,12 +228,13 @@ def main(
     style,
     pygments_tokens,
     file,
-):
+) -> int:
     """A command-line interface to Mathics.
 
     Mathics is a general-purpose computer algebra system
     """
 
+    exit_rc = 0
     quit_command = "CTRL-BREAK" if sys.platform == "win32" else "CONTROL-D"
 
     extension_modules = []
@@ -278,8 +279,19 @@ def main(
             result = evaluation.parse_evaluate(expr, timeout=settings.TIMEOUT)
             shell.print_result(result, debug_pygments=pygments_tokens)
 
+            # After the next release, we can remove the hasattr test.
+            if hasattr(evaluation, "exc_result"):
+                if evaluation.exc_result == Symbol("Null"):
+                    exit_rc = 0
+                elif evaluation.exc_result == Symbol("$Aborted"):
+                    exit_rc = -1
+                elif evaluation.exc_result == Symbol("Overflow"):
+                    exit_rc = -2
+                else:
+                    exit_rc = -3
+
         if not persist:
-            return
+            return exit_rc
 
     if file is not None:
         feeder = FileLineFeeder(file)
@@ -299,7 +311,7 @@ def main(
             print("\nKeyboardInterrupt")
 
         if not persist:
-            return
+            return exit_rc
 
     if not quiet:
         print()
@@ -369,7 +381,8 @@ def main(
             raise
         finally:
             shell.reset_lineno()
+    return exit_rc
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
