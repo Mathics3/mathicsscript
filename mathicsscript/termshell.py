@@ -14,8 +14,8 @@ from mathics.core.expression import strip_context, from_python
 from mathics.core.rules import Rule
 from mathics.core.characters import named_characters
 
-from pygments import highlight
-from mathematica.lexer import MathematicaLexer, MToken
+from pygments import highlight, lex
+from mathematica.lexer import MathematicaLexer
 
 mma_lexer = MathematicaLexer()
 
@@ -30,7 +30,7 @@ from pygments.token import (
     # Keyword,
     Name,
     Literal,
-    # Operator,
+    Operator,
     # String,
     Token,
 )
@@ -40,7 +40,7 @@ ALL_PYGMENTS_STYLES = list(get_all_styles())
 color_scheme = TERMINAL_COLORS.copy()
 color_scheme[Token.Name] = ("yellow", "ansibrightyellow")
 color_scheme[Name.Function] = ("ansigreen", "ansibrightgreen")
-color_scheme[Name.NameSpace] = ("magenta", "ansibrightmagenta")
+color_scheme[Operator] = ("magenta", "ansibrightmagenta")
 color_scheme[Literal.Number] = ("ansiblue", "ansibrightblue")
 
 from colorama import init as colorama_init
@@ -152,6 +152,9 @@ class TerminalShell(LineFeeder):
 
         self.pygments_style = style
         self.definitions = definitions
+        self.definitions.set_ownvalue(
+            "Settings`$PygmentsShowTokens", from_python(False)
+        )
         self.definitions.set_ownvalue("Settings`$PygmentsStyle", from_python(style))
         self.definitions.set_ownvalue(
             "Settings`PygmentsStylesAvailable", from_python(ALL_PYGMENTS_STYLES)
@@ -214,15 +217,13 @@ class TerminalShell(LineFeeder):
             return self.rl_read_line(prompt)
         return input(prompt)
 
-    def print_result(self, result, output_style="", debug_pygments=False):
+    def print_result(self, result, output_style=""):
         if result is not None and result.result is not None:
             out_str = str(result.result)
             if self.terminal_formatter:  # pygmentize
-                from pygments import lex
-
-                if debug_pygments:
-                    print(list(lex(out_str, mma_lexer)))
-
+                show_pygments_tokens = self.definitions.get_ownvalue(
+                    "Settings`$PygmentsShowTokens"
+                ).replace.to_python()
                 pygments_style = self.definitions.get_ownvalue(
                     "Settings`$PygmentsStyle"
                 ).replace.get_string_value()
@@ -232,6 +233,8 @@ class TerminalShell(LineFeeder):
                             "Settings`$PygmentsStyle", String(self.pygments_style)
                         )
 
+                if show_pygments_tokens:
+                    print(list(lex(out_str, mma_lexer)))
                 out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
             output = self.to_output(out_str)
             print(self.get_out_prompt(output_style) + output + "\n")

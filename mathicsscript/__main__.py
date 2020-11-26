@@ -247,7 +247,13 @@ def main(
     # Set a default value for $ShowFullFormInput to False.
     # Then, it can be changed by the settings file (in WL)
     # and overwritten by the command line parameter.
-    definitions.set_ownvalue("Settings`$ShowFullFormInput", from_python(False))
+    definitions.set_ownvalue(
+        "Settings`$ShowFullFormInput", from_python(1 if full_form else 0)
+    )
+    definitions.set_ownvalue(
+        "Settings`$PygmentsShowTokens", from_python(1 if pygments_tokens else 0)
+    )
+
     shell = TerminalShell(definitions, style, readline, completion)
     load_settings(shell)
     if initfile:
@@ -277,7 +283,7 @@ def main(
                 shell.definitions, output=TerminalOutput(shell), format="text"
             )
             result = evaluation.parse_evaluate(expr, timeout=settings.TIMEOUT)
-            shell.print_result(result, debug_pygments=pygments_tokens)
+            shell.print_result(result)
 
             # After the next release, we can remove the hasattr test.
             if hasattr(evaluation, "exc_result"):
@@ -326,6 +332,9 @@ def main(
     definitions.set_ownvalue(
         "Settings`$PygmentsStyle", from_python(shell.pygments_style)
     )
+    definitions.set_ownvalue(
+        "Settings`$PygmentsShowTokens", from_python(pygments_tokens)
+    )
 
     TeXForm = Symbol("System`TeXForm")
 
@@ -369,7 +378,7 @@ def main(
                 print(fmt(query))
             result = evaluation.evaluate(query, timeout=settings.TIMEOUT)
             if result is not None:
-                shell.print_result(result, output_style, debug_pygments=pygments_tokens)
+                shell.print_result(result, output_style)
         except (KeyboardInterrupt):
             print("\nKeyboardInterrupt")
         except EOFError:
