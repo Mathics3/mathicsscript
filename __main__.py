@@ -1,1 +1,0 @@
-/home/pablo/Documents/mathicsscript/mathicsscript/__main__.py
