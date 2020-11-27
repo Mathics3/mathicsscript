@@ -58,7 +58,7 @@ from readline import (
 # Set up mathicsscript configuration directory
 CONFIGHOME = os.environ.get("XDG_CONFIG_HOME", osp.expanduser("~/.config"))
 CONFIGDIR = os.path.join(CONFIGHOME, "mathicsscript")
-os.makedir(CONFIGDIR, exist_ok=True)
+os.makedirs(CONFIGDIR, exist_ok=True)
 
 try:
     HISTSIZE = int(os.environ.get("MATHICSSCRIPT_HISTSIZE", 50))
