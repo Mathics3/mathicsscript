@@ -21,7 +21,7 @@ mma_lexer = MathematicaLexer()
 
 from pygments.formatters.terminal import TERMINAL_COLORS
 from pygments.formatters import Terminal256Formatter
-from pygments.styles import get_style_by_name, get_all_styles
+from pygments.styles import get_all_styles
 from pygments.util import ClassNotFound
 
 from pygments.token import (
@@ -65,13 +65,14 @@ try:
 except:
     HISTSIZE = 50
 
-HISTFILE = os.path.join(CONFIGDIR, "history")
+# This doesn't work: investigate
+# HISTFILE = os.path.join(CONFIGDIR, "history")
+HISTFILE = osp.expanduser("~/.mathicsscript_hist")
 
 RL_COMPLETER_DELIMS_WITH_BRACE = " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
 RL_COMPLETER_DELIMS = " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
 
-
-from mathics.core.parser import LineFeeder, FileLineFeeder
+from mathics.core.parser import LineFeeder
 
 
 def is_pygments_style(style):
