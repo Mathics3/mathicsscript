@@ -55,12 +55,17 @@ from readline import (
     write_history_file,
 )
 
+# Set up mathicsscript configuration directory
+CONFIGHOME = os.environ.get("XDG_CONFIG_HOME", osp.expanduser("~/.config"))
+CONFIGDIR = os.path.join(CONFIGHOME, "mathicsscript")
+os.makedirs(CONFIGDIR, exist_ok=True)
+
 try:
     HISTSIZE = int(os.environ.get("MATHICSSCRIPT_HISTSIZE", 50))
 except:
     HISTSIZE = 50
 
-HISTFILE = osp.expanduser("~/.mathicsscript_hist")
+HISTFILE = os.path.join(CONFIGDIR, "history")
 
 RL_COMPLETER_DELIMS_WITH_BRACE = " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
 RL_COMPLETER_DELIMS = " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
