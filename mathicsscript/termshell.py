@@ -226,6 +226,8 @@ class TerminalShell(LineFeeder):
     def print_result(self, result, output_style=""):
         if result is not None and result.result is not None:
             out_str = str(result.result)
+            if output_style == "//Graph":
+                out_str = "*Graph*"
             if self.terminal_formatter:  # pygmentize
                 show_pygments_tokens = self.definitions.get_ownvalue(
                     "Settings`$PygmentsShowTokens"
@@ -243,7 +245,7 @@ class TerminalShell(LineFeeder):
                     print(list(lex(out_str, mma_lexer)))
                 out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
             output = self.to_output(out_str)
-            print(self.get_out_prompt(output_style) + output + "\n")
+            print(self.get_out_prompt("") + output + "\n")
 
     def rl_read_line(self, prompt):
         # Wrap ANSI color sequences in \001 and \002, so readline
