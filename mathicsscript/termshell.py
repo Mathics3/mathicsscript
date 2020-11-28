@@ -15,7 +15,7 @@ from mathics.core.rules import Rule
 from mathics.core.characters import named_characters
 
 from pygments import highlight, lex
-from mathematica.lexer import MathematicaLexer
+from mathicsscript.mmalexer import MathematicaLexer
 
 mma_lexer = MathematicaLexer()
 

@@ -70,7 +70,6 @@ setup(
         "colorama",
         "columnize",
         "pygments",
-        "pygments-mathematica",
         "term-background >= 1.0.1",
     ],
     entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main"]},
