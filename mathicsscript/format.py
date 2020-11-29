@@ -77,14 +77,15 @@ def format_graph(G, options):
     import matplotlib.pyplot as plt
 
     plot_theme = options.get("PlotTheme", None)
+    vertex_labeling = options.get("VertexLabeling", None).to_python() or False
     if plot_theme:
         if not isinstance(plot_theme, str):
             plot_theme = plot_theme.get_string_value()
         layout_fn = NETWORKX_LAYOUTS.get(plot_theme, None)
 
     if layout_fn:
-        nx.draw(G, pos=layout_fn(G))
+        nx.draw(G, pos=layout_fn(G), with_labels=vertex_labeling)
     else:
-        nx.draw_shell(G)
+        nx.draw_shell(G, with_labels=vertex_labeling)
     plt.show()
     return None
