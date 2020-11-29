@@ -247,15 +247,19 @@ def format_graph(G, options):
     # FIXME handle graphviz as well
     import matplotlib.pyplot as plt
 
-    plot_theme = options.get("PlotTheme", None) if options else None
+    graph_layout = options.get("GraphLayout", None) if options else None
     vertex_labeling = options.get("VertexLabeling", None) if options else None
     if vertex_labeling:
         vertex_labeling = vertex_labeling.to_python() or False
 
-    if plot_theme:
-        if not isinstance(plot_theme, str):
-            plot_theme = plot_theme.get_string_value()
-        layout_fn = NETWORKX_LAYOUTS.get(plot_theme, None)
+    if hasattr(G, "title") and G.title.get_string_value():
+        fig, ax = plt.subplots()  # Create a figure and an axes
+        ax.set_title(G.title.get_string_value())
+
+    if graph_layout:
+        if not isinstance(graph_layout, str):
+            graph_layout = graph_layout.get_string_value()
+        layout_fn = NETWORKX_LAYOUTS.get(graph_layout, None)
     else:
         layout_fn = None
 
