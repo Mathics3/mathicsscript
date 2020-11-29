@@ -40,7 +40,7 @@ def format_output(obj, expr, format=None):
         result = Expression("StandardForm", expr).format(obj, "System`TeXForm")
     elif format == "unformatted":
         if str(expr) == "-Graph-":
-            return format_graph(expr.G, expr.options)
+            return format_graph(expr.G)
         else:
             result = expr.format(obj, "System`OutputForm")
     else:
@@ -240,15 +240,15 @@ NETWORKX_LAYOUTS = {
 }
 
 
-def format_graph(G, options):
+def format_graph(G):
     """
     Format a Graph
     """
     # FIXME handle graphviz as well
     import matplotlib.pyplot as plt
 
-    graph_layout = options.get("GraphLayout", None) if options else None
-    vertex_labeling = options.get("VertexLabeling", None) if options else None
+    graph_layout = G.graph_layout if hasattr(G, "graph_layout") else None
+    vertex_labeling = G.vertex_labeling if hasattr(G, "vertex_labeling") else False
     if vertex_labeling:
         vertex_labeling = vertex_labeling.to_python() or False
 
