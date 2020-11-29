@@ -247,8 +247,11 @@ def format_graph(G, options):
     # FIXME handle graphviz as well
     import matplotlib.pyplot as plt
 
-    plot_theme = options.get("PlotTheme", None)
-    vertex_labeling = options.get("VertexLabeling", None).to_python() or False
+    plot_theme = options.get("PlotTheme", None) if options else None
+    vertex_labeling = options.get("VertexLabeling", None) if options else None
+    if vertex_labeling:
+        vertex_labeling = vertex_labeling.to_python() or False
+
     if plot_theme:
         if not isinstance(plot_theme, str):
             plot_theme = plot_theme.get_string_value()
