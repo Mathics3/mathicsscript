@@ -2,6 +2,8 @@
 Format Mathics objects
 """
 
+import networkx as nx
+
 
 def format_output(obj, expr, format=None):
     if format is None:
@@ -37,7 +39,7 @@ def format_output(obj, expr, format=None):
         result = Expression("StandardForm", expr).format(obj, "System`TeXForm")
     elif format == "unformatted":
         if str(expr) == "-Graph-":
-            return format_graph_matplotlib(expr.G)
+            return format_graph(expr.G, expr.options)
         else:
             result = expr.format(obj, "System`OutputForm")
     else:
@@ -55,13 +57,34 @@ def format_output(obj, expr, format=None):
     return boxes
 
 
-def format_graph_matplotlib(G):
+NETWORKX_LAYOUTS = {
+    "circular": nx.circular_layout,
+    "multipartite": nx.multipartite_layout,
+    "planar": nx.planar_layout,
+    "random": nx.random_layout,
+    "shell": nx.shell_layout,
+    "spectral": nx.spectral_layout,
+    "spring": nx.spring_layout,
+    "tree": nx.planar_layout,
+}
+
+
+def format_graph(G, options):
     """
     Format a Graph
     """
+    # FIXME handle graphviz as well
     import matplotlib.pyplot as plt
-    import networkx as nx
 
-    nx.draw_shell(G)
+    plot_theme = options.get("PlotTheme", None)
+    if plot_theme:
+        if not isinstance(plot_theme, str):
+            plot_theme = plot_theme.get_string_value()
+        layout_fn = NETWORKX_LAYOUTS.get(plot_theme, None)
+
+    if layout_fn:
+        nx.draw(G, pos=layout_fn(G))
+    else:
+        nx.draw_shell(G)
     plt.show()
     return None
