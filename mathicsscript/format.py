@@ -218,14 +218,31 @@ def hierarchy_pos(
         )
     #    pos = {node:(leaf_vs_root_factor*x1+(1-leaf_vs_root_factor)*x2, y1) for ((x1,y1), (x2,y2)) in (leafpos[node], rootpos[node]) for node in rootpos}
     xmax = max(x for x, y in pos.values())
+    y_list = {}
     for node in pos:
-        pos[node] = (pos[node][0] * width / xmax, pos[node][1])
-    return pos
+        x, y = pos[node] = (pos[node][0] * width / xmax, pos[node][1])
+        y_list[y] = y_list.get(y, set([]))
+        y_list[y].add(x)
+
+    min_sep = xmax
+    for y in y_list.keys():
+        x_list = sorted(y_list[y])
+        n = len(x_list) - 1
+        if n <= 0:
+            continue
+        min_sep = min([x_list[i + 1] - x_list[i] for i in range(n)] + [min_sep])
+    return pos, min_sep
+
+
+node_size = 300  # this is networkx's default size
 
 
 def tree_layout(G):
+    global node_size
     root = G.root if hasattr(G, "root") else None
-    return hierarchy_pos(G, root=root)
+    pos, min_sep = hierarchy_pos(G, root=root)
+    node_size = min_sep * 2000
+    return pos
 
 
 NETWORKX_LAYOUTS = {
@@ -247,6 +264,9 @@ def format_graph(G):
     # FIXME handle graphviz as well
     import matplotlib.pyplot as plt
 
+    global node_size
+    node_size = 300  # This is networkx's default
+
     graph_layout = G.graph_layout if hasattr(G, "graph_layout") else None
     vertex_labeling = G.vertex_labeling if hasattr(G, "vertex_labeling") else False
     if vertex_labeling:
@@ -264,8 +284,8 @@ def format_graph(G):
         layout_fn = None
 
     if layout_fn:
-        nx.draw(G, pos=layout_fn(G), with_labels=vertex_labeling)
+        nx.draw(G, pos=layout_fn(G), with_labels=vertex_labeling, node_size=node_size)
     else:
-        nx.draw_shell(G, with_labels=vertex_labeling)
+        nx.draw_shell(G, with_labels=vertex_labeling, node_size=node_size)
     plt.show()
     return None
