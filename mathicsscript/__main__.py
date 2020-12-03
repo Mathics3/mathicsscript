@@ -9,7 +9,7 @@ from pathlib import Path
 from mathicsscript.termshell import TerminalShell
 from mathicsscript.format import format_output
 
-from mathics.core.parser import LineFeeder, FileLineFeeder
+from mathics.core.parser import FileLineFeeder
 from mathics.core.definitions import Definitions
 from mathics.core.expression import Symbol
 from mathics.core.evaluation import Evaluation, Output
@@ -128,9 +128,6 @@ class TerminalOutput(Output):
     default=True,
     help="GNU Readline line editing. enable tab completion",
 )
-# @click.option(
-#     "--script", default=True, required=False, help="run a mathics file in script mode"
-# )
 @click.option(
     "--pyextensions",
     "-l",
@@ -175,7 +172,6 @@ def main(
     quiet,
     readline,
     completion,
-    # script,
     pyextensions,
     execute,
     initfile,
