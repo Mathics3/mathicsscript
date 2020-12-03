@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 
 from mathicsscript.termshell import TerminalShell
+from mathicsscript.format import format_output
 
 from mathics.core.parser import LineFeeder, FileLineFeeder
 from mathics.core.definitions import Definitions
@@ -75,53 +76,6 @@ def load_settings(shell):
         except (KeyboardInterrupt):
             print("\nKeyboardInterrupt")
     return True
-
-
-def format_output(obj, expr, format=None):
-    if format is None:
-        format = obj.format
-
-    if isinstance(format, dict):
-        return dict((k, obj.format_output(expr, f)) for k, f in format.items())
-
-    from mathics.core.expression import Expression, BoxError
-
-    expr_type = expr.get_head_name()
-    if expr_type == "System`MathMLForm":
-        format = "xml"
-        leaves = expr.get_leaves()
-        if len(leaves) == 1:
-            expr = leaves[0]
-    elif expr_type == "System`TeXForm":
-        format = "tex"
-        leaves = expr.get_leaves()
-        if len(leaves) == 1:
-            expr = leaves[0]
-    elif expr_type == "System`Graphics":
-        result = Expression("StandardForm", expr).format(obj, "System`MathMLForm")
-        ml_str = result.leaves[0].leaves[0]
-        # FIXME: not quite right. Need to parse out strings
-        display_svg(str(ml_str))
-
-    if format == "text":
-        result = expr.format(obj, "System`OutputForm")
-    elif format == "xml":
-        result = Expression("StandardForm", expr).format(obj, "System`MathMLForm")
-    elif format == "tex":
-        result = Expression("StandardForm", expr).format(obj, "System`TeXForm")
-    else:
-        raise ValueError
-
-    try:
-        boxes = result.boxes_to_text(evaluation=obj)
-    except BoxError:
-        boxes = None
-        if not hasattr(obj, "seen_box_error"):
-            obj.seen_box_error = True
-            obj.message(
-                "General", "notboxes", Expression("FullForm", result).evaluate(obj)
-            )
-    return boxes
 
 
 Evaluation.format_output = format_output
@@ -376,7 +330,9 @@ def main(
 
             if full_form != 0:
                 print(fmt(query))
-            result = evaluation.evaluate(query, timeout=settings.TIMEOUT)
+            result = evaluation.evaluate(
+                query, timeout=settings.TIMEOUT, format="unformatted"
+            )
             if result is not None:
                 shell.print_result(result, output_style)
         except (KeyboardInterrupt):

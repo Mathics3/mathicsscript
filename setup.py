@@ -69,6 +69,7 @@ setup(
         "click",
         "colorama",
         "columnize",
+        "networkx",
         "pygments",
         "term-background >= 1.0.1",
     ],
