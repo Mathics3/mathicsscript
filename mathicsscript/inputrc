@@ -79,6 +79,7 @@
 "\el\e": "\\[LeftBracketingBar]"
 "\er\e": "\\[RightBracketingBar]"
 "\edd\e": "\\[DifferentialD]"
+# "\ede\e": "\\[DirectedEdge]"
 "\eee\e": "\\[ExponentialE]"
 "\eii\e": "\\[ImaginaryI]"
 "\ejj\e": "\\[ImaginaryJ]"
