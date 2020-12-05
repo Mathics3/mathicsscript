@@ -22,6 +22,10 @@ build:
 develop:
 	$(PIP) install -e .
 
+#: Run mathicsscript and reload on file changes to the source
+runner:
+	watchgod mathicsscript.__main__.main
+
 #: Install mathicsscript
 install:
 	$(PYTHON) setup.py install

@@ -224,10 +224,21 @@ class TerminalShell(LineFeeder):
         return input(prompt)
 
     def print_result(self, result, output_style=""):
-        if result is not None and result.last_eval is not None:
+        if result is None:
+            # FIXME decide what to do here
+            return
+
+        # FIXME: after Mathics last_eval is fixed,
+        # we need only the True branch of this code
+        if hasattr(result, "last_eval"):
             last_eval = result.last_eval
-            out_str = str(result.result)
             eval_type = last_eval.get_head_name()
+        else:
+            eval_type = ""
+            last_eval = result.result
+
+        if last_eval is not None:
+            out_str = str(result.result)
             if eval_type == "System`Graph":
                 out_str = "-Graph-"
             elif self.terminal_formatter:  # pygmentize
