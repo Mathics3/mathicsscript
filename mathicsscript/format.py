@@ -284,9 +284,9 @@ def format_graph(G):
     node_size = 300  # This is networkx's default
 
     graph_layout = G.graph_layout if hasattr(G, "graph_layout") else None
-    vertex_labeling = G.vertex_labeling if hasattr(G, "vertex_labeling") else False
-    if vertex_labeling:
-        vertex_labeling = vertex_labeling.to_python() or False
+    vertex_labels = G.vertex_labels if hasattr(G, "vertex_labels") else False
+    if vertex_labels:
+        vertex_labels = vertex_labels.to_python() or False
 
     if hasattr(G, "title") and G.title.get_string_value():
         fig, ax = plt.subplots()  # Create a figure and an axes
@@ -299,9 +299,23 @@ def format_graph(G):
     else:
         layout_fn = None
 
+    options = {
+        # "font_size": 36,
+        "node_size": node_size,
+        # "node_color": "white",  # Set below
+        # "edgecolors": "black",  # Set below
+        # "linewidths": 5,
+        # "width": 5,
+        "with_labels": vertex_labels,
+    }
+
+    if vertex_labels:
+        options["node_color"] = "white"
+        options["edgecolors"] = "black"
+
     if layout_fn:
-        nx.draw(G, pos=layout_fn(G), with_labels=vertex_labeling, node_size=node_size)
+        nx.draw(G, pos=layout_fn(G), **options)
     else:
-        nx.draw_shell(G, with_labels=vertex_labeling, node_size=node_size)
+        nx.draw_shell(G, **options)
     plt.show()
     return None
