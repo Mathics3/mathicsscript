@@ -291,10 +291,24 @@ def clamp(value, min=-math.inf, max=math.inf):
 
 
 DEFAULT_NODE_SIZE = 300.0
-DEFAULT_POINT_SIZE = 12
+DEFAULT_POINT_SIZE = 16
 
 
-def harmonize_parameters(draw_options: dict):
+def harmonize_parameters(G, draw_options: dict):
+
+    global node_size
+    graph_layout = G.graph_layout if hasattr(G, "graph_layout") else ""
+
+    if graph_layout == "tree":
+        # Call this to compute node_size. Cache the
+        # results
+        tree_layout(G)
+        draw_options["node_size"] = node_size
+    elif graph_layout == "circular":
+        node_size = draw_options["node_size"] = (2 * DEFAULT_NODE_SIZE) / math.sqrt(
+            len(G) + 1
+        )
+
     if draw_options.get("with_labels", False):
         draw_options["edgecolors"] = draw_options.get("edgecolors", "black")
         draw_options["node_color"] = draw_options.get("node_color", "white")
@@ -304,6 +318,7 @@ def harmonize_parameters(draw_options: dict):
         draw_options["width"] = width
 
     if "font_size" not in draw_options:
+        # FIXME: should also take into consideration max width of label.
         font_size = clamp(
             int((node_size * DEFAULT_POINT_SIZE) / DEFAULT_NODE_SIZE), min=1, max=18
         )
@@ -346,15 +361,10 @@ def format_graph(G):
         if not isinstance(graph_layout, str):
             graph_layout = graph_layout.get_string_value()
         layout_fn = NETWORKX_LAYOUTS.get(graph_layout, None)
-        if layout_fn == tree_layout:
-            # Call this to compute node_size. Cache the
-            # results
-            tree_layout(G)
-            draw_options["node_size"] = node_size
     else:
         layout_fn = None
 
-    harmonize_parameters(draw_options)
+    harmonize_parameters(G, draw_options)
 
     if layout_fn:
         nx.draw(G, pos=layout_fn(G), **draw_options)
