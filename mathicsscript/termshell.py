@@ -224,11 +224,13 @@ class TerminalShell(LineFeeder):
         return input(prompt)
 
     def print_result(self, result, output_style=""):
-        if result is not None and result.result is not None:
+        if result is not None and result.last_eval is not None:
+            last_eval = result.last_eval
             out_str = str(result.result)
-            if output_style == "//Graph":
-                out_str = "*Graph*"
-            if self.terminal_formatter:  # pygmentize
+            eval_type = last_eval.get_head_name()
+            if eval_type == "System`Graph":
+                out_str = "-Graph-"
+            elif self.terminal_formatter:  # pygmentize
                 show_pygments_tokens = self.definitions.get_ownvalue(
                     "Settings`$PygmentsShowTokens"
                 ).replace.to_python()

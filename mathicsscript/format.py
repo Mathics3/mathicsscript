@@ -117,11 +117,27 @@ def hierarchy_pos(
     if not nx.is_tree(G):
         raise TypeError("cannot use hierarchy_pos on a graph that is not a tree")
 
+    # These get swapped if tree edge directions point to the root.
+    decendants = nx.descendants
+    out_degree = G.out_degree
+    neighbors = G.neighbors
+
     if root is None:
         if isinstance(G, nx.DiGraph):
-            root = next(
-                iter(nx.topological_sort(G))
-            )  # allows back compatibility with nx version 1.11
+            zero_outs = [n for n in G.out_degree() if n[1] == 0]
+            if len(zero_outs) == 1 and len(G) > 2:
+                # We unequivocally have a directed that points from leave to the root.
+                # The case where we have a one or two node graph is ambiguous.
+                root = list(nx.topological_sort(G))[-1]
+                # Swap motion functions
+                decendants = nx.ancestors
+                out_degree = G.in_degree
+                neighbors = G.predecessors
+            else:
+                root = next(
+                    iter(nx.topological_sort(G))
+                )  # allows back compatibility with nx version 1.11
+                # root = next(nx.topological_sort(G))
         else:
             root = random.choice(list(G.nodes))
 
@@ -152,7 +168,8 @@ def hierarchy_pos(
             rootpos[root] = (xcenter, vert_loc)
         if leafpos is None:
             leafpos = {}
-        children = list(G.neighbors(root))
+
+        children = list(neighbors(root))
         leaf_count = 0
         if not isinstance(G, nx.DiGraph) and parent is not None:
             children.remove(parent)
@@ -188,9 +205,7 @@ def hierarchy_pos(
 
     xcenter = width / 2.0
     if isinstance(G, nx.DiGraph):
-        leafcount = len(
-            [node for node in nx.descendants(G, root) if G.out_degree(node) == 0]
-        )
+        leafcount = len([node for node in decendants(G, root) if out_degree(node) == 0])
     elif isinstance(G, nx.Graph):
         leafcount = len(
             [
@@ -199,6 +214,7 @@ def hierarchy_pos(
                 if G.degree(node) == 1 and node != root
             ]
         )
+
     rootpos, leafpos, leaf_count = _hierarchy_pos(
         G,
         root,

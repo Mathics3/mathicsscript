@@ -341,6 +341,9 @@ def main(
             # raise to pass the error code on, e.g. Quit[1]
             raise
         finally:
+            # Reset the input line that would be shown in a parse error.
+            # This is not to be confused with the number of complete
+            # inputs that have been seen, i.e. In[]
             shell.reset_lineno()
     return exit_rc
 
