@@ -119,7 +119,7 @@ def hierarchy_pos(
 
     # These get swapped if tree edge directions point to the root.
     decendants = nx.descendants
-    out_degree = G.out_degree
+    out_degree = G.out_degree if hasattr(G, "out_degree") else G.degree
     neighbors = G.neighbors
 
     if root is None:
