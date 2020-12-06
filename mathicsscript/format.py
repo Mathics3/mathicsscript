@@ -353,11 +353,11 @@ def format_graph(G):
 
     vertex_labels = G.vertex_labels if hasattr(G, "vertex_labels") else False
     if vertex_labels:
-        draw_options["with_labels"] = vertex_labels.to_python() or False
+        draw_options["with_labels"] = bool(vertex_labels)
 
-    if hasattr(G, "title") and G.title.get_string_value():
+    if hasattr(G, "title") and G.title:
         fig, ax = plt.subplots()  # Create a figure and an axes
-        ax.set_title(G.title.get_string_value())
+        ax.set_title(G.title)
 
     if graph_layout:
         if not isinstance(graph_layout, str):
