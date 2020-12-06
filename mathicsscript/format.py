@@ -269,6 +269,8 @@ def tree_layout(G):
     node_size = min_sep * 2000
     return pos
 
+def spiral_equidistant_layout(G, *args, **kwargs):
+    return nx.spiral_layout(G, equidistant=True, *args, **kwargs)
 
 NETWORKX_LAYOUTS = {
     "circular": nx.circular_layout,
@@ -277,6 +279,8 @@ NETWORKX_LAYOUTS = {
     "random": nx.random_layout,
     "shell": nx.shell_layout,
     "spectral": nx.spectral_layout,
+    "spiral": nx.spiral_layout,
+    "spiral_equidistant": spiral_equidistant_layout,
     "spring": nx.spring_layout,
     "tree": tree_layout,
 }
@@ -304,7 +308,10 @@ def harmonize_parameters(G, draw_options: dict):
         # results
         tree_layout(G)
         draw_options["node_size"] = node_size
-    elif graph_layout == "circular":
+    elif graph_layout in ["circular", "spiral", "spiral_equidistant"]:
+        # FIXME spiral is more 2D filling
+        # Instead of Sqrt use adjusted exponent like **0.6
+        # and mayb for spiral **0.7
         node_size = draw_options["node_size"] = (2 * DEFAULT_NODE_SIZE) / math.sqrt(
             len(G) + 1
         )
@@ -359,12 +366,11 @@ def format_graph(G):
         fig, ax = plt.subplots()  # Create a figure and an axes
         ax.set_title(G.title)
 
+    layout_fn = None
     if graph_layout:
         if not isinstance(graph_layout, str):
             graph_layout = graph_layout.get_string_value()
         layout_fn = NETWORKX_LAYOUTS.get(graph_layout, None)
-    else:
-        layout_fn = None
 
     harmonize_parameters(G, draw_options)
 
