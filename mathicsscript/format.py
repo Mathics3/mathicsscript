@@ -338,10 +338,12 @@ def format_graph(G):
     cached_pair = None
 
     graph_layout = G.graph_layout if hasattr(G, "graph_layout") else None
+    node_shape = G.node_shape if hasattr(G, "node_shape") else "o"
 
     node_size = DEFAULT_NODE_SIZE
     draw_options = {
         "node_size": node_size,
+        "node_shape": node_shape,
         # "with_labels": vertex_labels # Set below
         # "font_size": 12,        # Harmonized
         # "node_color": "white",  # Set below
