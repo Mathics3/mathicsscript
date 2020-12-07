@@ -326,8 +326,6 @@ def harmonize_parameters(G, draw_options: dict):
     if "width" not in draw_options:
         width = clamp(node_size / DEFAULT_NODE_SIZE, min=0.15)
         draw_options["width"] = width
-    print("width", draw_options["width"])
-    print("graph_layout", graph_layout)
 
     if "font_size" not in draw_options:
         # FIXME: should also take into consideration max width of label.
