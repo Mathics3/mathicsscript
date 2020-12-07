@@ -70,6 +70,8 @@
 "\einf\e": "∞"
 "\edeg\e": "°"
 "\e&&\e": "∧"
+"\eue\e": "↔"
+"\ede\e": "→"
 
 # Things we have don't have Unicode symbols in terminal.
 # So we use the Mathics name
