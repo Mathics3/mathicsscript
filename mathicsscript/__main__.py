@@ -4,6 +4,7 @@
 import click
 import sys
 import os
+import re
 from pathlib import Path
 
 from mathicsscript.termshell import TerminalShell
@@ -23,6 +24,20 @@ from pygments.lexers import MathematicaLexer
 mma_lexer = MathematicaLexer()
 
 from mathicsscript.version import __version__
+
+wl_replace_dict = {"": "→", "": "↔"}
+wl_replace_dict_esc = dict((re.escape(k), v) for k, v in wl_replace_dict.items())
+wl_replace_pattern = re.compile("|".join(wl_replace_dict_esc.keys()))
+
+
+def replace_wl_to_unicode(wl_input: str) -> str:
+    """WL uses some non-unicode character for various things.
+    Replace them with the unicode equivalent.
+    Two known items are directed arrow and undirected arrow.
+    """
+    return wl_replace_pattern.sub(
+        lambda m: wl_replace_dict_esc[re.escape(m.group(0))], wl_input
+    )
 
 
 def ensure_settings():
@@ -314,7 +329,8 @@ def main(
                 current_pos = GNU_readline.get_current_history_length()
                 for pos in range(last_pos, current_pos - 1):
                     GNU_readline.remove_history_item(pos)
-                GNU_readline.add_history(source_code.rstrip())
+                wl_input = replace_wl_to_unicode(source_code.rstrip())
+                GNU_readline.add_history(wl_input)
 
             if query is None:
                 continue

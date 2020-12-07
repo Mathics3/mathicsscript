@@ -269,8 +269,10 @@ def tree_layout(G):
     node_size = min_sep * 2000
     return pos
 
+
 def spiral_equidistant_layout(G, *args, **kwargs):
     return nx.spiral_layout(G, equidistant=True, *args, **kwargs)
+
 
 NETWORKX_LAYOUTS = {
     "circular": nx.circular_layout,
@@ -285,11 +287,8 @@ NETWORKX_LAYOUTS = {
     "tree": tree_layout,
 }
 
-LAYOUT_DENSITY_EXPONENT = {
-    "circular": 0.9,
-    "spiral_equidistant": 0.7,
-    "spiral": 0.6,
-}
+LAYOUT_DENSITY_EXPONENT = {"circular": 0.9, "spiral_equidistant": 0.7, "spiral": 0.6}
+
 
 def clamp(value, min=-math.inf, max=math.inf):
     if value <= min:
@@ -315,7 +314,9 @@ def harmonize_parameters(G, draw_options: dict):
         draw_options["node_size"] = node_size
     elif graph_layout in ["circular", "spiral", "spiral_equidistant"]:
         exponent = LAYOUT_DENSITY_EXPONENT[graph_layout]
-        node_size = draw_options["node_size"] = (2 * DEFAULT_NODE_SIZE) / (len(G)+1) ** exponent
+        node_size = draw_options["node_size"] = (2 * DEFAULT_NODE_SIZE) / (
+            len(G) + 1
+        ) ** exponent
         # print("XX", node_size, exponent)
 
     if draw_options.get("with_labels", False):
@@ -325,6 +326,8 @@ def harmonize_parameters(G, draw_options: dict):
     if "width" not in draw_options:
         width = clamp(node_size / DEFAULT_NODE_SIZE, min=0.15)
         draw_options["width"] = width
+    print("width", draw_options["width"])
+    print("graph_layout", graph_layout)
 
     if "font_size" not in draw_options:
         # FIXME: should also take into consideration max width of label.
