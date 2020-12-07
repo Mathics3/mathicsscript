@@ -285,6 +285,11 @@ NETWORKX_LAYOUTS = {
     "tree": tree_layout,
 }
 
+LAYOUT_DENSITY_EXPONENT = {
+    "circular": 0.9,
+    "spiral_equidistant": 0.7,
+    "spiral": 0.6,
+}
 
 def clamp(value, min=-math.inf, max=math.inf):
     if value <= min:
@@ -309,12 +314,9 @@ def harmonize_parameters(G, draw_options: dict):
         tree_layout(G)
         draw_options["node_size"] = node_size
     elif graph_layout in ["circular", "spiral", "spiral_equidistant"]:
-        # FIXME spiral is more 2D filling
-        # Instead of Sqrt use adjusted exponent like **0.6
-        # and mayb for spiral **0.7
-        node_size = draw_options["node_size"] = (2 * DEFAULT_NODE_SIZE) / math.sqrt(
-            len(G) + 1
-        )
+        exponent = LAYOUT_DENSITY_EXPONENT[graph_layout]
+        node_size = draw_options["node_size"] = (2 * DEFAULT_NODE_SIZE) / (len(G)+1) ** exponent
+        # print("XX", node_size, exponent)
 
     if draw_options.get("with_labels", False):
         draw_options["edgecolors"] = draw_options.get("edgecolors", "black")
