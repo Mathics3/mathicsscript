@@ -276,6 +276,7 @@ def spiral_equidistant_layout(G, *args, **kwargs):
 
 NETWORKX_LAYOUTS = {
     "circular": nx.circular_layout,
+    "kamada_kawai": nx.kamada_kawai_layout,
     "multipartite": nx.multipartite_layout,
     "planar": nx.planar_layout,
     "random": nx.random_layout,
@@ -374,6 +375,9 @@ def format_graph(G):
         if not isinstance(graph_layout, str):
             graph_layout = graph_layout.get_string_value()
         layout_fn = NETWORKX_LAYOUTS.get(graph_layout, None)
+        if graph_layout in ["circular", "spiral", "spiral_equidistant"]:
+            plt.axes().set_aspect("equal")
+
 
     harmonize_parameters(G, draw_options)
 
