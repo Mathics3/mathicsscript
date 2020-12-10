@@ -28,10 +28,11 @@ def format_output(obj, expr, format=None):
         if len(leaves) == 1:
             expr = leaves[0]
     elif expr_type == "System`Graphics":
-        result = Expression("StandardForm", expr).format(obj, "System`MathMLForm")
-        ml_str = result.leaves[0].leaves[0]
+        result = "-System Graphics-"
+        # result = Expression("StandardForm", expr).format(obj, "System`MathMLForm")
+        # ml_str = result.leaves[0].leaves[0]
         # FIXME: not quite right. Need to parse out strings
-        display_svg(str(ml_str))
+        # display_svg(str(ml_str))
 
     if format == "text":
         result = expr.format(obj, "System`OutputForm")
