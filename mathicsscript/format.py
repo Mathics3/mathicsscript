@@ -27,7 +27,7 @@ def format_output(obj, expr, format=None):
         leaves = expr.get_leaves()
         if len(leaves) == 1:
             expr = leaves[0]
-    elif expr_type == "System`Graphics":
+    elif expr_type in ("System`Graphics", "System`Plot"):
         result = "-System Graphics-"
         # result = Expression("StandardForm", expr).format(obj, "System`MathMLForm")
         # ml_str = result.leaves[0].leaves[0]
@@ -41,7 +41,7 @@ def format_output(obj, expr, format=None):
     elif format == "tex":
         result = Expression("StandardForm", expr).format(obj, "System`TeXForm")
     elif format == "unformatted":
-        if str(expr) == "-Graph-":
+        if str(expr) == "-Graph-" and hasattr(expr, "G"):
             return format_graph(expr.G)
         else:
             result = expr.format(obj, "System`OutputForm")

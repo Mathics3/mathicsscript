@@ -276,7 +276,7 @@ class TerminalShell(LineFeeder):
                 )
             return self._complete_symbol_name(text, state)
 
-        except Exception as e:
+        except Exception:
             # any exception thrown inside the completer gets silently
             # thrown away otherwise
             print("Unhandled error in readline completion")
@@ -319,7 +319,7 @@ class TerminalShell(LineFeeder):
             suffix = text
         try:
             matches = self.definitions.get_matching_names(suffix + "*")
-        except Exception as e:
+        except Exception:
             return []
         if "`" not in text:
             matches = [strip_context(m) for m in matches]
