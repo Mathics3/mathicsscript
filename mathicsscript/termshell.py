@@ -72,7 +72,37 @@ HISTFILE = osp.expanduser("~/.mathicsscript_hist")
 RL_COMPLETER_DELIMS_WITH_BRACE = " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
 RL_COMPLETER_DELIMS = " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
 
+wl_replace_dict = {
+    "": "Ạ",
+    "": "ạ",
+    "": "Ḅ",
+    "": "ḅ",
+    # ...
+    "": "→",
+    "": "↔",
+}
+
+wl_replace_dict_esc = dict((re.escape(k), v) for k, v in wl_replace_dict.items())
+wl_replace_pattern = re.compile("|".join(wl_replace_dict_esc.keys()))
+
+unicode_replace_dict = {v: k for k, v in wl_replace_dict.items()}
+unicode_replace_dict_esc = dict(
+    (re.escape(k), v) for k, v in unicode_replace_dict.items()
+)
+unicode_replace_pattern = re.compile("|".join(unicode_replace_dict_esc.keys()))
+
+
 from mathics.core.parser import LineFeeder
+
+
+def replace_unicode_to_wl(unicode_input: str) -> str:
+    """WL uses some non-unicode character for various things.
+    Replace the unicode equivalent with the WL equivalent.
+    Formal values like FormalA are like this.
+    """
+    return unicode_replace_pattern.sub(
+        lambda m: unicode_replace_dict_esc[re.escape(m.group(0))], wl_input
+    )
 
 
 def is_pygments_style(style):
@@ -221,7 +251,7 @@ class TerminalShell(LineFeeder):
     def read_line(self, prompt):
         if self.using_readline:
             return self.rl_read_line(prompt)
-        return input(prompt)
+        return replace_unicode_to_wl(input(prompt))
 
     def print_result(self, result, output_style=""):
         if result is None:

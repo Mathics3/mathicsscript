@@ -7,7 +7,12 @@ import os
 import re
 from pathlib import Path
 
-from mathicsscript.termshell import TerminalShell
+from mathicsscript.termshell import (
+    TerminalShell,
+    wl_replace_dict_esc,
+    wl_replace_pattern,
+)
+
 from mathicsscript.format import format_output
 
 from mathics.core.parser import FileLineFeeder
@@ -24,18 +29,6 @@ from pygments.lexers import MathematicaLexer
 mma_lexer = MathematicaLexer()
 
 from mathicsscript.version import __version__
-
-wl_replace_dict = {
-    "": "Ạ",
-    "": "ạ",
-    "": "Ḅ",
-    "": "ḅ",
-    # ...
-    "": "→",
-    "": "↔",
-}
-wl_replace_dict_esc = dict((re.escape(k), v) for k, v in wl_replace_dict.items())
-wl_replace_pattern = re.compile("|".join(wl_replace_dict_esc.keys()))
 
 
 def replace_wl_to_unicode(wl_input: str) -> str:
