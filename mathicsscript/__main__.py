@@ -145,6 +145,11 @@ class TerminalOutput(Output):
     help="GNU Readline line editing. enable tab completion",
 )
 @click.option(
+    "--unicode/--no-unicode",
+    default=True,
+    help="GNU Readline line editing. If this is off completion and command history are also turned off",
+)
+@click.option(
     "--pyextensions",
     "-l",
     required=False,
@@ -188,6 +193,7 @@ def main(
     quiet,
     readline,
     completion,
+    unicode,
     pyextensions,
     execute,
     initfile,
@@ -220,7 +226,7 @@ def main(
         "Settings`$PygmentsShowTokens", from_python(1 if pygments_tokens else 0)
     )
 
-    shell = TerminalShell(definitions, style, readline, completion)
+    shell = TerminalShell(definitions, style, readline, completion, unicode)
     load_settings(shell)
     if initfile:
         with open(initfile, "r") as ifile:

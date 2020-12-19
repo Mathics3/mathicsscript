@@ -115,7 +115,12 @@ def is_pygments_style(style):
 
 class TerminalShell(LineFeeder):
     def __init__(
-        self, definitions, style: str, want_readline: bool, want_completion: bool
+        self,
+        definitions,
+        style: str,
+        want_readline: bool,
+        want_completion: bool,
+        use_unicode: bool,
     ):
         super(TerminalShell, self).__init__("<stdin>")
         self.input_encoding = locale.getpreferredencoding()
@@ -141,8 +146,15 @@ class TerminalShell(LineFeeder):
                     # set_completer_delims(RL_COMPLETER_DELIMS)
                     set_completer_delims(RL_COMPLETER_DELIMS_WITH_BRACE)
 
-                    inputrc = pathlib.Path(__file__).parent.absolute() / "inputrc"
-                    read_init_file(inputrc)
+                    # GNU Readling inputrc $include's paths are relative to itself,
+                    # so chdir to its directory before reading the file.
+                    parent_dir = pathlib.Path(__file__).parent.absolute()
+                    with parent_dir:
+                        inputrc = (
+                            "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
+                        )
+                        read_init_file(str(parent_dir / inputrc))
+
                     # parse_and_bind("tab: complete")
                     self.completion_candidates = []
 
@@ -192,6 +204,7 @@ class TerminalShell(LineFeeder):
             "Settings`$PygmentsShowTokens", from_python(False)
         )
         self.definitions.set_ownvalue("Settings`$PygmentsStyle", from_python(style))
+        self.definitions.set_ownvalue("Settings`$UseUnicode", from_python(use_unicode))
         self.definitions.set_ownvalue(
             "Settings`PygmentsStylesAvailable", from_python(ALL_PYGMENTS_STYLES)
         )
@@ -212,6 +225,7 @@ class TerminalShell(LineFeeder):
         self.definitions.set_attribute(
             "Settings`PygmentsStylesAvailable", "System`Locked"
         )
+        self.definitions.set_attribute("Settings`UseUnicode", "System`Locked")
 
     def change_pygments_style(self, style):
         if style == self.pygments_style:
