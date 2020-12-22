@@ -220,10 +220,10 @@ def main(
     # Then, it can be changed by the settings file (in WL)
     # and overwritten by the command line parameter.
     definitions.set_ownvalue(
-        "Settings`$ShowFullFormInput", from_python(1 if full_form else 0)
+        "Settings`$ShowFullFormInput", from_python(True if full_form else False)
     )
     definitions.set_ownvalue(
-        "Settings`$PygmentsShowTokens", from_python(1 if pygments_tokens else 0)
+        "Settings`$PygmentsShowTokens", from_python(True if pygments_tokens else False)
     )
 
     shell = TerminalShell(definitions, style, readline, completion, unicode)
