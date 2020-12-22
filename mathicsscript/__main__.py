@@ -145,6 +145,11 @@ class TerminalOutput(Output):
     help="GNU Readline line editing. enable tab completion",
 )
 @click.option(
+    "--unicode/--no-unicode",
+    default=True,
+    help="GNU Readline line editing. If this is off completion and command history are also turned off",
+)
+@click.option(
     "--pyextensions",
     "-l",
     required=False,
@@ -188,6 +193,7 @@ def main(
     quiet,
     readline,
     completion,
+    unicode,
     pyextensions,
     execute,
     initfile,
@@ -214,13 +220,13 @@ def main(
     # Then, it can be changed by the settings file (in WL)
     # and overwritten by the command line parameter.
     definitions.set_ownvalue(
-        "Settings`$ShowFullFormInput", from_python(1 if full_form else 0)
+        "Settings`$ShowFullFormInput", from_python(True if full_form else False)
     )
     definitions.set_ownvalue(
-        "Settings`$PygmentsShowTokens", from_python(1 if pygments_tokens else 0)
+        "Settings`$PygmentsShowTokens", from_python(True if pygments_tokens else False)
     )
 
-    shell = TerminalShell(definitions, style, readline, completion)
+    shell = TerminalShell(definitions, style, readline, completion, unicode)
     load_settings(shell)
     if initfile:
         with open(initfile, "r") as ifile:

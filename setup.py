@@ -63,7 +63,9 @@ setup(
     version=__version__,  # noqa
     packages=find_packages(),
     include_package_data=True,
-    package_data={"": ["inputrc", "settings/settings.m"]},
+    package_data={
+        "": ["inputrc", "inputrc-no-unicode", "inputrc-unicode", "settings/settings.m"]
+    },
     install_requires=[
         "Mathics3 >= 1.0",
         "click",

@@ -8,7 +8,11 @@ from os import environ
 def test_completion():
     definitions = Definitions(add_builtin=True, extension_modules=[])
     term = TerminalShell(
-        definitions=definitions, style=None, want_readline=True, want_completion=True
+        definitions=definitions,
+        style=None,
+        want_readline=True,
+        want_completion=True,
+        use_unicode=False,
     )
 
     for prefix, completions in (
