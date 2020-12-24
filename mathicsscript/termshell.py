@@ -47,6 +47,7 @@ from colorama import init as colorama_init
 from term_background import is_dark_background
 
 from readline import (
+    parse_and_bind,
     read_history_file,
     read_init_file,
     set_completer,
@@ -155,7 +156,7 @@ class TerminalShell(LineFeeder):
                         )
                         read_init_file(str(parent_dir / inputrc))
 
-                    # parse_and_bind("tab: complete")
+                    parse_and_bind("tab: complete")
                     self.completion_candidates = []
 
                 # History
