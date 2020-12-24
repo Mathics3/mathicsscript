@@ -1,3 +1,24 @@
+1.1.1
+-----
+
+* We require Mathics3 1.1.1 for features added in that to support unicode and user-formatting
+* Start to support Unicode as a CLI option: `--unicode/--no-unicode`. The setting name is ``Settings`$UseUnicode``.
+* Add a lot of Unicode symbols and the WL esc sequences. For example letters with dots under them. These are the "Formal" parmaters/letters.
+* Handle Unicode versus WL character code mismatches, , in particular Unicode directed and undirected edges.
+* Support for ``PyMathics`Graph`` (to be released on PyPI soon).
+* Some XDG compatibility
+* Toleratte MS/Windows pyreadline which doesn't handle `remove_history_item`
+* Show pygments styles when an invalid one is given
+* Use "inkpot" for dark backgrounds and "colorful" for  light backgrounds.
+* Add settings.m to holds `mathicsscript`-specific definitions `Settings` and their default values. Settings include
+  - ``Settings`$ShowFullFormInput``
+  - ``Settings`$PygmentsStyle``
+  - ``Settings`$PygmentsShowTokens``
+  - ``Settings`$UseUnicode`` (also mentioned above)
+
+A lot of code for handling graph formatting is here but will eventually be moved to a backend formattting module which hasn't been written yet.
+
+
 1.1.0
 -----
 
