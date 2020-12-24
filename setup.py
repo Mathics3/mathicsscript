@@ -67,7 +67,7 @@ setup(
         "": ["inputrc", "inputrc-no-unicode", "inputrc-unicode", "settings/settings.m"]
     },
     install_requires=[
-        "Mathics3 >= 1.0",
+        "Mathics3 >= 1.1.1",
         "click",
         "colorama",
         "columnize",
