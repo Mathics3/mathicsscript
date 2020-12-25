@@ -48,7 +48,7 @@ goes wrong, it is harder to track down problems.
 At the other end of the spectrum, if the dependencies of this package
 are too onerous and you want even simpler, lighter-weight terminal interaction _without_
 and of the features mentioend above, use ``mathics`` which is distributed as part of
-the core Mathic3 ackage.
+the core Mathic3 package.
 
 
 .. |screenshot| image:: https://github.com/Mathics3/mathicsscript/blob/master/screenshots/mathicsscript1.gif
@@ -56,4 +56,5 @@ the core Mathic3 ackage.
 		 :target: https://badge.fury.io/py/mathicsscript
 .. |Pypi Installs| image:: https://pepy.tech/badge/mathicsscript
 .. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/mathicsscript.svg
-.. |CI status| image:: https://github.com/Mathics3/mathicsscript/workflows/mathicsscript%20(basic)/badge.svg
+.. |CI status| image:: https://github.com/Mathics3/mathicsscript/workflows/mathicsscript%20(ubuntu)/badge.svg
+		       :target: https://github.com/Mathics3/mathicsscript/actions
