@@ -1,6 +1,6 @@
 |CI status| |Pypi Installs| |Latest Version| |Supported Python Versions|
 
-mathicsscript is a command-line interface to Mathics.
+mathicsscript is a command-line interface to `Mathics <https://mathics.org>`_.
 
 |screenshot|
 
@@ -26,7 +26,7 @@ To install, run
 
     $ make install
 
-To install from git shources so that you run from the git source tree:
+To install from git sources so that you run from the git source tree:
 
 
 ::

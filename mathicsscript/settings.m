@@ -21,5 +21,7 @@ Settings`$PygmentsShowTokens::usage = "Setting this variable True will show Pygm
 
 Settings`$PygmentsShowTokens = False
 
-Settings`$PygmentsStyle::usage = "This Boolean variable sets whether Unicode is used in terminal input and output."
+Settings`$UseUnicode::usage = "This Boolean variable sets whether Unicode is used in terminal input and output."
 Settings`$UseUnicode = True
+
+Settings`MathicsScriptVersion::usage = "This string is the version of MathicsScript we are running."

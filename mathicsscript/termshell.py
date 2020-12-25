@@ -217,7 +217,9 @@ class TerminalShell(LineFeeder):
                     Symbol("Settings`PygmentsStylesAvailable"),
                     from_python("usage"),
                 ),
-                from_python("Lists the available styles for Pygment"),
+                from_python(
+                    "A list of Pygments style that are valid in Settings`$PygmentsStyle."
+                ),
             ),
         )
         self.definitions.set_attribute(

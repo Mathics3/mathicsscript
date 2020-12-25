@@ -1,3 +1,10 @@
+1.1.2
+-----
+
+* Fix ``Settings`$ShowFullForm`` now that we use Mathics supports Booleans better
+* Show mathicsscript version on startup
+* Add ``Settings`MathicsScriptVersion`
+
 1.1.1
 -----
 
@@ -10,6 +17,7 @@
 * Toleratte MS/Windows pyreadline which doesn't handle `remove_history_item`
 * Show pygments styles when an invalid one is given
 * Use "inkpot" for dark backgrounds and "colorful" for  light backgrounds.
+* Add ``Settings`PygementsStylesAvailable``
 * Add settings.m to holds `mathicsscript`-specific definitions `Settings` and their default values. Settings include
   - ``Settings`$ShowFullFormInput``
   - ``Settings`$PygmentsStyle``
