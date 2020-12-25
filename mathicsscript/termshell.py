@@ -228,7 +228,7 @@ class TerminalShell(LineFeeder):
         self.definitions.set_attribute(
             "Settings`PygmentsStylesAvailable", "System`Locked"
         )
-        self.definitions.set_attribute("Settings`UseUnicode", "System`Locked")
+        self.definitions.set_attribute("Settings`$UseUnicode", "System`Locked")
 
     def change_pygments_style(self, style):
         if style == self.pygments_style:
