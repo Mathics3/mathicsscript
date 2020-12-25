@@ -292,8 +292,7 @@ def main(
             return exit_rc
 
     if not quiet:
-        print()
-        print(version_string + "\n")
+        print(f"\nMathicscript: {__version__}, {version_string}\n")
         print(license_string + "\n")
         print(f"Quit by pressing {quit_command}\n")
 
@@ -347,7 +346,7 @@ def main(
             else:
                 output_style = ""
 
-            if full_form != 0:
+            if full_form:
                 print(fmt(query))
             result = evaluation.evaluate(
                 query, timeout=settings.TIMEOUT, format="unformatted"
