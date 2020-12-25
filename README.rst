@@ -39,11 +39,16 @@ Why not IPython via Jupyter?
 
 There will always be a need for simple terminal-like
 interaction. Although there is IPython support via Jupyter all of this
-is pretty heavy-weight. To code to this a developer needs to code
-write a kernel, and use a wire protocol and this adds complexity not
+is pretty heavy-weight. To code to this protocol, a developer needs to
+write a kernel, and use a wire protocol. This adds complexity not
 only for the person developing this package, but also for the user who
 needs to load the extra layers that aren't used. And when something
 goes wrong, it is harder to track down problems.
+
+At the other end of the spectrum, if the dependencies of this package
+are too onerous and you want even simpler, lighter-weight terminal interaction _without_
+and of the features mentioend above, use ``mathics`` which is distributed as part of
+the core Mathic3 ackage.
 
 
 .. |screenshot| image:: https://github.com/Mathics3/mathicsscript/blob/master/screenshots/mathicsscript1.gif

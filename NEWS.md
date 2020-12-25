@@ -3,7 +3,7 @@
 
 * Fix ``Settings`$ShowFullForm`` now that we use Mathics supports Booleans better
 * Show mathicsscript version on startup
-* Add ``Settings`MathicsScriptVersion`
+* Add ``Settings`MathicsScriptVersion``
 
 1.1.1
 -----
