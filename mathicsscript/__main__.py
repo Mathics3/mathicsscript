@@ -321,7 +321,7 @@ def main(
 
             full_form = definitions.get_ownvalue(
                 "Settings`$ShowFullFormInput"
-            ).replace.get_int_value()
+            ).replace.to_python()
             style = definitions.get_ownvalue("Settings`$PygmentsStyle")
             fmt = lambda x: x
             if style:
