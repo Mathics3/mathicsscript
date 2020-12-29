@@ -81,6 +81,7 @@ wl_replace_dict = {
     # ...
     "": "→",
     "": "↔",
+    "": "𝑑",
 }
 
 wl_replace_dict_esc = dict((re.escape(k), v) for k, v in wl_replace_dict.items())
