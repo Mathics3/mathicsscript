@@ -67,19 +67,10 @@ def hierarchy_pos(
     G, root=None, width=1.0, vert_gap=0.2, vert_loc=0, leaf_vs_root_factor=0.5
 ):
 
-    """From EoN (Epidemics on Networks): a fast, flexible Python package
-    for simulation, analytic approximation, and analysis of epidemics
-    on networks
-    https://joss.theoj.org/papers/10.21105/joss.01731
-
-    If the graph is a tree this will return the positions to plot this in a
-    hierarchical layout.
+    """Position nodes in tree layout. The root is at the top.
 
     Based on Joel's answer at https://stackoverflow.com/a/29597209/2966723,
     but with some modifications.
-
-    We include this because it may be useful for plotting transmission trees,
-    and there is currently no networkx equivalent (though it may be coming soon).
 
     There are two basic approaches we think of to allocate the horizontal
     location of a node.
@@ -97,26 +88,51 @@ def hierarchy_pos(
     or top down approaches.  ``0`` gives pure bottom up, while 1 gives pure top
     down.
 
+    From EoN (Epidemics on Networks): a fast, flexible Python package
+    for simulation, analytic approximation, and analysis of epidemics
+    on networks
+    https://joss.theoj.org/papers/10.21105/joss.01731
 
     :Arguments:
 
-    **G** the graph (must be a tree)
+    Parameters
+    ----------
+    G : NetworkX graph or list of nodes
+        A position will be assigned to every node in G.
+        The graph must be a tree.
 
-    **root** the root node of the tree
+    root : the root node of the tree
+
     - if the tree is directed and this is not given, the root will be found and used
     - if the tree is directed and this is given, then the positions will be
       just for the descendants of this node.
     - if the tree is undirected and not given, then a random choice will be used.
 
-    **width** horizontal space allocated for this branch - avoids overlap with other branches
+    width : horizontal space allocated for this branch - avoids overlap with other branches
 
-    **vert_gap** gap between levels of hierarchy
+    vert_gap : gap between levels of hierarchy
 
-    **vert_loc** vertical location of root
+    vert_loc : vertical location of root
 
-    **leaf_vs_root_factor**
+    leaf_vs_root_factor : used in calculating the _x_ coordinate of a leaf
 
-    xcenter: horizontal location of root
+    xcenter : horizontal location of root
+
+    Examples
+    --------
+    >>> G = nx.binomial_tree(3)
+    >>> nx.draw(G, pos=nx.hierarchy_layout(G, root=0))
+
+    As the number of nodes gets large, the node size and node labels
+    may need to be adjusted. The following shows how the minimum
+    separation between nodes can be used to adjust node sizes.
+
+    >>> G = nx.full_rary_tree(2, 127)
+    >>> pos, min_sep = nx.hierarchy_layout_with_min_sep(G, root=0)
+    >>> nx.draw(G, pos=pos, node_size=min_sep * 1500)
+
+    Also see the NetworkX drawing examples at
+    https://networkx.org/documentation/latest/auto_examples/index.html
 
     """
     if not nx.is_tree(G):
