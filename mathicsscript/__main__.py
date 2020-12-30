@@ -333,6 +333,12 @@ def main(
 
             evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
             query, source_code = evaluation.parse_feeder_returning_code(shell)
+            if len(source_code) and source_code[0] == "!":
+                os.system(source_code[1:])
+                # Should we test exit code for adding to history?
+                GNU_readline.add_history(source_code.rstrip())
+                continue
+
             if shell.using_readline and hasattr(GNU_readline, "remove_history_item"):
                 current_pos = GNU_readline.get_current_history_length()
                 for pos in range(last_pos, current_pos - 1):
