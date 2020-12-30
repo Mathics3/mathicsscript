@@ -5,9 +5,11 @@ import click
 import sys
 import os
 import re
+import subprocess
 from pathlib import Path
 
 from mathicsscript.termshell import (
+    ShellEscapeException,
     TerminalShell,
     wl_replace_dict_esc,
     wl_replace_pattern,
@@ -333,11 +335,6 @@ def main(
 
             evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
             query, source_code = evaluation.parse_feeder_returning_code(shell)
-            if len(source_code) and source_code[0] == "!":
-                os.system(source_code[1:])
-                # Should we test exit code for adding to history?
-                GNU_readline.add_history(source_code.rstrip())
-                continue
 
             if shell.using_readline and hasattr(GNU_readline, "remove_history_item"):
                 current_pos = GNU_readline.get_current_history_length()
@@ -361,6 +358,22 @@ def main(
             )
             if result is not None:
                 shell.print_result(result, output_style)
+
+        except ShellEscapeException as e:
+            source_code = e.line
+            if len(source_code) and source_code[1] == "!":
+                try:
+                    print(open(source_code[2:], "r").read())
+                except:
+                    print(str(sys.exc_info()[1]))
+            else:
+                subprocess.run(source_code[1:], shell=True)
+
+                # Should we test exit code for adding to history?
+                GNU_readline.add_history(source_code.rstrip())
+                ## FIXME add this... when in Mathics core updated
+                ## shell.defintions.increment_line(1)
+
         except (KeyboardInterrupt):
             print("\nKeyboardInterrupt")
         except EOFError:
