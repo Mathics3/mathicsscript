@@ -115,6 +115,11 @@ def is_pygments_style(style):
     return True
 
 
+class ShellEscapeException(Exception):
+    def __init__(self, line):
+        self.line = line
+
+
 class TerminalShell(LineFeeder):
     def __init__(
         self,
@@ -268,8 +273,12 @@ class TerminalShell(LineFeeder):
 
     def read_line(self, prompt):
         if self.using_readline:
-            return self.rl_read_line(prompt)
-        return replace_unicode_to_wl(input(prompt))
+            line = self.rl_read_line(prompt)
+        else:
+            line = input(prompt)
+        if line.startswith("!") and self.lineno == 0:
+            raise ShellEscapeException(line)
+        return replace_unicode_to_wl(line)
 
     def print_result(self, result, output_style=""):
         if result is None:
