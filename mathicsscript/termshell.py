@@ -103,7 +103,7 @@ def replace_unicode_to_wl(unicode_input: str) -> str:
     Formal values like FormalA are like this.
     """
     return unicode_replace_pattern.sub(
-        lambda m: unicode_replace_dict_esc[re.escape(m.group(0))], wl_input
+        lambda m: unicode_replace_dict_esc[re.escape(m.group(0))], unicode_input
     )
 
 
