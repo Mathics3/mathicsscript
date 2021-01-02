@@ -19,7 +19,7 @@ from mathicsscript.format import format_output
 
 from mathics.core.parser import FileLineFeeder
 from mathics.core.definitions import Definitions
-from mathics.core.expression import Symbol
+from mathics.core.expression import Symbol, SymbolTrue, SymbolFalse
 from mathics.core.evaluation import Evaluation, Output
 from mathics.core.expression import from_python
 from mathics import version_string, license_string
@@ -299,8 +299,7 @@ def main(
         print(f"Quit by pressing {quit_command}\n")
 
     # If defined, full_form and style overwrite the predefined values.
-    if full_form:
-        definitions.set_ownvalue("Settings`$ShowFullFormInput", from_python(full_form))
+    definitions.set_ownvalue("Settings`$ShowFullFormInput", SymbolTrue if full_form else SymbolFalse)
 
     definitions.set_ownvalue(
         "Settings`$PygmentsStyle", from_python(shell.pygments_style)
