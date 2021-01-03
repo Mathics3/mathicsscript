@@ -285,16 +285,15 @@ class TerminalShell(LineFeeder):
             # FIXME decide what to do here
             return
 
-        # FIXME: after Mathics last_eval is fixed,
-        # we need only the True branch of this code
-        if hasattr(result, "last_eval"):
-            last_eval = result.last_eval
-            eval_type = last_eval.get_head_name()
-        else:
-            eval_type = ""
-            last_eval = result.result
+        last_eval = result.last_eval
 
         if last_eval is not None:
+            try:
+                eval_type = last_eval.get_head_name()
+            except:
+                print(sys.exc_info()[1])
+                return
+
             out_str = str(result.result)
             if eval_type == "System`Graph":
                 out_str = "-Graph-"
