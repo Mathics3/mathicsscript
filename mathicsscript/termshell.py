@@ -9,7 +9,7 @@ import pathlib
 import sys
 import re
 from columnize import columnize
-from mathics import replace_unicode_to_wl
+from mathics import replace_unicode_with_wl
 from mathics.core.expression import Expression, String, Symbol
 from mathics.core.expression import strip_context, from_python
 from mathics.core.rules import Rule
