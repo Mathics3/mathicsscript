@@ -11,12 +11,11 @@ from pathlib import Path
 from mathicsscript.termshell import (
     ShellEscapeException,
     TerminalShell,
-    wl_replace_dict_esc,
-    wl_replace_pattern,
 )
 
 from mathicsscript.format import format_output
 
+from mathics import replace_wl_with_unicode
 from mathics.core.parser import FileLineFeeder
 from mathics.core.definitions import Definitions
 from mathics.core.expression import Symbol, SymbolTrue, SymbolFalse
@@ -31,16 +30,6 @@ from pygments.lexers import MathematicaLexer
 mma_lexer = MathematicaLexer()
 
 from mathicsscript.version import __version__
-
-
-def replace_wl_to_unicode(wl_input: str) -> str:
-    """WL uses some non-unicode character for various things.
-    Replace them with the unicode equivalent.
-    Two known items are directed arrow and undirected arrow.
-    """
-    return wl_replace_pattern.sub(
-        lambda m: wl_replace_dict_esc[re.escape(m.group(0))], wl_input
-    )
 
 
 def ensure_settings():
@@ -339,7 +328,7 @@ def main(
                 current_pos = GNU_readline.get_current_history_length()
                 for pos in range(last_pos, current_pos - 1):
                     GNU_readline.remove_history_item(pos)
-                wl_input = replace_wl_to_unicode(source_code.rstrip())
+                wl_input = replace_wl_with_unicode(source_code.rstrip())
                 GNU_readline.add_history(wl_input)
 
             if query is None:
