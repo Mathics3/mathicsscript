@@ -1,9 +1,16 @@
-1.1.2
+2.0.0
 -----
 
 * Fix ``Settings`$ShowFullForm`` now that we use Mathics supports Booleans better
 * Show mathicsscript version on startup
 * Add ``Settings`MathicsScriptVersion``
+* Add all of the WL escape sequences
+* Add conversions from WL Unicode to standard Unicode
+* Shell escapes `!` and `!!` added
+
+Incompatible changes:
+
+* `-e` `--execute` is better suited for embedded use. It adds `--quiet` and shows just evaluation output as text
 
 1.1.1
 -----

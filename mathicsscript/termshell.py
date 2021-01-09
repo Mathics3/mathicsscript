@@ -285,7 +285,10 @@ class TerminalShell(LineFeeder):
                     print(list(lex(out_str, mma_lexer)))
                 out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
             output = self.to_output(out_str)
-            print(self.get_out_prompt("") + output + "\n")
+            if output_style == "text":
+                print(output)
+            else:
+                print(self.get_out_prompt("") + output + "\n")
 
     def rl_read_line(self, prompt):
         # Wrap ANSI color sequences in \001 and \002, so readline

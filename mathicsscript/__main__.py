@@ -8,10 +8,7 @@ import re
 import subprocess
 from pathlib import Path
 
-from mathicsscript.termshell import (
-    ShellEscapeException,
-    TerminalShell,
-)
+from mathicsscript.termshell import ShellEscapeException, TerminalShell
 
 from mathicsscript.format import format_output
 
@@ -151,7 +148,7 @@ class TerminalOutput(Output):
     "-e",
     "--execute",
     help="evaluate EXPR before processing any input files (may be given "
-    "multiple times)",
+    "multiple times). Sets --quiet and --no-completion",
     multiple=True,
     required=False,
 )
@@ -241,12 +238,12 @@ def main(
 
     if execute:
         for expr in execute:
-            print(shell.get_in_prompt() + expr)
             evaluation = Evaluation(
                 shell.definitions, output=TerminalOutput(shell), format="text"
             )
+            shell.terminal_formatter = None
             result = evaluation.parse_evaluate(expr, timeout=settings.TIMEOUT)
-            shell.print_result(result)
+            shell.print_result(result, "text")
 
             # After the next release, we can remove the hasattr test.
             if hasattr(evaluation, "exc_result"):
@@ -288,7 +285,9 @@ def main(
         print(f"Quit by pressing {quit_command}\n")
 
     # If defined, full_form and style overwrite the predefined values.
-    definitions.set_ownvalue("Settings`$ShowFullFormInput", SymbolTrue if full_form else SymbolFalse)
+    definitions.set_ownvalue(
+        "Settings`$ShowFullFormInput", SymbolTrue if full_form else SymbolFalse
+    )
 
     definitions.set_ownvalue(
         "Settings`$PygmentsStyle", from_python(shell.pygments_style)
