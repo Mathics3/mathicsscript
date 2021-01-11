@@ -63,13 +63,15 @@ CONFIGDIR = os.path.join(CONFIGHOME, "mathicsscript")
 os.makedirs(CONFIGDIR, exist_ok=True)
 
 try:
-    HISTSIZE = int(os.environ.get("MATHICSSCRIPT_HISTSIZE", 50))
+    HISTSIZE = int(os.environ.get("MATHICSSCRIPT_HISTSIZE"))
 except:
     HISTSIZE = 50
 
-# This doesn't work: investigate
-# HISTFILE = os.path.join(CONFIGDIR, "history")
-HISTFILE = osp.expanduser("~/.mathicsscript_hist")
+HISTFILE = os.path.join(CONFIGDIR, "history")
+
+# Create HISTFILE if it doesn't exist already
+if not os.path.isfile(HISTFILE):
+    pathlib.Path(HISTFILE).touch()
 
 RL_COMPLETER_DELIMS_WITH_BRACE = " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
 RL_COMPLETER_DELIMS = " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
