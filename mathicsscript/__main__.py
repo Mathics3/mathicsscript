@@ -12,7 +12,6 @@ from mathicsscript.termshell import ShellEscapeException, TerminalShell
 
 from mathicsscript.format import format_output
 
-from mathics import replace_wl_with_unicode
 from mathics.core.parser import FileLineFeeder
 from mathics.core.definitions import Definitions
 from mathics.core.expression import Symbol, SymbolTrue, SymbolFalse
@@ -20,6 +19,8 @@ from mathics.core.evaluation import Evaluation, Output
 from mathics.core.expression import from_python
 from mathics import version_string, license_string
 from mathics import settings
+
+from mathics_scanner.characters import replace_wl_with_plain_text
 
 from pygments import highlight
 from pygments.lexers import MathematicaLexer
@@ -327,7 +328,7 @@ def main(
                 current_pos = GNU_readline.get_current_history_length()
                 for pos in range(last_pos, current_pos - 1):
                     GNU_readline.remove_history_item(pos)
-                wl_input = replace_wl_with_unicode(source_code.rstrip())
+                wl_input = replace_wl_with_plain_text(source_code.rstrip(), use_unicode=unicode)
                 GNU_readline.add_history(wl_input)
 
             if query is None:
@@ -344,7 +345,7 @@ def main(
                 query, timeout=settings.TIMEOUT, format="unformatted"
             )
             if result is not None:
-                shell.print_result(result, output_style)
+                shell.print_result(result, output_style, use_unicode=unicode)
 
         except ShellEscapeException as e:
             source_code = e.line
