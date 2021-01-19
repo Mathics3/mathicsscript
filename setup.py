@@ -81,7 +81,7 @@ setup(
         "": ["inputrc", "inputrc-no-unicode", "inputrc-unicode", "settings/settings.m"]
     },
     install_requires=INSTALL_REQUIRES,
-    dependency_link=DEPENDENCY_LINKS,
+    dependency_links=DEPENDENCY_LINKS,
     entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main"]},
     long_description=long_description,
     long_description_content_type="text/x-rst",
