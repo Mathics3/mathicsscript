@@ -12,7 +12,7 @@ def format_output(obj, expr, format=None):
         format = obj.format
 
     if isinstance(format, dict):
-        return {k: obj.format_output(expr, f) for k, f in format.items()}
+        return dict((k, obj.format_output(expr, f)) for k, f in format.items())
 
     from mathics.core.expression import Expression, BoxError
 

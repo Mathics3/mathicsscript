@@ -17,20 +17,6 @@ from distutils.core import setup
 import os.path as osp
 from setuptools import find_packages
 
-INSTALL_REQUIRES = [
-    "Mathics-Scanner>=1.0.0dev",
-    "Mathics3 >= 2.0.0dev",
-    "click",
-    "colorama",
-    "columnize",
-    "networkx",
-    "pygments",
-    "term-background >= 1.0.1",
-]
-
-DEPENDENCY_LINKS = [
-    'http://github.com/Mathics3/mathics-scanner/tarball/master#egg=Mathics-Scanner-1.0.0dev'
-]
 
 def get_srcdir():
     filename = osp.normcase(osp.dirname(osp.abspath(__file__)))
@@ -80,8 +66,15 @@ setup(
     package_data={
         "": ["inputrc", "inputrc-no-unicode", "inputrc-unicode", "settings/settings.m"]
     },
-    install_requires=INSTALL_REQUIRES,
-    dependency_links=DEPENDENCY_LINKS,
+    install_requires=[
+        "Mathics3 >= 2.0.0dev",
+        "click",
+        "colorama",
+        "columnize",
+        "networkx",
+        "pygments",
+        "term-background >= 1.0.1",
+    ],
     entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main"]},
     long_description=long_description,
     long_description_content_type="text/x-rst",
