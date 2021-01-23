@@ -1,4 +1,4 @@
-name: Mathics (OSX)
+name: mathicsscript (OSX)
 
 on:
   push:
@@ -8,11 +8,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       matrix:
         os: [macOS]
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -21,11 +21,15 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        brew install llvm@9
         python -m pip install --upgrade pip
-    - name: Install Mathics Scanner
+        LLVM_CONFIG=/usr/local/Cellar/llvm@9/9.0.1_2/bin/llvm-config pip install llvmlite
+        python -m pip install -e git://github.com/Mathics3/mathics-scanner.git#egg=Mathics_Scanner
+        python -m pip install -e git://github.com/Mathics3/mathics-scanner.git#egg=Mathics3
+    - name: Install mathicsscript
       run: |
         make
-    - name: Test Mathics Scanner
+    - name: Test mathicsscript
       run: |
         pip install pytest
         make check
