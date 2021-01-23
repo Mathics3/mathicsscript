@@ -9,11 +9,14 @@ import pathlib
 import sys
 import re
 from columnize import columnize
-from mathics import replace_unicode_with_wl
 from mathics.core.expression import Expression, String, Symbol
 from mathics.core.expression import strip_context, from_python
 from mathics.core.rules import Rule
-from mathics.core.characters import named_characters
+from mathics_scanner.characters import (
+    named_characters,
+    replace_unicode_with_wl,
+    replace_wl_with_plain_text,
+)
 
 from pygments import highlight, lex
 from mathicsscript.mmalexer import MathematicaLexer
@@ -253,7 +256,7 @@ class TerminalShell(LineFeeder):
             raise ShellEscapeException(line)
         return replace_unicode_with_wl(line)
 
-    def print_result(self, result, output_style=""):
+    def print_result(self, result, output_style="", use_unicode=True):
         if result is None:
             # FIXME decide what to do here
             return
@@ -267,7 +270,9 @@ class TerminalShell(LineFeeder):
                 print(sys.exc_info()[1])
                 return
 
-            out_str = str(result.result)
+            out_str = replace_wl_with_plain_text(str(result.result), 
+                                                use_unicode=use_unicode)
+
             if eval_type == "System`Graph":
                 out_str = "-Graph-"
             elif self.terminal_formatter:  # pygmentize
