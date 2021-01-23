@@ -67,7 +67,8 @@ setup(
         "": ["inputrc", "inputrc-no-unicode", "inputrc-unicode", "settings/settings.m"]
     },
     install_requires=[
-        "Mathics3 >= 2.0.0dev",
+        "Mathics_Scanner >= 1.0.0.dev",
+        "Mathics3 >= 2.0.0.dev",
         "click",
         "colorama",
         "columnize",

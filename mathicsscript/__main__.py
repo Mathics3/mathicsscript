@@ -8,12 +8,11 @@ import re
 import subprocess
 from pathlib import Path
 
+from mathics_scanner import FileLineFeeder
+
 from mathicsscript.termshell import ShellEscapeException, TerminalShell
-
 from mathicsscript.format import format_output
-
 from mathics import replace_wl_with_unicode
-from mathics.core.parser import FileLineFeeder
 from mathics.core.definitions import Definitions
 from mathics.core.expression import Symbol, SymbolTrue, SymbolFalse
 from mathics.core.evaluation import Evaluation, Output

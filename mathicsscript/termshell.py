@@ -13,7 +13,7 @@ from mathics import replace_unicode_with_wl
 from mathics.core.expression import Expression, String, Symbol
 from mathics.core.expression import strip_context, from_python
 from mathics.core.rules import Rule
-from mathics.core.characters import named_characters
+from mathics_scanner.characters import named_characters
 
 from pygments import highlight, lex
 from mathicsscript.mmalexer import MathematicaLexer
