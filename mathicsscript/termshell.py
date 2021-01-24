@@ -132,7 +132,10 @@ class TerminalShell(LineFeeder):
                         inputrc = (
                             "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
                         )
-                        read_init_file(str(parent_dir / inputrc))
+                        try:
+                            read_init_file(str(parent_dir / inputrc))
+                        except:
+                            pass
 
                     parse_and_bind("tab: complete")
                     self.completion_candidates = []
