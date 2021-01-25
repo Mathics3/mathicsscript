@@ -12,7 +12,7 @@ from mathicsscript.termshell import ShellEscapeException, TerminalShell
 
 from mathicsscript.format import format_output
 
-from mathics import replace_wl_with_unicode
+from mathics_scanner import replace_wl_with_plain_text
 from mathics.core.parser import FileLineFeeder
 from mathics.core.definitions import Definitions
 from mathics.core.expression import Symbol, SymbolTrue, SymbolFalse
@@ -327,7 +327,9 @@ def main(
                 current_pos = GNU_readline.get_current_history_length()
                 for pos in range(last_pos, current_pos - 1):
                     GNU_readline.remove_history_item(pos)
-                wl_input = replace_wl_with_unicode(source_code.rstrip())
+                wl_input = source_code.rstrip()
+                if unicode:
+                    wl_input = replace_wl_with_plain_text(wl_input)
                 GNU_readline.add_history(wl_input)
 
             if query is None:
