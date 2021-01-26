@@ -4,7 +4,7 @@ from mathics_scanner.characters import replace_wl_with_plain_text as r
 from mathics_scanner.characters import aliased_characters
 
 def escape(s: str) -> str:
-    """Escaped special chracters in inputrc strings"""
+    """Escapes special chracters in inputrc strings"""
     return s.replace("\\", "\\\\").replace("\"", "\\\"")
 
 def format(c: str, use_unicode: bool) -> str:
