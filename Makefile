@@ -9,17 +9,17 @@ PYTHON ?= python3
 PIP ?= pip3
 RM  ?= rm
 
-.PHONY: all build check clean develop dist doc pytest sdist test rmChangeLog
+.PHONY: all build check clean inputrc develop dist doc pytest sdist test rmChangeLog
 
 #: Default target - same as "develop"
 all: develop
 
 #: build everything needed to install
-build:
+build: inputrc
 	$(PYTHON) ./setup.py build
 
 #: Set up to run from the source tree
-develop:
+develop: inputrc
 	$(PIP) install -e .
 
 #: Make distirbution: wheels, eggs, tarball
@@ -31,12 +31,16 @@ runner:
 	watchgod mathicsscript.__main__.main
 
 #: Install mathicsscript
-install:
+install: inputrc
 	$(PYTHON) setup.py install
 
 #: Run tests. You can set environment variable "o" for pytest options
 check:
 	py.test test $o
+
+inputrc:
+	$(PIP) install mathics-scanner
+	$(PYTHON) admin-tools/generate-inputrc.py
 
 # Check StructuredText long description formatting
 check-rst:
