@@ -64,7 +64,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     package_data={
-        "": ["inputrc", "inputrc-no-unicode", "inputrc-unicode", "settings/settings.m"]
+        "": ["inputrc-no-unicode", "inputrc-unicode", "settings/settings.m"]
     },
     install_requires=[
         "Mathics_Scanner>=1.0.0,<1.1.0",
