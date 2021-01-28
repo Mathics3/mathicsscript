@@ -243,7 +243,7 @@ def main(
             )
             shell.terminal_formatter = None
             result = evaluation.parse_evaluate(expr, timeout=settings.TIMEOUT)
-            shell.print_result(result, unicode, output_style="text")
+            shell.print_result(result, "text")
 
             # After the next release, we can remove the hasattr test.
             if hasattr(evaluation, "exc_result"):
@@ -346,7 +346,7 @@ def main(
                 query, timeout=settings.TIMEOUT, format="unformatted"
             )
             if result is not None:
-                shell.print_result(result, unicode, output_style=output_style)
+                shell.print_result(result, output_style)
 
         except ShellEscapeException as e:
             source_code = e.line

@@ -110,6 +110,7 @@ class TerminalShell(LineFeeder):
         self.lineno = 0
         self.terminal_formatter = None
         self.history_length = definitions.get_config_value("$HistoryLength", HISTSIZE)
+        self.use_unicode = use_unicode
 
         # Try importing readline to enable arrow keys support etc.
         self.using_readline = False
@@ -134,7 +135,7 @@ class TerminalShell(LineFeeder):
                     parent_dir = pathlib.Path(__file__).parent.absolute()
                     with parent_dir:
                         inputrc = (
-                            "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
+                            "inputrc-unicode" if self.use_unicode else "inputrc-no-unicode"
                         )
                         try:
                             read_init_file(str(parent_dir / inputrc))
@@ -190,7 +191,7 @@ class TerminalShell(LineFeeder):
             "Settings`$PygmentsShowTokens", from_python(False)
         )
         self.definitions.set_ownvalue("Settings`$PygmentsStyle", from_python(style))
-        self.definitions.set_ownvalue("Settings`$UseUnicode", from_python(use_unicode))
+        self.definitions.set_ownvalue("Settings`$UseUnicode", from_python(self.use_unicode))
         self.definitions.set_ownvalue(
             "Settings`PygmentsStylesAvailable", from_python(ALL_PYGMENTS_STYLES)
         )
@@ -248,7 +249,11 @@ class TerminalShell(LineFeeder):
         return newline.join(text.splitlines())
 
     def out_callback(self, out):
-        print(self.to_output(str(out)))
+        print(
+            self.to_output(
+                replace_wl_with_plain_text(str(out), self.use_unicode)
+            )
+        )
 
     def read_line(self, prompt):
         if self.using_readline:
@@ -259,7 +264,7 @@ class TerminalShell(LineFeeder):
             raise ShellEscapeException(line)
         return replace_unicode_with_wl(line)
 
-    def print_result(self, result, use_unicode, output_style=""):
+    def print_result(self, result, output_style=""):
         if result is None:
             # FIXME decide what to do here
             return
@@ -274,7 +279,7 @@ class TerminalShell(LineFeeder):
                 return
 
             out_str = replace_wl_with_plain_text(str(result.result), 
-                                                 use_unicode=use_unicode)
+                                                 use_unicode=self.use_unicode)
             if eval_type == "System`Graph":
                 out_str = "-Graph-"
             elif self.terminal_formatter:  # pygmentize
