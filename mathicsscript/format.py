@@ -29,7 +29,8 @@ def format_output(obj, expr, format=None):
             expr = leaves[0]
     elif expr_type in ("System`Graphics", "System`Plot"):
         result = "-System Graphics-"
-        result = Expression("StandardForm", expr).format(obj, "System`MathMLForm")
+        result = Expression("StandardForm", expr)
+        result = result.format(obj, "System`MathMLForm")
         ml_str = result.leaves[0].leaves[0]
         # FIXME: not quite right. Need to parse out strings
         # display_svg(str(ml_str))
