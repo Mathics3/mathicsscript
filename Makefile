@@ -22,6 +22,10 @@ build:
 develop:
 	$(PIP) install -e .
 
+#: Make distirbution: wheels, eggs, tarball
+dist:
+	./admin-tools/make-dist.sh
+
 #: Run mathicsscript and reload on file changes to the source
 runner:
 	watchgod mathicsscript.__main__.main
