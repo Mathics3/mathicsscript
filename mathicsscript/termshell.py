@@ -76,7 +76,7 @@ RL_COMPLETER_DELIMS_WITH_BRACE = " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
 RL_COMPLETER_DELIMS = " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
 
 
-from mathics.core.parser import LineFeeder
+from mathics.core.parser import MathicsLineFeeder
 
 
 def is_pygments_style(style):
@@ -92,7 +92,7 @@ class ShellEscapeException(Exception):
         self.line = line
 
 
-class TerminalShell(LineFeeder):
+class TerminalShell(MathicsLineFeeder):
     def __init__(
         self,
         definitions,
