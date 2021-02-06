@@ -13,7 +13,7 @@ from mathicsscript.termshell import ShellEscapeException, TerminalShell
 from mathicsscript.format import format_output
 
 from mathics_scanner import replace_wl_with_plain_text
-from mathics.core.parser import FileLineFeeder
+from mathics.core.parser import MathicsFileLineFeeder
 from mathics.core.definitions import Definitions
 from mathics.core.expression import Symbol, SymbolTrue, SymbolFalse
 from mathics.core.evaluation import Evaluation, Output
@@ -64,7 +64,7 @@ def load_settings(shell):
     if settings_file == "":
         return
     with open(settings_file, "r") as src:
-        feeder = FileLineFeeder(src)
+        feeder = MathicsFileLineFeeder(src)
         try:
             while not feeder.empty():
                 evaluation = Evaluation(

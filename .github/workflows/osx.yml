@@ -24,7 +24,6 @@ jobs:
         brew install llvm@9
         python -m pip install --upgrade pip
         LLVM_CONFIG=/usr/local/Cellar/llvm@9/9.0.1_2/bin/llvm-config pip install llvmlite
-        python -m pip install -e git://github.com/Mathics3/mathics-scanner.git#egg=Mathics_Scanner
         python -m pip install -e git://github.com/mathics/Mathics.git#egg=Mathics3
     - name: Install mathicsscript
       run: |
