@@ -1,4 +1,11 @@
-2.0.0
+1.2.0
+-----
+
+* All escape sequence for unicode and letter names added for GNU Readline
+* Use Mathics Scanner package
+* Support XDG-style configuration files
+
+1.1.2
 -----
 
 * Fix ``Settings`$ShowFullForm`` now that we use Mathics supports Booleans better

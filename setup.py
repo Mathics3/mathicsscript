@@ -57,7 +57,8 @@ exec(read("mathicsscript/version.py"))
 is_PyPy = platform.python_implementation() == "PyPy"
 
 setup(
-    maintainer="Rocky Bernstein",
+    maintainer="Mathics Group",
+    maintainer_email="mathic-devel@googlegroups.com",
     author_email="rb@dustyfeet.com",
     name="mathicsscript",
     version=__version__,  # noqa
@@ -66,7 +67,7 @@ setup(
     package_data={"": ["inputrc-no-unicode", "inputrc-unicode", "settings/settings.m"]},
     install_requires=[
         "Mathics_Scanner>=1.0.0,<1.1.0",
-        "Mathics3 >= 2.0.0.rc1",
+        "Mathics3 >= 2.0.0rc1",
         "click",
         "colorama",
         "columnize",
