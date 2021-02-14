@@ -1,4 +1,4 @@
-1.2.0
+2.0.0
 -----
 
 * All escape sequence for unicode and letter names added for GNU Readline
