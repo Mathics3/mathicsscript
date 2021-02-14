@@ -13,9 +13,8 @@ how to customize the install procedure read the output of:
     python setup.py --help install
 """
 
-from distutils.core import setup
 import os.path as osp
-from setuptools import find_packages
+from setuptools import setup, find_packages
 
 
 def get_srcdir():
