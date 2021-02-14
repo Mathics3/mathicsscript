@@ -21,6 +21,8 @@
 /.cache
 /.coverage
 /.eggs
+./mathicsscript/inputrc-no-unicode
+./mathicsscript/inputrc-unicode
 /.mypy_cache
 /.pytest_cache
 /.python-version

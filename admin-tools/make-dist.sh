@@ -32,7 +32,6 @@ for pyversion in $PYVERSIONS; do
     python setup.py bdist_egg
     python setup.py bdist_wheel
     python setup.py bdist_wheel --universal
-    mv -v dist/${PACKAGE}-$VERSION-{py2.py3,py$first_two}-none-any.whl
 done
 
 python ./setup.py sdist
