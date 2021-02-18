@@ -44,7 +44,9 @@ color_scheme[Operator] = ("magenta", "ansibrightmagenta")
 color_scheme[Literal.Number] = ("ansiblue", "ansibrightblue")
 
 from colorama import init as colorama_init
-from term_background import is_dark_background
+
+## FIXME: __main__ shouldn't be needed. Fix term_background
+from term_background.__main__ import is_dark_background
 
 from readline import (
     parse_and_bind,
