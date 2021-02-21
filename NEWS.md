@@ -1,3 +1,8 @@
+2.0.1
+-----
+
+Fix `mathicsscript -f FILE` argument. See PR #26
+
 2.0.0
 -----
 
