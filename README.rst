@@ -51,7 +51,7 @@ and of the features mentioend above, use ``mathics`` which is distributed as par
 the core Mathic3 package.
 
 
-.. |screenshot| image:: https://github.com/Mathics3/mathicsscript/blob/master/screenshots/mathicsscript1.gif
+.. |screenshot| image:: https://mathics.org/images/mathicsscript1.gif
 .. |Latest Version| image:: https://badge.fury.io/py/mathicsscript.svg
 		 :target: https://badge.fury.io/py/mathicsscript
 .. |Pypi Installs| image:: https://pepy.tech/badge/mathicsscript
