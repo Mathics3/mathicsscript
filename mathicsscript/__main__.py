@@ -218,7 +218,7 @@ def main(
     load_settings(shell)
     if initfile:
         with open(initfile, "r") as ifile:
-            feeder = FileLineFeeder(ifile)
+            feeder = MathicsFileLineFeeder(ifile)
             try:
                 while not feeder.empty():
                     evaluation = Evaluation(
@@ -260,21 +260,22 @@ def main(
             return exit_rc
 
     if file is not None:
-        feeder = FileLineFeeder(file)
-        try:
-            while not feeder.empty():
-                evaluation = Evaluation(
-                    shell.definitions,
-                    output=TerminalOutput(shell),
-                    catch_interrupt=False,
-                    format="text",
-                )
-                query = evaluation.parse_feeder(feeder)
-                if query is None:
-                    continue
-                evaluation.evaluate(query, timeout=settings.TIMEOUT)
-        except (KeyboardInterrupt):
-            print("\nKeyboardInterrupt")
+        with open(file, "r") as ifile:
+            feeder = MathicsFileLineFeeder(ifile)
+            try:
+                while not feeder.empty():
+                    evaluation = Evaluation(
+                        shell.definitions,
+                        output=TerminalOutput(shell),
+                        catch_interrupt=False,
+                        format="text",
+                    )
+                    query = evaluation.parse_feeder(feeder)
+                    if query is None:
+                        continue
+                    evaluation.evaluate(query, timeout=settings.TIMEOUT)
+            except (KeyboardInterrupt):
+                print("\nKeyboardInterrupt")
 
         if not persist:
             return exit_rc
