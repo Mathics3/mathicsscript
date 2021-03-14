@@ -231,7 +231,10 @@ class TerminalShell(MathicsLineFeeder):
         if self.lineno > 0:
             return " " * len(f"In[{next_line_number}]:= ")
         else:
-            return "{1}In[{2}{0}{3}]:= {4}".format(next_line_number, *self.incolors)
+            if have_full_readline:
+                return "{1}In[{2}{0}{3}]:= {4}".format(next_line_number, *self.incolors)
+            else:
+                return f"In[{next_line_number}]:= "
 
     def get_out_prompt(self, output_style=""):
         line_number = self.get_last_line_number()

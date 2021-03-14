@@ -293,8 +293,7 @@ def main(
     if not quiet:
         print(f"\nMathicscript: {__version__}, {version_string}\n")
         print(license_string + "\n")
-        print(f"Quit by pressing {quit_command}\n")
-
+        print(f"Quit by evaluating Quit[] or by pressing {quit_command}.\n")
     # If defined, full_form and style overwrite the predefined values.
     definitions.set_ownvalue(
         "Settings`$ShowFullFormInput", SymbolTrue if full_form else SymbolFalse
