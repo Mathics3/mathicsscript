@@ -4,7 +4,6 @@
 import click
 import sys
 import os
-import re
 import subprocess
 from pathlib import Path
 
@@ -27,6 +26,13 @@ from pygments.lexers import MathematicaLexer
 mma_lexer = MathematicaLexer()
 
 from mathicsscript.version import __version__
+
+try:
+    __import__("readline")
+except ImportError:
+    have_readline = False
+else:
+    have_readline = False
 
 
 def ensure_settings():
@@ -124,18 +130,22 @@ class TerminalOutput(Output):
 )
 @click.option(
     "--readline/--no-readline",
-    default=True,
+    default=have_readline,
+    show_default=True,
     help="GNU Readline line editing. If this is off completion and command history are also turned off",
 )
 @click.option(
     "--completion/--no-completion",
-    default=True,
-    help="GNU Readline line editing. enable tab completion",
+    default=have_readline,
+    show_default=True,
+    help=("GNU Readline line editing. enable tab completion; "
+          "you need a working GNU Readline for this option."),
 )
 @click.option(
     "--unicode/--no-unicode",
-    default=True,
-    help="GNU Readline line editing. If this is off completion and command history are also turned off",
+    default=sys.getdefaultencoding() == "utf-8",
+    show_default=True,
+    help="Accept Unicode operators in input and show unicode in output.",
 )
 @click.option(
     "--pyextensions",

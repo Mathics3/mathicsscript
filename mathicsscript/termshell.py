@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2020 Rocky Bernstein <rb@dustyfeet.com>
+#   Copyright (C) 2020-2021 Rocky Bernstein <rb@dustyfeet.com>
 
 import atexit
 import os
@@ -48,15 +48,19 @@ from colorama import init as colorama_init
 ## FIXME: __main__ shouldn't be needed. Fix term_background
 from term_background.__main__ import is_dark_background
 
-from readline import (
-    parse_and_bind,
-    read_history_file,
-    read_init_file,
-    set_completer,
-    set_completer_delims,
-    set_history_length,
-    write_history_file,
-)
+try:
+    from readline import (
+        parse_and_bind,
+        read_history_file,
+        read_init_file,
+        set_completer,
+        set_completer_delims,
+        set_history_length,
+        write_history_file,
+    )
+    have_full_readline = True
+except ImportError:
+    have_full_readline = False
 
 # Set up mathicsscript configuration directory
 CONFIGHOME = os.environ.get("XDG_CONFIG_HOME", osp.expanduser("~/.config"))
@@ -107,55 +111,50 @@ class TerminalShell(MathicsLineFeeder):
         self.input_encoding = locale.getpreferredencoding()
         self.lineno = 0
         self.terminal_formatter = None
-        self.history_length = definitions.get_config_value("$HistoryLength", HISTSIZE)
 
         # Try importing readline to enable arrow keys support etc.
         self.using_readline = False
-        try:
-            if want_readline:
+        self.history_length = definitions.get_config_value("$HistoryLength", HISTSIZE)
+        if have_full_readline and want_readline:
+            self.using_readline = sys.stdin.isatty() and sys.stdout.isatty()
+            self.ansi_color_re = re.compile("\033\\[[0-9;]+m")
+            if want_completion:
+                set_completer(
+                    lambda text, state: self.complete_symbol_name(text, state)
+                )
 
-                self.using_readline = sys.stdin.isatty() and sys.stdout.isatty()
-                self.ansi_color_re = re.compile("\033\\[[0-9;]+m")
-                if want_completion:
-                    set_completer(
-                        lambda text, state: self.complete_symbol_name(text, state)
+                self.named_character_names = set(named_characters.keys())
+
+                # Make _ a delimiter, but not $ or `
+                # set_completer_delims(RL_COMPLETER_DELIMS)
+                set_completer_delims(RL_COMPLETER_DELIMS_WITH_BRACE)
+
+                # GNU Readling inputrc $include's paths are relative to itself,
+                # so chdir to its directory before reading the file.
+                parent_dir = pathlib.Path(__file__).parent.absolute()
+                with parent_dir:
+                    inputrc = (
+                        "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
                     )
+                    try:
+                        read_init_file(str(parent_dir / inputrc))
+                    except:
+                        pass
 
-                    self.named_character_names = set(named_characters.keys())
+                parse_and_bind("tab: complete")
+                self.completion_candidates = []
 
-                    # Make _ a delimiter, but not $ or `
-                    # set_completer_delims(RL_COMPLETER_DELIMS)
-                    set_completer_delims(RL_COMPLETER_DELIMS_WITH_BRACE)
-
-                    # GNU Readling inputrc $include's paths are relative to itself,
-                    # so chdir to its directory before reading the file.
-                    parent_dir = pathlib.Path(__file__).parent.absolute()
-                    with parent_dir:
-                        inputrc = (
-                            "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
-                        )
-                        try:
-                            read_init_file(str(parent_dir / inputrc))
-                        except:
-                            pass
-
-                    parse_and_bind("tab: complete")
-                    self.completion_candidates = []
-
-                # History
-                try:
-                    read_history_file(HISTFILE)
-                except IOError:
-                    pass
-                except:
-                    # PyPy read_history_file fails
-                    pass
-                else:
-                    set_history_length(self.history_length)
-                    atexit.register(self.user_write_history_file)
+            # History
+            try:
+                read_history_file(HISTFILE)
+            except IOError:
                 pass
-
-        except ImportError:
+            except:
+                # PyPy read_history_file fails
+                pass
+            else:
+                set_history_length(self.history_length)
+                atexit.register(self.user_write_history_file)
             pass
 
         colorama_init()
