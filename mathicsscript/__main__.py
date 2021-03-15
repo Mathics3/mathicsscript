@@ -32,7 +32,7 @@ try:
 except ImportError:
     have_readline = False
 else:
-    have_readline = False
+    have_readline = True
 
 
 def ensure_settings():
@@ -138,8 +138,10 @@ class TerminalOutput(Output):
     "--completion/--no-completion",
     default=have_readline,
     show_default=True,
-    help=("GNU Readline line editing. enable tab completion; "
-          "you need a working GNU Readline for this option."),
+    help=(
+        "GNU Readline line editing. enable tab completion; "
+        "you need a working GNU Readline for this option."
+    ),
 )
 @click.option(
     "--unicode/--no-unicode",
