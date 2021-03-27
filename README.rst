@@ -1,5 +1,7 @@
 |CI status| |Pypi Installs| |Latest Version| |Supported Python Versions|
 
+|Packaging status|
+
 mathicsscript is a command-line interface to `Mathics <https://mathics.org>`_.
 
 |screenshot|
@@ -58,3 +60,5 @@ the core Mathic3 package.
 .. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/mathicsscript.svg
 .. |CI status| image:: https://github.com/Mathics3/mathicsscript/workflows/mathicsscript%20(ubuntu)/badge.svg
 		       :target: https://github.com/Mathics3/mathicsscript/actions
+.. |Packaging status| image:: https://repology.org/badge/vertical-allrepos/mathicsscript.svg
+			    :target: https://repology.org/project/mathicsscript/versions
