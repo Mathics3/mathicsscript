@@ -1,7 +1,15 @@
+2.1.0
+-----
+
+* Allow command-line flag `-c` as an alias for `--execute` (along with `-e` to be compatible with wolframscript
+* Better compliance on Windows which are GNU readline-starved
+* Better unicode detection
+* Accept newer mathics-scanner and Mathics3 versions
+
 2.0.1
 -----
 
-Fix `mathicsscript -f FILE` argument. See PR #26
+* Fix `mathicsscript -f FILE` argument. See PR #26
 
 2.0.0
 -----

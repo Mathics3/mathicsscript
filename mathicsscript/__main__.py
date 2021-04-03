@@ -157,6 +157,7 @@ class TerminalOutput(Output):
     help="directory to load extensions in Python",
 )
 @click.option(
+    "-c",
     "-e",
     "--execute",
     help="evaluate EXPR before processing any input files (may be given "
