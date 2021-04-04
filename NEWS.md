@@ -1,3 +1,12 @@
+2.1.1
+-----
+
+Administrative changes but necessary to get this working properly:
+
+* Bump min version of mathicsscanner. There was a bug in mathicsscanner that prevented
+the GNU Readline inputrc files from getting created properly.
+* Include settings.m in distribution. There was a typo in setup.py for location of this file.
+
 2.1.0
 -----
 
