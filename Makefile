@@ -19,7 +19,7 @@ build: inputrc
 	$(PYTHON) ./setup.py build
 
 #: Set up to run from the source tree
-develop:
+develop: inputrc
 	$(PIP) install -e .
 
 #: Make distirbution: wheels, eggs, tarball
