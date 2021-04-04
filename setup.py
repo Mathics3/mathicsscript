@@ -71,7 +71,7 @@ setup(
         ]
     },
     install_requires=[
-        "Mathics_Scanner>=1.1.1,<1.2.0",
+        "Mathics_Scanner>=1.1.2,<1.2.0",
         "Mathics3 >= 2.0.0,<2.2.0",
         "click",
         "colorama",

@@ -1,3 +1,9 @@
+2.1.2
+-----
+
+* Packaging changes. Make sure egg/wheel/tarball has settings.m and GNU Readline inputrc files package
+* Bump minimum Mathics-Scanner version. There was a small subtle bug in infix Function operators in that
+
 2.1.1
 -----
 
