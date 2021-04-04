@@ -64,7 +64,11 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     package_data={
-        "": ["inputrc-no-unicode", "inputrc-unicode", "mathicsscript/settings.m"]
+        "": [
+            "mathicsscript/inputrc-no-unicode",
+            "mathicsscript/inputrc-unicode",
+            "mathicsscript/settings.m",
+        ]
     },
     install_requires=[
         "Mathics_Scanner>=1.1.1,<1.2.0",

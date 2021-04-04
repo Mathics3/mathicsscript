@@ -5,6 +5,7 @@ include COPYING
 include Makefile
 include mathicsscript/inputrc-no-unicode
 include mathicsscript/inputrc-unicode
+include mathicsscript/settings.m
 recursive-include mathicsscript *.py
 recursive-include test *.py *.m
 recursive-exclude __pycache__ *.pyc
