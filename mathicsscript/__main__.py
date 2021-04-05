@@ -172,10 +172,10 @@ class TerminalOutput(Output):
     required=False,
 )
 @click.option(
-    "--initfile",
+    "--run",
     type=click.Path(readable=True),
     help=(
-        "go to interactive shell after evaluating INITFILE but leave "
+        "go to interactive shell after evaluating PATH but leave "
         "history empty and set $Line to 1"
     ),
 )
@@ -204,7 +204,7 @@ def main(
     prompt,
     pyextensions,
     execute,
-    initfile,
+    run,
     style,
     pygments_tokens,
     file,
@@ -236,8 +236,8 @@ def main(
 
     shell = TerminalShell(definitions, style, readline, completion, unicode, prompt)
     load_settings(shell)
-    if initfile:
-        with open(initfile, "r") as ifile:
+    if run:
+        with open(run, "r") as ifile:
             feeder = MathicsFileLineFeeder(ifile)
             try:
                 while not feeder.empty():
