@@ -18,6 +18,7 @@ def test_completion():
         want_readline=True,
         want_completion=True,
         use_unicode=False,
+        prompt=True,
     )
 
     for prefix, completions in (

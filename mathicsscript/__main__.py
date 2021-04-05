@@ -150,6 +150,12 @@ class TerminalOutput(Output):
     help="Accept Unicode operators in input and show unicode in output.",
 )
 @click.option(
+    "--prompt/--no-prompt",
+    default=True,
+    show_default=True,
+    help="Do not prompt In[] or Out[].",
+)
+@click.option(
     "--pyextensions",
     "-l",
     required=False,
@@ -195,6 +201,7 @@ def main(
     readline,
     completion,
     unicode,
+    prompt,
     pyextensions,
     execute,
     initfile,
@@ -227,7 +234,7 @@ def main(
         "Settings`$PygmentsShowTokens", from_python(True if pygments_tokens else False)
     )
 
-    shell = TerminalShell(definitions, style, readline, completion, unicode)
+    shell = TerminalShell(definitions, style, readline, completion, unicode, prompt)
     load_settings(shell)
     if initfile:
         with open(initfile, "r") as ifile:
@@ -256,7 +263,7 @@ def main(
             )
             shell.terminal_formatter = None
             result = evaluation.parse_evaluate(expr, timeout=settings.TIMEOUT)
-            shell.print_result(result, "text")
+            shell.print_result(result, prompt, "text")
 
             # After the next release, we can remove the hasattr test.
             if hasattr(evaluation, "exc_result"):
@@ -293,7 +300,7 @@ def main(
         if not persist:
             return exit_rc
 
-    if not quiet:
+    if not quiet and prompt:
         print(f"\nMathicscript: {__version__}, {version_string}\n")
         print(license_string + "\n")
         print(f"Quit by evaluating Quit[] or by pressing {quit_command}.\n")
@@ -359,7 +366,7 @@ def main(
                 query, timeout=settings.TIMEOUT, format="unformatted"
             )
             if result is not None:
-                shell.print_result(result, output_style)
+                shell.print_result(result, prompt, output_style)
 
         except ShellEscapeException as e:
             source_code = e.line
@@ -379,7 +386,8 @@ def main(
         except (KeyboardInterrupt):
             print("\nKeyboardInterrupt")
         except EOFError:
-            print("\n\nGoodbye!\n")
+            if prompt:
+                print("\n\nGoodbye!\n")
             break
         except SystemExit:
             print("\n\nGoodbye!\n")
