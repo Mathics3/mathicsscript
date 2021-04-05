@@ -19,6 +19,7 @@ Features
 * Syntax highlighting using `pygments <https://pygments.org>`_.
 * Automatic detection of light or dark `terminal background color <https://pypi.org/project/term-background/>`_.
 * Entering and displaying Unicode symbols such as used for Pi or Rule arrows
+* Provision for running in non-interactive batch mode which an be used inside POSIX shells
 
 Installing
 ----------
@@ -34,6 +35,59 @@ To install from git sources so that you run from the git source tree:
 ::
 
     $ make develop
+
+
+Running
+-------
+
+Once install run using ``mathicsscript``:
+
+::
+
+   $ mathicsscript
+   Mathicscript: 2.1.2, Mathics 2.1.1.dev0
+   on CPython 3.7.10 (default, Feb 27 2021, 08:15:51)
+   using SymPy 1.7.1, mpmath 1.2.1, numpy 1.20.1
+
+   Copyright (C) 2011-2021 The Mathics Team.
+   This program comes with ABSOLUTELY NO WARRANTY.
+   This is free software, and you are welcome to redistribute it
+   under certain conditions.
+   See the documentation for the full license.
+
+   Quit by evaluating Quit[] or by pressing CONTROL-D.
+
+   In[1]:=
+
+
+For batch use:
+::
+
+   $ mathicsscript -c "N[Pi, 30]"
+   3.14159265358979323846264338328
+
+To read from a file
+
+In file ``/tmp/test.m``:
+
+::
+
+   sum=2+2
+   integral=Integrate[1,x]
+   Print["Results: ",{sum,integral}]
+
+Feeding this into ``mathicsscript``:
+
+::
+
+    $ mathicsscript --no-prompt </tmp/test.m
+    4
+    x
+    Results: {4, x}
+    None
+
+
+For a full list of options, type ``mathicsscript --help``.
 
 
 Why not IPython via Jupyter?
