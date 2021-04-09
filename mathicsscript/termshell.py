@@ -85,10 +85,10 @@ RL_COMPLETER_DELIMS = " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
 from mathics.core.parser import MathicsLineFeeder
 
 
-def is_pygments_style(style):
+def is_pygments_style(style: str):
     if style not in ALL_PYGMENTS_STYLES:
-        print("Pygments style name '%s' not found." % style)
-        print("Style names are:\n%s" % columnize(ALL_PYGMENTS_STYLES))
+        print(f"Pygments style name '{style}' not found.")
+        print(f"Style names are:\n{columnize(ALL_PYGMENTS_STYLES)}")
         return False
     return True
 
@@ -106,11 +106,13 @@ class TerminalShell(MathicsLineFeeder):
         want_readline: bool,
         want_completion: bool,
         use_unicode: bool,
+        prompt: bool,
     ):
-        super(TerminalShell, self).__init__("<stdin>")
+        super().__init__("<stdin>")
         self.input_encoding = locale.getpreferredencoding()
         self.lineno = 0
         self.terminal_formatter = None
+        self.prompt = prompt
 
         # Try importing readline to enable arrow keys support etc.
         self.using_readline = False
@@ -212,7 +214,7 @@ class TerminalShell(MathicsLineFeeder):
         )
         self.definitions.set_attribute("Settings`$UseUnicode", "System`Locked")
 
-    def change_pygments_style(self, style):
+    def change_pygments_style(self, style:str):
         if style == self.pygments_style:
             return False
         if is_pygments_style(style):
@@ -259,7 +261,7 @@ class TerminalShell(MathicsLineFeeder):
             raise ShellEscapeException(line)
         return replace_unicode_with_wl(line)
 
-    def print_result(self, result, output_style=""):
+    def print_result(self, result, prompt: bool, output_style=""):
         if result is None:
             # FIXME decide what to do here
             return
@@ -293,7 +295,7 @@ class TerminalShell(MathicsLineFeeder):
                     print(list(lex(out_str, mma_lexer)))
                 out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
             output = self.to_output(out_str)
-            if output_style == "text":
+            if output_style == "text" or not prompt:
                 print(output)
             else:
                 print(self.get_out_prompt("") + output + "\n")
@@ -346,7 +348,7 @@ class TerminalShell(MathicsLineFeeder):
         except IndexError:
             return None
 
-    def get_completion_candidates(self, text):
+    def get_completion_candidates(self, text: str):
 
         brace_pos = text.rfind("[")
         if brace_pos >= 0:
@@ -367,7 +369,8 @@ class TerminalShell(MathicsLineFeeder):
         self.lineno = 0
 
     def feed(self):
-        result = self.read_line(self.get_in_prompt()) + "\n"
+        prompt_str = self.get_in_prompt() if self.prompt else ""
+        result = self.read_line(prompt_str) + "\n"
         if result == "\n":
             return ""  # end of input
         self.lineno += 1
