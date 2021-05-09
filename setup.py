@@ -78,6 +78,8 @@ setup(
         "columnize",
         "networkx",
         "pygments",
+        # "mathics_pygments @ https://github.com/Mathics3/mathics-pygments/archive/master.zip#egg=mathics_pygments",
+        "mathics_pygments",
         "term-background >= 1.0.1",
     ],
     entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main"]},

@@ -15,7 +15,9 @@ from mathics.core.expression import strip_context, from_python
 from mathics.core.rules import Rule
 
 from pygments import highlight, lex
-from mathicsscript.mmalexer import MathematicaLexer
+
+# from mathicsscript.mmalexer import MathematicaLexer
+from mathics_pygments.lexer import MathematicaLexer, MToken
 
 mma_lexer = MathematicaLexer()
 
@@ -24,24 +26,13 @@ from pygments.formatters import Terminal256Formatter
 from pygments.styles import get_all_styles
 from pygments.util import ClassNotFound
 
-from pygments.token import (
-    # Comment,
-    # Generic,
-    # Keyword,
-    Name,
-    Literal,
-    Operator,
-    # String,
-    Token,
-)
-
 ALL_PYGMENTS_STYLES = list(get_all_styles())
 
 color_scheme = TERMINAL_COLORS.copy()
-color_scheme[Token.Name] = ("yellow", "ansibrightyellow")
-color_scheme[Name.Function] = ("ansigreen", "ansibrightgreen")
-color_scheme[Operator] = ("magenta", "ansibrightmagenta")
-color_scheme[Literal.Number] = ("ansiblue", "ansibrightblue")
+color_scheme[MToken.SYMBOL] = ("yellow", "ansibrightyellow")
+color_scheme[MToken.BUILTIN] = ("ansigreen", "ansibrightgreen")
+color_scheme[MToken.OPERATOR] = ("magenta", "ansibrightmagenta")
+color_scheme[MToken.NUMBER] = ("ansiblue", "ansibrightblue")
 
 from colorama import init as colorama_init
 
@@ -58,6 +49,7 @@ try:
         set_history_length,
         write_history_file,
     )
+
     have_full_readline = True
 except ImportError:
     have_full_readline = False
@@ -135,9 +127,7 @@ class TerminalShell(MathicsLineFeeder):
                 # so chdir to its directory before reading the file.
                 parent_dir = pathlib.Path(__file__).parent.absolute()
                 with parent_dir:
-                    inputrc = (
-                        "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
-                    )
+                    inputrc = "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
                     try:
                         read_init_file(str(parent_dir / inputrc))
                     except:
@@ -214,7 +204,7 @@ class TerminalShell(MathicsLineFeeder):
         )
         self.definitions.set_attribute("Settings`$UseUnicode", "System`Locked")
 
-    def change_pygments_style(self, style:str):
+    def change_pygments_style(self, style: str):
         if style == self.pygments_style:
             return False
         if is_pygments_style(style):
@@ -276,6 +266,8 @@ class TerminalShell(MathicsLineFeeder):
                 return
 
             out_str = str(result.result)
+            if eval_type == "System`String":
+                out_str = '"' + out_str.replace('"', r"\"") + '"'
             if eval_type == "System`Graph":
                 out_str = "-Graph-"
             elif self.terminal_formatter:  # pygmentize

@@ -2,21 +2,40 @@
 """
     Lexer for Mathics. Adapted from pygments.lexers.algebra
 
-    :copyright: Copyright 2006-2020 by the Pygments team, see AUTHORS.
+    :copyright: Copyright 2006-2021 by the Pygments team, see AUTHORS.
     :license: BSD, see LICENSE for details.
 """
 
-from pygments.lexer import RegexLexer, bygroups, words
-from pygments.token import (
-    Text,
-    Comment,
-    Operator,
-    Keyword,
-    Name,
-    String,
-    Number,
-    Punctuation,
-)
+import re
+from pygments.lexer import RegexLexer, words
+
+import pygments.token as PToken
+
+
+class MToken:
+    """
+    Mathics Tokens. Like Pygments Token but for Mathics.
+
+    Class variables contain Mathics tokens like BUILTIN, COMMENT.
+    These variables hold corresponding Pygments token-name value.
+    """
+
+    BUILTIN = PToken.Name.Function
+    COMMENT = PToken.Comment
+    GROUP = PToken.Punctuation
+    LOCAL_SCOPE = PToken.Name.Variable.Class
+    MESSAGE = PToken.Name.Exception
+    NAMESPACE = PToken.Namespace
+    NUMBER = PToken.Number
+    OPERATOR = PToken.Operator
+    PATTERN = PToken.Name.Tag
+    PUNCTUATION = PToken.Punctuation
+    SLOT = PToken.Name.Function
+    STRING = PToken.String
+    TEXT = PToken.Text
+    SYMBOL = PToken.Name.Variable
+    UNKNOWN = PToken.Error
+    WHITESPACE = PToken.Text.Whitespace
 
 
 class MathematicaLexer(RegexLexer):
@@ -27,7 +46,7 @@ class MathematicaLexer(RegexLexer):
     """
 
     name = "Mathematica"
-    aliases = ["mathematica", "mma", "nb"]
+    aliases = ["mathematica", "mathics", "mma", "nb"]
     filenames = ["*.nb", "*.cdf", "*.nbp", "*.ma"]
     mimetypes = [
         "application/mathematica",
@@ -79,17 +98,17 @@ class MathematicaLexer(RegexLexer):
 
     tokens = {
         "root": [
-            (r"(?s)\(\*.*?\*\)", Comment),
-            (r"([$a-zA-Z]+[$A-Za-z0-9]*`)", Name.Namespace),
-            (r"([$A-Za-z0-9]*_+[$A-Za-z0-9]*)", Name.Variable),
-            (r"#\d*", Name.Variable),
-            (r"([$a-zA-Z]+[$a-zA-Z0-9]*)", Name),
-            (r"-?\d+\.\d*", Number.Float),
-            (r"-?\d*\.\d+", Number.Float),
-            (r"-?\d+", Number.Integer),
-            (words(operators), Operator),
-            (words(punctuation), Punctuation),
-            (r'".*?"', String),
-            (r"\s+", Text.Whitespace),
+            (r"(?s)\(\*.*?\*\)", MToken.COMMENT),
+            (r"([$a-zA-Z]+[$A-Za-z0-9]*`)", MToken.NAMESPACE),
+            (r"([$A-Za-z0-9]*_+[$A-Za-z0-9]*)", MToken.SYMBOL),
+            (r"#\d*", MToken.SLOT),
+            (r"([$a-zA-Z]+[$a-zA-Z0-9]*)", MToken.SYMBOL),
+            (r"-?\d+\.\d*", MToken.NUMBER),
+            (r"-?\d*\.\d+", MToken.NUMBER),
+            (r"-?\d+", MToken.NUMBER),
+            (words(operators), MToken.OPERATOR),
+            (words(punctuation), MToken.PUNCTUATION),
+            (r'".*?"', MToken.STRING),
+            (r"\s+", MToken.WHITESPACE),
         ]
     }
