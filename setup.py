@@ -78,7 +78,7 @@ setup(
         "columnize",
         "networkx",
         "pygments",
-        # "mathics_pygments @ git+ssh://git@github.com/Mathics3/mathics-pygments#egg=mathics_pygments",
+        # "mathics_pygments @ https://github.com/Mathics3/mathics-pygments/archive/master.zip#egg=mathics_pygments",
         "mathics_pygments",
         "term-background >= 1.0.1",
     ],
