@@ -266,6 +266,8 @@ class TerminalShell(MathicsLineFeeder):
                 return
 
             out_str = str(result.result)
+            if eval_type == "System`String":
+                out_str = f'"{out_str}"'
             if eval_type == "System`Graph":
                 out_str = "-Graph-"
             elif self.terminal_formatter:  # pygmentize
