@@ -46,7 +46,7 @@ class MathematicaLexer(RegexLexer):
     """
 
     name = "Mathematica"
-    aliases = ["mathematica", "mma", "nb"]
+    aliases = ["mathematica", "mathics", "mma", "nb"]
     filenames = ["*.nb", "*.cdf", "*.nbp", "*.ma"]
     mimetypes = [
         "application/mathematica",
