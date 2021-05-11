@@ -14,7 +14,8 @@ from mathics.core.expression import Expression, String, Symbol
 from mathics.core.expression import strip_context, from_python
 from mathics.core.rules import Rule
 
-from pygments import highlight, lex
+from pygments import format, highlight, lex
+from pygments.token import Token
 
 # from mathicsscript.mmalexer import MathematicaLexer
 from mathics_pygments.lexer import MathematicaLexer, MToken
@@ -251,7 +252,7 @@ class TerminalShell(MathicsLineFeeder):
             raise ShellEscapeException(line)
         return replace_unicode_with_wl(line)
 
-    def print_result(self, result, prompt: bool, output_style=""):
+    def print_result(self, result, prompt: bool, output_style="", strict_wl=False):
         if result is None:
             # FIXME decide what to do here
             return
@@ -266,8 +267,18 @@ class TerminalShell(MathicsLineFeeder):
                 return
 
             out_str = str(result.result)
+            use_highlight = True
             if eval_type == "System`String":
-                out_str = '"' + out_str.replace('"', r"\"") + '"'
+                if strict_wl:  # exact-wl-compatibility
+                    out_str = (
+                        format(
+                            [(MToken.STRING, out_str.rstrip())], self.terminal_formatter
+                        )
+                        + "\n"
+                    )
+                    use_highlight = False
+                else:
+                    out_str = '"' + out_str.replace('"', r"\"") + '"'
             if eval_type == "System`Graph":
                 out_str = "-Graph-"
             elif self.terminal_formatter:  # pygmentize
@@ -285,7 +296,8 @@ class TerminalShell(MathicsLineFeeder):
 
                 if show_pygments_tokens:
                     print(list(lex(out_str, mma_lexer)))
-                out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
+                if use_highlight:
+                    out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
             output = self.to_output(out_str)
             if output_style == "text" or not prompt:
                 print(output)

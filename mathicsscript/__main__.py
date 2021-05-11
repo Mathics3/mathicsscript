@@ -193,6 +193,12 @@ class TerminalOutput(Output):
     help=("Show pygments tokenization of output."),
     required=False,
 )
+@click.option(
+    "--strict-wl/--no-strict-wl",
+    default=False,
+    help=("Most WL-output compatible (at the expense of useability)."),
+    required=False,
+)
 @click.argument("file", nargs=1, type=click.Path(readable=True), required=False)
 def main(
     full_form,
@@ -207,6 +213,7 @@ def main(
     run,
     style,
     pygments_tokens,
+    strict_wl,
     file,
 ) -> int:
     """A command-line interface to Mathics.
@@ -366,7 +373,7 @@ def main(
                 query, timeout=settings.TIMEOUT, format="unformatted"
             )
             if result is not None:
-                shell.print_result(result, prompt, output_style)
+                shell.print_result(result, prompt, output_style, strict_wl=strict_wl)
 
         except ShellEscapeException as e:
             source_code = e.line
