@@ -194,7 +194,7 @@ class TerminalOutput(Output):
     required=False,
 )
 @click.option(
-    "--strict-wl/--no-strict-wl",
+    "--strict-wl-output/--no-strict-wl-output",
     default=False,
     help=("Most WL-output compatible (at the expense of useability)."),
     required=False,
@@ -213,7 +213,7 @@ def main(
     run,
     style,
     pygments_tokens,
-    strict_wl,
+    strict_wl_output,
     file,
 ) -> int:
     """A command-line interface to Mathics.
@@ -270,7 +270,7 @@ def main(
             )
             shell.terminal_formatter = None
             result = evaluation.parse_evaluate(expr, timeout=settings.TIMEOUT)
-            shell.print_result(result, prompt, "text")
+            shell.print_result(result, prompt, "text", strict_wl_output)
 
             # After the next release, we can remove the hasattr test.
             if hasattr(evaluation, "exc_result"):
@@ -373,7 +373,9 @@ def main(
                 query, timeout=settings.TIMEOUT, format="unformatted"
             )
             if result is not None:
-                shell.print_result(result, prompt, output_style, strict_wl=strict_wl)
+                shell.print_result(
+                    result, prompt, output_style, strict_wl_output=strict_wl_output
+                )
 
         except ShellEscapeException as e:
             source_code = e.line

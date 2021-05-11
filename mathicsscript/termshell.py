@@ -15,7 +15,6 @@ from mathics.core.expression import strip_context, from_python
 from mathics.core.rules import Rule
 
 from pygments import format, highlight, lex
-from pygments.token import Token
 
 # from mathicsscript.mmalexer import MathematicaLexer
 from mathics_pygments.lexer import MathematicaLexer, MToken
@@ -252,7 +251,9 @@ class TerminalShell(MathicsLineFeeder):
             raise ShellEscapeException(line)
         return replace_unicode_with_wl(line)
 
-    def print_result(self, result, prompt: bool, output_style="", strict_wl=False):
+    def print_result(
+        self, result, prompt: bool, output_style="", strict_wl_output=False
+    ):
         if result is None:
             # FIXME decide what to do here
             return
@@ -269,7 +270,7 @@ class TerminalShell(MathicsLineFeeder):
             out_str = str(result.result)
             use_highlight = True
             if eval_type == "System`String":
-                if strict_wl:  # exact-wl-compatibility
+                if strict_wl_output:  # exact-wl-compatibility
                     out_str = (
                         format(
                             [(MToken.STRING, out_str.rstrip())], self.terminal_formatter
