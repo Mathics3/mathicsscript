@@ -4,6 +4,7 @@
 import click
 import sys
 import os
+import os.path as osp
 import subprocess
 from pathlib import Path
 
@@ -13,7 +14,7 @@ from mathicsscript.format import format_output
 
 from mathics_scanner import replace_wl_with_plain_text
 from mathics.core.parser import MathicsFileLineFeeder
-from mathics.core.definitions import Definitions
+from mathics.core.definitions import autoload_files, Definitions
 from mathics.core.expression import Symbol, SymbolTrue, SymbolFalse
 from mathics.core.evaluation import Evaluation, Output
 from mathics.core.expression import from_python
@@ -22,6 +23,12 @@ from mathics import settings
 
 from pygments import highlight
 from pygments.lexers import MathematicaLexer
+
+
+def get_srcdir():
+    filename = osp.normcase(osp.dirname(osp.abspath(__file__)))
+    return osp.realpath(filename)
+
 
 mma_lexer = MathematicaLexer()
 
@@ -48,7 +55,7 @@ def ensure_settings():
     if not settings_file.is_file():
         import mathicsscript
 
-        srcfn = Path(mathicsscript.__file__).parent / "settings.m"
+        srcfn = Path(mathicsscript.__file__).parent / "user-settings.m"
         try:
             with open(srcfn, "r") as src:
                 buffer = src.readlines()
@@ -66,6 +73,7 @@ def ensure_settings():
 
 
 def load_settings(shell):
+    autoload_files(shell.definitions, get_srcdir(), "autoload")
     settings_file = ensure_settings()
     if settings_file == "":
         return
