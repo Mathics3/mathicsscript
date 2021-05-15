@@ -1,3 +1,18 @@
+2.2.0
+-----
+
+* There are now system setting and user settings. User settings take precedence over system settings.
+* String output is now shown in quotes to make it more distinguishable from symbol and unexpanded
+  expressssion output. This does not follow how `wolframscript` works. Option `strict-wl-output` wil
+  disable this.
+* Syntax and Highlighting is now done via the Python
+  [mathics-pygments](https://pypi.org/project/mathics-pygments/)
+  package.  I think you'll find colorization more complete and
+  useful. Expect more improvements as mathics-pygments improves.
+* Flag `--initfile` is now `--run` to have better conformance with `wolframscript`. In the future we hope
+  to support support conformance with `wolfram` if the` mathicsscript` (or code underneath) is called
+  using the name `mathics3`.
+
 2.1.2
 -----
 

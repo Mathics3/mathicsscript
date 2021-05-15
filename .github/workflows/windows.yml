@@ -27,12 +27,11 @@ jobs:
         set LLVM_DIR="C:\Program Files\LLVM"
         pip install -e .
         # Can remove when next Mathics is released
-        python -m pip install -e git://github.com/mathics/Mathics#egg=Mathics3
+        # python -m pip install -e git://github.com/mathics/Mathics#egg=Mathics3
     - name: Install mathicsscript
       run: |
         python setup.py install
     - name: Test Mathics
       run: |
-        pip install pytest
         pip install -r requirements-dev.txt
         make check
