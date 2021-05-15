@@ -25,3 +25,6 @@ Settings`$UseUnicode::usage = "This Boolean variable sets whether Unicode is use
 Settings`$UseUnicode = True
 
 Settings`MathicsScriptVersion::usage = "This string is the version of MathicsScript we are running."
+
+System`$Notebooks::usage = "Set True if the Mathics is being used with a notebook-based front end."
+System`$Notebooks = False
