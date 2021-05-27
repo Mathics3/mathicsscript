@@ -1,30 +1,45 @@
 # -*- coding: utf-8 -*-
 #   Copyright (C) 2020-2021 Rocky Bernstein <rb@dustyfeet.com>
 
-import atexit
+from columnize import columnize
+
+import locale
 import os
 import os.path as osp
-import locale
 import pathlib
-import sys
 import re
-from columnize import columnize
-from mathics_scanner import replace_unicode_with_wl, named_characters
-from mathics.core.expression import Expression, String, Symbol
-from mathics.core.expression import strip_context, from_python
-from mathics.core.rules import Rule
+import sys
 
-from pygments import format, highlight, lex
-
-# from mathicsscript.mmalexer import MathematicaLexer
 from mathics_pygments.lexer import MathematicaLexer, MToken
 
-mma_lexer = MathematicaLexer()
 
+from mathics.core.expression import (
+    Expression,
+    String,
+    Symbol,
+    strip_context,
+    from_python,
+)
+from mathics.core.rules import Rule
+from mathics_scanner import replace_unicode_with_wl, named_characters
+
+from mathicsscript.bindkeys import bindings
+
+from prompt_toolkit import PromptSession, HTML, print_formatted_text
+from prompt_toolkit.history import FileHistory
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.lexers import PygmentsLexer
+from prompt_toolkit.styles.pygments import style_from_pygments_cls
+
+
+from pygments import format, highlight, lex
+from pygments.styles import get_style_by_name
 from pygments.formatters.terminal import TERMINAL_COLORS
 from pygments.formatters import Terminal256Formatter
 from pygments.styles import get_all_styles
 from pygments.util import ClassNotFound
+
+mma_lexer = MathematicaLexer()
 
 ALL_PYGMENTS_STYLES = list(get_all_styles())
 
@@ -39,21 +54,6 @@ from colorama import init as colorama_init
 ## FIXME: __main__ shouldn't be needed. Fix term_background
 from term_background.__main__ import is_dark_background
 
-try:
-    from readline import (
-        parse_and_bind,
-        read_history_file,
-        read_init_file,
-        set_completer,
-        set_completer_delims,
-        set_history_length,
-        write_history_file,
-    )
-
-    have_full_readline = True
-except ImportError:
-    have_full_readline = False
-
 # Set up mathicsscript configuration directory
 CONFIGHOME = os.environ.get("XDG_CONFIG_HOME", osp.expanduser("~/.config"))
 CONFIGDIR = os.path.join(CONFIGHOME, "mathicsscript")
@@ -64,7 +64,7 @@ try:
 except:
     HISTSIZE = 50
 
-HISTFILE = os.path.join(CONFIGDIR, "history")
+HISTFILE = os.path.join(CONFIGDIR, "history-ptk")
 
 # Create HISTFILE if it doesn't exist already
 if not os.path.isfile(HISTFILE):
@@ -105,49 +105,41 @@ class TerminalShell(MathicsLineFeeder):
         self.lineno = 0
         self.terminal_formatter = None
         self.prompt = prompt
+        if want_readline:
+            self.session = PromptSession(history=FileHistory(HISTFILE))
+        else:
+            self.session = None
 
         # Try importing readline to enable arrow keys support etc.
         self.using_readline = False
         self.history_length = definitions.get_config_value("$HistoryLength", HISTSIZE)
-        if have_full_readline and want_readline:
+        if want_readline:
             self.using_readline = sys.stdin.isatty() and sys.stdout.isatty()
             self.ansi_color_re = re.compile("\033\\[[0-9;]+m")
-            if want_completion:
-                set_completer(
-                    lambda text, state: self.complete_symbol_name(text, state)
-                )
+            # FIXME: redo in prompt-toolkit
+            # if want_completion:
+            #     set_completer(
+            #         lambda text, state: self.complete_symbol_name(text, state)
+            #     )
 
-                self.named_character_names = set(named_characters.keys())
+            #     self.named_character_names = set(named_characters.keys())
 
-                # Make _ a delimiter, but not $ or `
-                # set_completer_delims(RL_COMPLETER_DELIMS)
-                set_completer_delims(RL_COMPLETER_DELIMS_WITH_BRACE)
+            #     # Make _ a delimiter, but not $ or `
+            #     # set_completer_delims(RL_COMPLETER_DELIMS)
+            #     set_completer_delims(RL_COMPLETER_DELIMS_WITH_BRACE)
 
-                # GNU Readling inputrc $include's paths are relative to itself,
-                # so chdir to its directory before reading the file.
-                parent_dir = pathlib.Path(__file__).parent.absolute()
-                with parent_dir:
-                    inputrc = "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
-                    try:
-                        read_init_file(str(parent_dir / inputrc))
-                    except:
-                        pass
+            #     # GNU Readling inputrc $include's paths are relative to itself,
+            #     # so chdir to its directory before reading the file.
+            #     parent_dir = pathlib.Path(__file__).parent.absolute()
+            #     with parent_dir:
+            #         inputrc = "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
+            #         try:
+            #             read_init_file(str(parent_dir / inputrc))
+            #         except:
+            #             pass
 
-                parse_and_bind("tab: complete")
-                self.completion_candidates = []
-
-            # History
-            try:
-                read_history_file(HISTFILE)
-            except IOError:
-                pass
-            except:
-                # PyPy read_history_file fails
-                pass
-            else:
-                set_history_length(self.history_length)
-                atexit.register(self.user_write_history_file)
-            pass
+            #     parse_and_bind("tab: complete")
+            #     self.completion_candidates = []
 
         colorama_init()
         if style == "None":
@@ -223,16 +215,18 @@ class TerminalShell(MathicsLineFeeder):
         if self.lineno > 0:
             return " " * len(f"In[{next_line_number}]:= ")
         else:
-            if have_full_readline:
-                return "{1}In[{2}{0}{3}]:= {4}".format(next_line_number, *self.incolors)
-            else:
-                return f"In[{next_line_number}]:= "
+            in_prompt = HTML(f"<b>This is bold</b>")
+            return HTML(f"<ansired>In[<b>{next_line_number}</b>]:=</ansired> ")
 
-    def get_out_prompt(self, output_style=""):
+    def get_out_prompt(self):
         line_number = self.get_last_line_number()
         return "{2}Out[{3}{0}{4}]{1}= {5}".format(
             line_number, output_style, *self.outcolors
         )
+
+    def get_out_prompt_toolkit(self):
+        line_number = self.get_last_line_number()
+        return HTML(f"<ansigreen>Out[<b>{line_number}</b>]:=</ansigreen> ")
 
     def to_output(self, text):
         line_number = self.get_last_line_number()
@@ -243,8 +237,18 @@ class TerminalShell(MathicsLineFeeder):
         print(self.to_output(str(out)))
 
     def read_line(self, prompt):
-        if self.using_readline:
-            line = self.rl_read_line(prompt)
+        if self.using_readline and self.session:
+
+            # FIXME set and update inside self.
+            style = style_from_pygments_cls(get_style_by_name(self.pygments_style))
+
+            line = self.session.prompt(
+                prompt,
+                lexer=PygmentsLexer(MathematicaLexer),
+                style=style,
+                key_bindings=bindings,
+            )
+            # line = self.rl_read_line(prompt)
         else:
             line = input(prompt)
         if line.startswith("!") and self.lineno == 0:
@@ -302,8 +306,11 @@ class TerminalShell(MathicsLineFeeder):
             output = self.to_output(out_str)
             if output_style == "text" or not prompt:
                 print(output)
+            elif self.session:
+                print_formatted_text(self.get_out_prompt_toolkit(), end="")
+                print(output + "\n")
             else:
-                print(self.get_out_prompt("") + output + "\n")
+                print(self.get_out_prompt() + output + "\n")
 
     def rl_read_line(self, prompt):
         # Wrap ANSI color sequences in \001 and \002, so readline
