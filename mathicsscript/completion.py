@@ -20,11 +20,18 @@ from typing import Iterable, NamedTuple
 
 from mathics.core.expression import strip_context
 from mathics_scanner import named_characters
+from mathics_pygments.lexer import MathematicaLexer, Regex
 from prompt_toolkit.completion import CompleteEvent, Completion, WordCompleter
 from prompt_toolkit.document import Document
 
+SYMBOLS = fr"[`]?({Regex.IDENTIFIER}|{Regex.NAMED_CHARACTER})(`({Regex.IDENTIFIER}|{Regex.NAMED_CHARACTER}))+[`]?"
+
+if False:  # FIXME reinstate this
+    NAMED_CHARACTER_START = fr"\\\[{Regex.IDENTIFIER}"
+    FIND_MATHICS_WORD_RE = re.compile(
+        fr"({NAMED_CHARACTER_START})|(?:.*[\[\(])?({SYMBOLS}$)"
+    )
 FIND_MATHICS_WORD_RE = re.compile(r"((?:\[)?[^\s]+)")
-# FIND_MATHICS_WORD_RE = re.compile("([\x1b].*)|((?:\[)?[^\x1b]+)")
 
 # TODO: "kind" could be an enumeration: of "Null", "Symbol", "NamedCharacter"
 WordToken = NamedTuple("WordToken", [("text", str), ("kind", str)])
@@ -130,7 +137,11 @@ class MathicsCompleter(WordCompleter):
         word_before_cursor = text_before_cursor[len(text_before_cursor) + start :]
         if word_before_cursor.startswith(r"\["):
             return WordToken(word_before_cursor[2:], "NamedCharacter")
-        elif word_before_cursor.isnumeric():
+        if word_before_cursor.startswith(r"["):
+            print
+            word_before_cursor = word_before_cursor[1:]
+
+        if word_before_cursor.isnumeric():
             return WordToken(word_before_cursor, "Null")
         elif word_before_cursor in self.ascii_operators:
             return WordToken(word_before_cursor, "AsciiOperator")

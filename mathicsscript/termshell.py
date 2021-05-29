@@ -13,6 +13,7 @@ import sys
 from mathics_pygments.lexer import MathematicaLexer, MToken
 from mathics_scanner import replace_unicode_with_wl
 from mathicsscript.completion import MathicsCompleter
+from mathicsscript.version import __version__
 
 # from prompt_toolkit.completion import WordCompleter
 
@@ -29,6 +30,8 @@ from mathics.core.rules import Rule
 from mathicsscript.bindkeys import bindings
 
 from prompt_toolkit import PromptSession, HTML, print_formatted_text
+from prompt_toolkit.application.current import get_app
+from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.styles.pygments import style_from_pygments_cls
@@ -181,6 +184,25 @@ class TerminalShell(MathicsLineFeeder):
             else None
         )
 
+    # Add an additional key binding for toggling this flag.
+    @bindings.add("f4")
+    def _(event):
+        " Toggle between Emacs and Vi mode. "
+        app = event.app
+
+        if app.editing_mode == EditingMode.VI:
+            app.editing_mode = EditingMode.EMACS
+        else:
+            app.editing_mode = EditingMode.VI
+
+    def bottom_toolbar(self):
+        """Adds a mode-line toolbar at the bottom"""
+        # TODO: Figure out how allow user-customization
+        edit_mode = "Vi" if get_app().editing_mode == EditingMode.VI else "Emacs"
+        return HTML(
+            f" mathicsscript: {__version__}, Style: {self.pygments_style}, Mode: [F4] {edit_mode}"
+        )
+
     def change_pygments_style(self, style: str):
         if style == self.pygments_style:
             return False
@@ -226,6 +248,7 @@ class TerminalShell(MathicsLineFeeder):
 
             line = self.session.prompt(
                 prompt,
+                bottom_toolbar=self.bottom_toolbar,
                 completer=self.completer,
                 key_bindings=bindings,
                 lexer=self.mma_pygments_lexer,
@@ -315,8 +338,3 @@ class TerminalShell(MathicsLineFeeder):
 
     def empty(self):
         return False
-
-    def get_word_names(self: str):
-        names = self.definitions.get_builtin_names()
-        short_names = [strip_context(m) for m in names]
-        return [list(names) + short_names]

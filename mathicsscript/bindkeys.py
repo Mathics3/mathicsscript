@@ -13,7 +13,9 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
+
 import pathlib
 import re
 
@@ -48,6 +50,17 @@ def read_init_file(path: str):
             event.current_buffer.insert_text(replacement)
 
         bindings.add(*alias_expand)(self_insert)
+
+        # Add an additional key binding for toggling this flag.
+        @bindings.add("f4")
+        def _(event):
+            " Toggle between Emacs and Vi mode. "
+            app = event.app
+
+            if app.editing_mode == EditingMode.VI:
+                app.editing_mode = EditingMode.EMACS
+            else:
+                app.editing_mode = EditingMode.VI
 
     for line_no, line in enumerate(open(path, "r").readlines()):
         line = line.strip()
