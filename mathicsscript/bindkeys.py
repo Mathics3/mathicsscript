@@ -1,16 +1,27 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) 2021 Rocky Bernstein <rb@dustyfeet.com>
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from prompt_toolkit.key_binding import KeyBindings
 import pathlib
 import re
 
 bindings = KeyBindings()
 
-bindings.add("escape", "p", "escape")(
-    lambda event: event.current_buffer.insert_text("π")
-)
-
-# @bindings.add("escape", "p", "escape")
-# def _(event):
-#     event.current_buffer.insert_text("π")
+# bindings.add("escape", "p", "escape")(
+#     lambda event: event.current_buffer.insert_text("π")
+# )
 
 
 def read_inputrc(use_unicode: bool) -> None:
@@ -23,7 +34,7 @@ def read_inputrc(use_unicode: bool) -> None:
     with parent_dir:
         inputrc = "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
         try:
-            read_init_file(str(parent_dir / inputrc))
+            read_init_file(str(parent_dir / "data" / inputrc))
         except:
             pass
 

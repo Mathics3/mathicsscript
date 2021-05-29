@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import pytest
 from mathics.core.definitions import Definitions
 from mathicsscript.termshell import TerminalShell
 
@@ -10,6 +11,8 @@ except ImportError:
 else:
     have_readline = True
 
+
+@pytest.mark.skip("Need to redo completion unit tests for prompt_toolkit")
 def test_completion():
     definitions = Definitions(add_builtin=True, extension_modules=[])
     term = TerminalShell(
@@ -21,19 +24,12 @@ def test_completion():
         prompt=True,
     )
 
-    for prefix, completions in (
-        ("Fibonac", "Fibonacci"),
-        ("Adfafdsadfs", None),
-    ):
+    for prefix, completions in (("Fibonac", "Fibonacci"), ("Adfafdsadfs", None)):
         assert term.complete_symbol_name(prefix, state=0) == completions
 
     if have_readline:
-        for prefix, completions in (
-            ("\\[Alph", "\\[Alpha]"),
-            ("\\[Adfafdsadfs", None),
-        ):
+        for prefix, completions in (("\\[Alph", "\\[Alpha]"), ("\\[Adfafdsadfs", None)):
             assert term.complete_symbol_name(prefix, state=0) == completions
-
 
     # TODO: multiple completion items
 

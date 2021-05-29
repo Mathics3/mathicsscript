@@ -42,7 +42,6 @@ from pygments.styles import get_all_styles
 from pygments.util import ClassNotFound
 
 mma_lexer = MathematicaLexer()
-mma_pygments_lexer = PygmentsLexer(MathematicaLexer)
 
 ALL_PYGMENTS_STYLES = list(get_all_styles())
 
@@ -107,7 +106,10 @@ class TerminalShell(MathicsLineFeeder):
         self.input_encoding = locale.getpreferredencoding()
         self.lineno = 0
         self.terminal_formatter = None
+        self.mma_pygments_lexer = PygmentsLexer(MathematicaLexer)
         self.prompt = prompt
+        self.completer = None
+
         if want_readline:
             self.session = PromptSession(history=FileHistory(HISTFILE))
         else:
@@ -119,30 +121,6 @@ class TerminalShell(MathicsLineFeeder):
         if want_readline:
             self.using_readline = sys.stdin.isatty() and sys.stdout.isatty()
             self.ansi_color_re = re.compile("\033\\[[0-9;]+m")
-            # FIXME: redo in prompt-toolkit
-            # if want_completion:
-            #     set_completer(
-            #         lambda text, state: self.complete_symbol_name(text, state)
-            #     )
-
-            #     self.named_character_names = set(named_characters.keys())
-
-            #     # Make _ a delimiter, but not $ or `
-            #     # set_completer_delims(RL_COMPLETER_DELIMS)
-            #     set_completer_delims(RL_COMPLETER_DELIMS_WITH_BRACE)
-
-            #     # GNU Readling inputrc $include's paths are relative to itself,
-            #     # so chdir to its directory before reading the file.
-            #     parent_dir = pathlib.Path(__file__).parent.absolute()
-            #     with parent_dir:
-            #         inputrc = "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
-            #         try:
-            #             read_init_file(str(parent_dir / inputrc))
-            #         except:
-            #             pass
-
-            #     parse_and_bind("tab: complete")
-            #     self.completion_candidates = []
 
         colorama_init()
         if style == "None":
@@ -198,7 +176,7 @@ class TerminalShell(MathicsLineFeeder):
             "Settings`PygmentsStylesAvailable", "System`Locked"
         )
         self.definitions.set_attribute("Settings`$UseUnicode", "System`Locked")
-        self.completer = MathicsCompleter(self.definitions)
+        self.completer = MathicsCompleter(self.definitions, self.mma_pygments_lexer)
 
     def change_pygments_style(self, style: str):
         if style == self.pygments_style:
@@ -247,7 +225,7 @@ class TerminalShell(MathicsLineFeeder):
                 prompt,
                 completer=self.completer,
                 key_bindings=bindings,
-                lexer=mma_pygments_lexer,
+                lexer=self.mma_pygments_lexer,
                 style=style,
             )
             # line = self.rl_read_line(prompt)

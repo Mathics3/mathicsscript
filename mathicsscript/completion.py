@@ -1,3 +1,19 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) 2021 Rocky Bernstein <rb@dustyfeet.com>
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import os.path as osp
 import re
 
 from typing import Iterable, NamedTuple
@@ -8,33 +24,23 @@ from prompt_toolkit.completion import CompleteEvent, Completion, WordCompleter
 from prompt_toolkit.document import Document
 
 FIND_MATHICS_WORD_RE = re.compile(r"((?:\[)?[^\s]+)")
+# FIND_MATHICS_WORD_RE = re.compile("([\x1b].*)|((?:\[)?[^\x1b]+)")
 
 # TODO: "kind" could be an enumeration: of "Null", "Symbol", "NamedCharacter"
 WordToken = NamedTuple("WordToken", [("text", str), ("kind", str)])
 
 
-def get_completion_candidates(self, text: str):
-
-    brace_pos = text.rfind("[")
-    if brace_pos >= 0:
-        suffix = text[brace_pos + 1 :]
-        prefix = text[: brace_pos + 1]
-    else:
-        prefix = ""
-        suffix = text
-    try:
-        matches = self.definitions.get_matching_names(suffix + "*")
-    except Exception:
-        return []
-    if "`" not in text:
-        matches = [strip_context(m) for m in matches]
-    return [prefix + m for m in matches]
+def get_datadir():
+    datadir = osp.normcase(osp.join(osp.dirname(osp.abspath(__file__)), "data"))
+    return osp.realpath(datadir)
 
 
 class MathicsCompleter(WordCompleter):
-    def __init__(self, definitions):
+    def __init__(self, definitions, lexer):
         self.definitions = definitions
         self.completer = WordCompleter([])
+        self.lexer = lexer
+        self.named_characters = [name + "]" for name in named_characters.keys()]
 
         # From WordCompleter, adjusted with default values
         self.ignore_case = True
@@ -44,12 +50,23 @@ class MathicsCompleter(WordCompleter):
         self.sentence = False
         self.match_middle = False
         self.pattern = None
-        self.display_dict = self.completer.display_dict
-        self.named_characters = [name + "]" for name in named_characters.keys()]
 
-    def _is_word_before_cursor_complete(
-        self, document, text_before_cursor: str
-    ) -> bool:
+        try:
+            import ujson
+        except ImportError:
+            import json as ujson
+        # Load tables from disk
+        with open(osp.join(get_datadir(), "mma-tables.json"), "r") as f:
+            _data = ujson.load(f)
+
+        # @ is not really an operator
+        self.ascii_operators = frozenset(_data["ascii-operators"])
+        from mathics_scanner.characters import aliased_characters
+
+        self.escape_sequences = aliased_characters.keys()
+
+    def _is_space_before_cursor(self, document, text_before_cursor: bool) -> bool:
+        """Space before or no text before cursor."""
         return text_before_cursor == "" or text_before_cursor[-1:].isspace()
 
     def get_completions(
@@ -61,8 +78,11 @@ class MathicsCompleter(WordCompleter):
             words = self.get_word_names()
         elif kind == "NamedCharacter":
             words = self.named_characters
+        elif kind == "AsciiOperator":
+            words = self.ascii_operators
+        elif kind == "EscapeSequence":
+            words = self.escape_sequences
         else:
-            # FIXME add ascii operators, and escape symbols
             words = []
 
         def word_matches(word: str) -> bool:
@@ -86,20 +106,18 @@ class MathicsCompleter(WordCompleter):
 
     def get_word_before_cursor_with_kind(self, document: Document) -> WordToken:
         """
-        Get the word before the cursor and clasify it into:
+        Get the word before the cursor and clasify it into one of the kinds
+        of tokens: NamedCharacter, AsciiOperator, Symbol, etc.
+
 
         If we have whitespace before the cursor this returns an empty string.
-
-        :param pattern: (None or compiled regex). When given, use this regex
-            pattern.
         """
 
         text_before_cursor = document.text_before_cursor
 
-        if self._is_word_before_cursor_complete(
+        if self._is_space_before_cursor(
             document=document, text_before_cursor=text_before_cursor
         ):
-            # Space before the cursor or no text before cursor.
             return WordToken("", "Null")
 
         start = (
@@ -114,6 +132,10 @@ class MathicsCompleter(WordCompleter):
             return WordToken(word_before_cursor[2:], "NamedCharacter")
         elif word_before_cursor.isnumeric():
             return WordToken(word_before_cursor, "Null")
+        elif word_before_cursor in self.ascii_operators:
+            return WordToken(word_before_cursor, "AsciiOperator")
+        elif word_before_cursor.startswith("\1xb"):
+            return WordToken(word_before_cursor, "EscapeSequence")
 
         return word_before_cursor, "Symbol"
 
