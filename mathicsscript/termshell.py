@@ -12,6 +12,9 @@ import sys
 
 from mathics_pygments.lexer import MathematicaLexer, MToken
 from mathics_scanner import replace_unicode_with_wl
+from mathicsscript.completion import MathicsCompleter
+
+# from prompt_toolkit.completion import WordCompleter
 
 
 from mathics.core.expression import (
@@ -26,7 +29,6 @@ from mathics.core.rules import Rule
 from mathicsscript.bindkeys import bindings
 
 from prompt_toolkit import PromptSession, HTML, print_formatted_text
-from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.styles.pygments import style_from_pygments_cls
@@ -196,7 +198,7 @@ class TerminalShell(MathicsLineFeeder):
             "Settings`PygmentsStylesAvailable", "System`Locked"
         )
         self.definitions.set_attribute("Settings`$UseUnicode", "System`Locked")
-        self.completer = WordCompleter(*self.get_word_names())
+        self.completer = MathicsCompleter(self.definitions)
 
     def change_pygments_style(self, style: str):
         if style == self.pygments_style:
@@ -221,7 +223,7 @@ class TerminalShell(MathicsLineFeeder):
 
     def get_out_prompt(self):
         line_number = self.get_last_line_number()
-        return HTML(f"<ansigreen>Out[<b>line_number</b>]=</ansigreen> ")
+        return f"{1}Out[{2}{0}{3}]= {4}".format(line_number, *self.outcolors)
 
     def get_out_prompt_toolkit(self):
         line_number = self.get_last_line_number()
