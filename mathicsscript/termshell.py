@@ -11,6 +11,7 @@ import re
 import sys
 
 from mathics_pygments.lexer import MathematicaLexer, MToken
+from mathics_scanner import replace_unicode_with_wl
 
 
 from mathics.core.expression import (
@@ -21,13 +22,12 @@ from mathics.core.expression import (
     from_python,
 )
 from mathics.core.rules import Rule
-from mathics_scanner import replace_unicode_with_wl, named_characters
 
 from mathicsscript.bindkeys import bindings
 
 from prompt_toolkit import PromptSession, HTML, print_formatted_text
+from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
-from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.styles.pygments import style_from_pygments_cls
 
@@ -40,6 +40,7 @@ from pygments.styles import get_all_styles
 from pygments.util import ClassNotFound
 
 mma_lexer = MathematicaLexer()
+mma_pygments_lexer = PygmentsLexer(MathematicaLexer)
 
 ALL_PYGMENTS_STYLES = list(get_all_styles())
 
@@ -195,6 +196,7 @@ class TerminalShell(MathicsLineFeeder):
             "Settings`PygmentsStylesAvailable", "System`Locked"
         )
         self.definitions.set_attribute("Settings`$UseUnicode", "System`Locked")
+        self.completer = WordCompleter(*self.get_word_names())
 
     def change_pygments_style(self, style: str):
         if style == self.pygments_style:
@@ -215,14 +217,11 @@ class TerminalShell(MathicsLineFeeder):
         if self.lineno > 0:
             return " " * len(f"In[{next_line_number}]:= ")
         else:
-            in_prompt = HTML(f"<b>This is bold</b>")
             return HTML(f"<ansired>In[<b>{next_line_number}</b>]:=</ansired> ")
 
     def get_out_prompt(self):
         line_number = self.get_last_line_number()
-        return "{2}Out[{3}{0}{4}]{1}= {5}".format(
-            line_number, output_style, *self.outcolors
-        )
+        return HTML(f"<ansigreen>Out[<b>line_number</b>]=</ansigreen> ")
 
     def get_out_prompt_toolkit(self):
         line_number = self.get_last_line_number()
@@ -244,9 +243,10 @@ class TerminalShell(MathicsLineFeeder):
 
             line = self.session.prompt(
                 prompt,
-                lexer=PygmentsLexer(MathematicaLexer),
-                style=style,
+                completer=self.completer,
                 key_bindings=bindings,
+                lexer=mma_pygments_lexer,
+                style=style,
             )
             # line = self.rl_read_line(prompt)
         else:
@@ -319,64 +319,6 @@ class TerminalShell(MathicsLineFeeder):
 
         return input(prompt)
 
-    def complete_symbol_name(self, text, state):
-        try:
-            match = re.match(r"^(.*\\\[)([A-Z][a-z]*)$", text)
-            if match:
-                return self._complete_named_characters(
-                    match.group(1), match.group(2), state
-                )
-            return self._complete_symbol_name(text, state)
-
-        except Exception:
-            # any exception thrown inside the completer gets silently
-            # thrown away otherwise
-            print("Unhandled error in readline completion")
-        except:
-            raise
-
-    def _complete_named_characters(self, prefix, text, state):
-        r"""prefix is the text after \[. Return a list of named character names."""
-        if state == 0:
-            self.completion_candidates = [
-                prefix + name + "]"
-                for name in self.named_character_names
-                if name.startswith(text)
-            ]
-            # self.completion_candidates = self.get_completion_symbol_candidates(prefix, text)
-        try:
-            return self.completion_candidates[state]
-        except IndexError:
-            return None
-
-    def _complete_symbol_name(self, text, state):
-        # The readline module calls this function repeatedly,
-        # increasing 'state' each time and expecting one string to be
-        # returned per call.
-        if state == 0:
-            self.completion_candidates = self.get_completion_candidates(text)
-        try:
-            return self.completion_candidates[state]
-        except IndexError:
-            return None
-
-    def get_completion_candidates(self, text: str):
-
-        brace_pos = text.rfind("[")
-        if brace_pos >= 0:
-            suffix = text[brace_pos + 1 :]
-            prefix = text[: brace_pos + 1]
-        else:
-            prefix = ""
-            suffix = text
-        try:
-            matches = self.definitions.get_matching_names(suffix + "*")
-        except Exception:
-            return []
-        if "`" not in text:
-            matches = [strip_context(m) for m in matches]
-        return [prefix + m for m in matches]
-
     def reset_lineno(self):
         self.lineno = 0
 
@@ -391,9 +333,7 @@ class TerminalShell(MathicsLineFeeder):
     def empty(self):
         return False
 
-    def user_write_history_file(self):
-        try:
-            set_history_length(self.history_length)
-            write_history_file(HISTFILE)
-        except:
-            pass
+    def get_word_names(self: str):
+        names = self.definitions.get_builtin_names()
+        short_names = [strip_context(m) for m in names]
+        return [list(names) + short_names]
