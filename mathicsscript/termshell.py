@@ -108,7 +108,6 @@ class TerminalShell(MathicsLineFeeder):
         self.terminal_formatter = None
         self.mma_pygments_lexer = PygmentsLexer(MathematicaLexer)
         self.prompt = prompt
-        self.completer = None
 
         if want_readline:
             self.session = PromptSession(history=FileHistory(HISTFILE))
@@ -176,7 +175,11 @@ class TerminalShell(MathicsLineFeeder):
             "Settings`PygmentsStylesAvailable", "System`Locked"
         )
         self.definitions.set_attribute("Settings`$UseUnicode", "System`Locked")
-        self.completer = MathicsCompleter(self.definitions, self.mma_pygments_lexer)
+        self.completer = (
+            MathicsCompleter(self.definitions, self.mma_pygments_lexer)
+            if want_completion
+            else None
+        )
 
     def change_pygments_style(self, style: str):
         if style == self.pygments_style:
