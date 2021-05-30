@@ -65,8 +65,8 @@ setup(
     include_package_data=True,
     package_data={
         "": [
-            "mathicsscript/inputrc-no-unicode",
-            "mathicsscript/inputrc-unicode",
+            "mathicsscript/data/inputrc-no-unicode",
+            "mathicsscript/data/inputrc-unicode",
             "mathicsscript/user-settings.m",
             "mathicsscript/autoload/*.m",
         ]
@@ -78,6 +78,7 @@ setup(
         "colorama",
         "columnize",
         "networkx",
+        "prompt_toolkit",
         "pygments",
         # "mathics_pygments @ https://github.com/Mathics3/mathics-pygments/archive/master.zip#egg=mathics_pygments",
         "mathics_pygments>=1.0.0",

@@ -8,7 +8,7 @@ import os.path as osp
 import subprocess
 from pathlib import Path
 
-from mathicsscript.termshell import ShellEscapeException, TerminalShell
+from mathicsscript.termshell import ShellEscapeException, TerminalShell, mma_lexer
 
 from mathicsscript.format import format_output
 
@@ -22,15 +22,12 @@ from mathics import version_string, license_string
 from mathics import settings
 
 from pygments import highlight
-from pygments.lexers import MathematicaLexer
 
 
 def get_srcdir():
     filename = osp.normcase(osp.dirname(osp.abspath(__file__)))
     return osp.realpath(filename)
 
-
-mma_lexer = MathematicaLexer()
 
 from mathicsscript.version import __version__
 
