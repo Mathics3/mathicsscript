@@ -21,7 +21,7 @@ from typing import Iterable, NamedTuple
 
 from mathics.core.expression import strip_context
 from mathics_scanner import named_characters
-from mathics_pygments.lexer import MathematicaLexer, Regex
+from mathics_pygments.lexer import Regex
 from prompt_toolkit.completion import CompleteEvent, Completion, WordCompleter
 from prompt_toolkit.document import Document
 
@@ -53,10 +53,9 @@ def get_datadir():
 
 
 class MathicsCompleter(WordCompleter):
-    def __init__(self, definitions, lexer):
+    def __init__(self, definitions):
         self.definitions = definitions
         self.completer = WordCompleter([])
-        self.lexer = lexer
         self.named_characters = [name + "]" for name in named_characters.keys()]
 
         # From WordCompleter, adjusted with default values

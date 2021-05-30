@@ -1,63 +1,50 @@
 # -*- coding: utf-8 -*-
 #   Copyright (C) 2020-2021 Rocky Bernstein <rb@dustyfeet.com>
 
-from columnize import columnize
-
-import locale
+import atexit
 import os
 import os.path as osp
+import locale
 import pathlib
-import re
 import sys
-
-from mathics_pygments.lexer import MathematicaLexer, MToken
-from mathics_scanner import replace_unicode_with_wl
-from mathicsscript.completion import MathicsCompleter
-from mathicsscript.version import __version__
-
-# from prompt_toolkit.completion import WordCompleter
-
-
-from mathics.core.expression import (
-    Expression,
-    String,
-    Symbol,
-    # strip_context,
-    from_python,
-)
+import re
+from columnize import columnize
+from mathics_scanner import replace_unicode_with_wl, named_characters
+from mathics_scanner.termshell import ShellEscapeException, mma_lexer
+from mathics.core.expression import Expression, String, Symbol
+from mathics.core.expression import strip_context, from_python
 from mathics.core.rules import Rule
 
-from mathicsscript.bindkeys import bindings
-
-from prompt_toolkit import PromptSession, HTML, print_formatted_text
-from prompt_toolkit.application.current import get_app
-from prompt_toolkit.enums import EditingMode
-from prompt_toolkit.history import FileHistory
-from prompt_toolkit.lexers import PygmentsLexer
-from prompt_toolkit.styles.pygments import style_from_pygments_cls
-
-
 from pygments import format, highlight, lex
-from pygments.styles import get_style_by_name
-from pygments.formatters.terminal import TERMINAL_COLORS
+
+# from mathicsscript.mmalexer import MathematicaLexer
+from mathics_pygments.lexer import MToken
+
 from pygments.formatters import Terminal256Formatter
 from pygments.styles import get_all_styles
 from pygments.util import ClassNotFound
 
-mma_lexer = MathematicaLexer()
-
 ALL_PYGMENTS_STYLES = list(get_all_styles())
-
-color_scheme = TERMINAL_COLORS.copy()
-color_scheme[MToken.SYMBOL] = ("yellow", "ansibrightyellow")
-color_scheme[MToken.BUILTIN] = ("ansigreen", "ansibrightgreen")
-color_scheme[MToken.OPERATOR] = ("magenta", "ansibrightmagenta")
-color_scheme[MToken.NUMBER] = ("ansiblue", "ansibrightblue")
 
 from colorama import init as colorama_init
 
 ## FIXME: __main__ shouldn't be needed. Fix term_background
 from term_background.__main__ import is_dark_background
+
+try:
+    from readline import (
+        parse_and_bind,
+        read_history_file,
+        read_init_file,
+        set_completer,
+        set_completer_delims,
+        set_history_length,
+        write_history_file,
+    )
+
+    have_full_readline = True
+except ImportError:
+    have_full_readline = False
 
 # Set up mathicsscript configuration directory
 CONFIGHOME = os.environ.get("XDG_CONFIG_HOME", osp.expanduser("~/.config"))
@@ -69,7 +56,7 @@ try:
 except:
     HISTSIZE = 50
 
-HISTFILE = os.path.join(CONFIGDIR, "history-ptk")
+HISTFILE = os.path.join(CONFIGDIR, "history")
 
 # Create HISTFILE if it doesn't exist already
 if not os.path.isfile(HISTFILE):
@@ -90,12 +77,7 @@ def is_pygments_style(style: str):
     return True
 
 
-class ShellEscapeException(Exception):
-    def __init__(self, line):
-        self.line = line
-
-
-class TerminalShell(MathicsLineFeeder):
+class TerminalShellGNUReadline(MathicsLineFeeder):
     def __init__(
         self,
         definitions,
@@ -109,20 +91,50 @@ class TerminalShell(MathicsLineFeeder):
         self.input_encoding = locale.getpreferredencoding()
         self.lineno = 0
         self.terminal_formatter = None
-        self.mma_pygments_lexer = PygmentsLexer(MathematicaLexer)
         self.prompt = prompt
-
-        if want_readline:
-            self.session = PromptSession(history=FileHistory(HISTFILE))
-        else:
-            self.session = None
 
         # Try importing readline to enable arrow keys support etc.
         self.using_readline = False
         self.history_length = definitions.get_config_value("$HistoryLength", HISTSIZE)
-        if want_readline:
+        if have_full_readline and want_readline:
             self.using_readline = sys.stdin.isatty() and sys.stdout.isatty()
             self.ansi_color_re = re.compile("\033\\[[0-9;]+m")
+            if want_completion:
+                set_completer(
+                    lambda text, state: self.complete_symbol_name(text, state)
+                )
+
+                self.named_character_names = set(named_characters.keys())
+
+                # Make _ a delimiter, but not $ or `
+                # set_completer_delims(RL_COMPLETER_DELIMS)
+                set_completer_delims(RL_COMPLETER_DELIMS_WITH_BRACE)
+
+                # GNU Readling inputrc $include's paths are relative to itself,
+                # so chdir to its directory before reading the file.
+                parent_dir = pathlib.Path(__file__).parent.absolute()
+                with parent_dir:
+                    inputrc = "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
+                    try:
+                        read_init_file(str(parent_dir / inputrc))
+                    except:
+                        pass
+
+                parse_and_bind("tab: complete")
+                self.completion_candidates = []
+
+            # History
+            try:
+                read_history_file(HISTFILE)
+            except IOError:
+                pass
+            except:
+                # PyPy read_history_file fails
+                pass
+            else:
+                set_history_length(self.history_length)
+                atexit.register(self.user_write_history_file)
+            pass
 
         colorama_init()
         if style == "None":
@@ -178,26 +190,6 @@ class TerminalShell(MathicsLineFeeder):
             "Settings`PygmentsStylesAvailable", "System`Locked"
         )
         self.definitions.set_attribute("Settings`$UseUnicode", "System`Locked")
-        self.completer = MathicsCompleter(self.definitions) if want_completion else None
-
-    # Add an additional key binding for toggling this flag.
-    @bindings.add("f4")
-    def _editor_toggle(event):
-        """Toggle between Emacs and Vi mode."""
-        app = event.app
-
-        if app.editing_mode == EditingMode.VI:
-            app.editing_mode = EditingMode.EMACS
-        else:
-            app.editing_mode = EditingMode.VI
-
-    def bottom_toolbar(self):
-        """Adds a mode-line toolbar at the bottom"""
-        # TODO: Figure out how allow user-customization
-        edit_mode = "Vi" if get_app().editing_mode == EditingMode.VI else "Emacs"
-        return HTML(
-            f" mathicsscript: {__version__}, Style: {self.pygments_style}, Mode: [F4] {edit_mode}"
-        )
 
     def change_pygments_style(self, style: str):
         if style == self.pygments_style:
@@ -218,15 +210,16 @@ class TerminalShell(MathicsLineFeeder):
         if self.lineno > 0:
             return " " * len(f"In[{next_line_number}]:= ")
         else:
-            return HTML(f"<ansired>In[<b>{next_line_number}</b>]:=</ansired> ")
+            if have_full_readline:
+                return "{1}In[{2}{0}{3}]:= {4}".format(next_line_number, *self.incolors)
+            else:
+                return f"In[{next_line_number}]:= "
 
-    def get_out_prompt(self):
+    def get_out_prompt(self, output_style=""):
         line_number = self.get_last_line_number()
-        return f"{1}Out[{2}{0}{3}]= {4}".format(line_number, *self.outcolors)
-
-    def get_out_prompt_toolkit(self):
-        line_number = self.get_last_line_number()
-        return HTML(f"<ansigreen>Out[<b>{line_number}</b>]:=</ansigreen> ")
+        return "{2}Out[{3}{0}{4}]{1}= {5}".format(
+            line_number, output_style, *self.outcolors
+        )
 
     def to_output(self, text):
         line_number = self.get_last_line_number()
@@ -237,20 +230,8 @@ class TerminalShell(MathicsLineFeeder):
         print(self.to_output(str(out)))
 
     def read_line(self, prompt):
-        if self.using_readline and self.session:
-
-            # FIXME set and update inside self.
-            style = style_from_pygments_cls(get_style_by_name(self.pygments_style))
-
-            line = self.session.prompt(
-                prompt,
-                bottom_toolbar=self.bottom_toolbar,
-                completer=self.completer,
-                key_bindings=bindings,
-                lexer=self.mma_pygments_lexer,
-                style=style,
-            )
-            # line = self.rl_read_line(prompt)
+        if self.using_readline:
+            line = self.rl_read_line(prompt)
         else:
             line = input(prompt)
         if line.startswith("!") and self.lineno == 0:
@@ -308,11 +289,8 @@ class TerminalShell(MathicsLineFeeder):
             output = self.to_output(out_str)
             if output_style == "text" or not prompt:
                 print(output)
-            elif self.session:
-                print_formatted_text(self.get_out_prompt_toolkit(), end="")
-                print(output + "\n")
             else:
-                print(self.get_out_prompt() + output + "\n")
+                print(self.get_out_prompt("") + output + "\n")
 
     def rl_read_line(self, prompt):
         # Wrap ANSI color sequences in \001 and \002, so readline
@@ -320,6 +298,64 @@ class TerminalShell(MathicsLineFeeder):
         prompt = self.ansi_color_re.sub(lambda m: "\001" + m.group(0) + "\002", prompt)
 
         return input(prompt)
+
+    def complete_symbol_name(self, text, state):
+        try:
+            match = re.match(r"^(.*\\\[)([A-Z][a-z]*)$", text)
+            if match:
+                return self._complete_named_characters(
+                    match.group(1), match.group(2), state
+                )
+            return self._complete_symbol_name(text, state)
+
+        except Exception:
+            # any exception thrown inside the completer gets silently
+            # thrown away otherwise
+            print("Unhandled error in readline completion")
+        except:
+            raise
+
+    def _complete_named_characters(self, prefix, text, state):
+        r"""prefix is the text after \[. Return a list of named character names."""
+        if state == 0:
+            self.completion_candidates = [
+                prefix + name + "]"
+                for name in self.named_character_names
+                if name.startswith(text)
+            ]
+            # self.completion_candidates = self.get_completion_symbol_candidates(prefix, text)
+        try:
+            return self.completion_candidates[state]
+        except IndexError:
+            return None
+
+    def _complete_symbol_name(self, text, state):
+        # The readline module calls this function repeatedly,
+        # increasing 'state' each time and expecting one string to be
+        # returned per call.
+        if state == 0:
+            self.completion_candidates = self.get_completion_candidates(text)
+        try:
+            return self.completion_candidates[state]
+        except IndexError:
+            return None
+
+    def get_completion_candidates(self, text: str):
+
+        brace_pos = text.rfind("[")
+        if brace_pos >= 0:
+            suffix = text[brace_pos + 1 :]
+            prefix = text[: brace_pos + 1]
+        else:
+            prefix = ""
+            suffix = text
+        try:
+            matches = self.definitions.get_matching_names(suffix + "*")
+        except Exception:
+            return []
+        if "`" not in text:
+            matches = [strip_context(m) for m in matches]
+        return [prefix + m for m in matches]
 
     def reset_lineno(self):
         self.lineno = 0
@@ -334,3 +370,10 @@ class TerminalShell(MathicsLineFeeder):
 
     def empty(self):
         return False
+
+    def user_write_history_file(self):
+        try:
+            set_history_length(self.history_length)
+            write_history_file(HISTFILE)
+        except:
+            pass
