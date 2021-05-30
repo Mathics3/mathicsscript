@@ -13,6 +13,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from enum import Enum
 import os.path as osp
 import re
 
@@ -33,8 +34,17 @@ if False:  # FIXME reinstate this
     )
 FIND_MATHICS_WORD_RE = re.compile(r"((?:\[)?[^\s]+)")
 
+
+class TokenKind(Enum):
+    Null = "Null"
+    NamedCharacter = "NamedCharacter"
+    Symbol = "Symbol"
+    ASCII_Operator = "ASCII_Operator"
+    EscapeSequence = "EscapeSequence"  # Not working yet
+
+
 # TODO: "kind" could be an enumeration: of "Null", "Symbol", "NamedCharacter"
-WordToken = NamedTuple("WordToken", [("text", str), ("kind", str)])
+WordToken = NamedTuple("WordToken", [("text", str), ("kind", TokenKind)])
 
 
 def get_datadir():
@@ -81,13 +91,13 @@ class MathicsCompleter(WordCompleter):
     ) -> Iterable[Completion]:
         # Get word/text before cursor.
         word_before_cursor, kind = self.get_word_before_cursor_with_kind(document)
-        if kind == "Symbol":
+        if kind == TokenKind.Symbol:
             words = self.get_word_names()
-        elif kind == "NamedCharacter":
+        elif kind == TokenKind.NamedCharacter:
             words = self.named_characters
-        elif kind == "AsciiOperator":
+        elif kind == TokenKind.ASCII_Operator:
             words = self.ascii_operators
-        elif kind == "EscapeSequence":
+        elif kind == TokenKind.EscapeSequence:
             words = self.escape_sequences
         else:
             words = []
@@ -125,7 +135,7 @@ class MathicsCompleter(WordCompleter):
         if self._is_space_before_cursor(
             document=document, text_before_cursor=text_before_cursor
         ):
-            return WordToken("", "Null")
+            return WordToken("", TokenKind.Null)
 
         start = (
             document.find_start_of_previous_word(
@@ -136,19 +146,18 @@ class MathicsCompleter(WordCompleter):
 
         word_before_cursor = text_before_cursor[len(text_before_cursor) + start :]
         if word_before_cursor.startswith(r"\["):
-            return WordToken(word_before_cursor[2:], "NamedCharacter")
+            return WordToken(word_before_cursor[2:], TokenKind.NamedCharacter)
         if word_before_cursor.startswith(r"["):
-            print
             word_before_cursor = word_before_cursor[1:]
 
         if word_before_cursor.isnumeric():
-            return WordToken(word_before_cursor, "Null")
+            return WordToken(word_before_cursor, TokenKind.Null)
         elif word_before_cursor in self.ascii_operators:
-            return WordToken(word_before_cursor, "AsciiOperator")
+            return WordToken(word_before_cursor, TokenKind.ASCII_Operator)
         elif word_before_cursor.startswith("\1xb"):
-            return WordToken(word_before_cursor, "EscapeSequence")
+            return WordToken(word_before_cursor, TokenKind.EscapeSequence)
 
-        return word_before_cursor, "Symbol"
+        return word_before_cursor, TokenKind.Symbol
 
     def get_word_names(self: str):
         names = self.definitions.get_names()
