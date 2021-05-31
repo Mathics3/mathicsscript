@@ -66,7 +66,7 @@ def read_init_file(path: str):
         line = line.strip()
         if not line or line.startswith("#"):
             continue
-        fields = re.split("\s*: ", line)
+        fields = re.split(r"\s*: ", line)
         if len(fields) != 2:
             print(f"{line_no+1}: expecting 2 fields, got {len(fields)} in:\n{line}")
             continue

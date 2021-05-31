@@ -252,7 +252,7 @@ def main(
         "Settings`$PygmentsShowTokens", from_python(True if pygments_tokens else False)
     )
 
-    readline = readline.lower()
+    readline = "none" if (execute or file and not persist) else readline.lower()
     if readline == "prompt":
         shell = TerminalShellPromptToolKit(
             definitions, style, completion, unicode, prompt
