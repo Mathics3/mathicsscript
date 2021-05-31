@@ -24,11 +24,6 @@ def get_srcdir():
 
 srcdir = get_srcdir()
 
-
-def read(*rnames):
-    return open(osp.join(srcdir, *rnames)).read()
-
-
 import sys
 import platform
 
@@ -36,11 +31,6 @@ import platform
 if sys.version_info < (3, 6):
     print("mathicsscript does not support Python %d.%d" % sys.version_info[:2])
     sys.exit(-1)
-
-
-def get_srcdir():
-    filename = osp.normcase(osp.dirname(osp.abspath(__file__)))
-    return osp.realpath(filename)
 
 
 def read(*rnames):

@@ -8,7 +8,12 @@ import os.path as osp
 import subprocess
 from pathlib import Path
 
-from mathicsscript.termshell import ShellEscapeException, TerminalShell, mma_lexer
+from mathicsscript.termshell import (
+    ShellEscapeException,
+    TerminalShellPromptToolKit,
+    mma_lexer,
+)
+from mathicsscript.termshell_gnu import TerminalShellGNUReadline
 
 from mathicsscript.format import format_output
 
@@ -134,10 +139,11 @@ class TerminalOutput(Output):
     help="don't print message at startup",
 )
 @click.option(
-    "--readline/--no-readline",
-    default=have_readline,
+    "--readline",
+    type=click.Choice(["GNU", "Prompt", "None"], case_sensitive=False),
+    default="Prompt",
     show_default=True,
-    help="GNU Readline line editing. If this is off completion and command history are also turned off",
+    help="""Readline method. "Prompt" is usually best. GNU Readline is better than "None" most of the time.""",
 )
 @click.option(
     "--completion/--no-completion",
@@ -246,7 +252,17 @@ def main(
         "Settings`$PygmentsShowTokens", from_python(True if pygments_tokens else False)
     )
 
-    shell = TerminalShell(definitions, style, readline, completion, unicode, prompt)
+    readline = readline.lower()
+    if readline == "prompt":
+        shell = TerminalShellPromptToolKit(
+            definitions, style, completion, unicode, prompt
+        )
+    else:
+        want_readline = readline == "gnu"
+        shell = TerminalShellGNUReadline(
+            definitions, style, want_readline, completion, unicode, prompt
+        )
+
     load_settings(shell)
     if run:
         with open(run, "r") as ifile:
