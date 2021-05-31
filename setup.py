@@ -68,7 +68,7 @@ setup(
         "colorama",
         "columnize",
         "networkx",
-        "prompt_toolkit",
+        "prompt_toolkit>=3.0.18",
         "pygments",
         # "mathics_pygments @ https://github.com/Mathics3/mathics-pygments/archive/master.zip#egg=mathics_pygments",
         "mathics_pygments>=1.0.2",
