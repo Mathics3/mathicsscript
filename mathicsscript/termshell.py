@@ -75,10 +75,6 @@ HISTFILE = os.path.join(CONFIGDIR, "history-ptk")
 if not os.path.isfile(HISTFILE):
     pathlib.Path(HISTFILE).touch()
 
-RL_COMPLETER_DELIMS_WITH_BRACE = " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
-RL_COMPLETER_DELIMS = " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
-
-
 from mathics.core.parser import MathicsLineFeeder
 
 
@@ -364,7 +360,8 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         self.definitions.set_attribute(
             "Settings`PygmentsStylesAvailable", "System`Locked"
         )
-        self.definitions.set_attribute("Settings`$UseUnicode", "System`Locked")
+        self.definitions.set_attribute("Settings`$UseUnicode", "System`Locked"
+                                       )
         self.completer = MathicsCompleter(self.definitions) if want_completion else None
 
     # Add an additional key binding for toggling this flag.

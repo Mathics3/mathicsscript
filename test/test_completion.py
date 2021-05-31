@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import pytest
 from mathics.core.definitions import Definitions
 from mathicsscript.termshell_gnu import TerminalShellGNUReadline
 
@@ -34,4 +33,4 @@ def test_completion_gnu():
 
 
 if __name__ == "__main__":
-    test_completion()
+    test_completion_gnu()

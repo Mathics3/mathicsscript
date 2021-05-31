@@ -4,26 +4,16 @@
 import atexit
 import os
 import os.path as osp
-import locale
 import pathlib
 import sys
 import re
 from mathics_scanner import named_characters
-from mathicsscript.termshell import is_pygments_style, TerminalShellCommon
-from mathics.core.expression import Expression, Symbol
-from mathics.core.expression import strip_context, from_python
-from mathics.core.rules import Rule
+from mathicsscript.termshell import TerminalShellCommon
+from mathics.core.expression import strip_context
 
-from pygments.formatters import Terminal256Formatter
 from pygments.styles import get_all_styles
-from pygments.util import ClassNotFound
 
 ALL_PYGMENTS_STYLES = list(get_all_styles())
-
-from colorama import init as colorama_init
-
-## FIXME: __main__ shouldn't be needed. Fix term_background
-from term_background.__main__ import is_dark_background
 
 try:
     from readline import (

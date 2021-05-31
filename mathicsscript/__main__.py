@@ -13,7 +13,18 @@ from mathicsscript.termshell import (
     TerminalShellPromptToolKit,
     mma_lexer,
 )
+
+import mathicsscript.termshell_gnu
 from mathicsscript.termshell_gnu import TerminalShellGNUReadline
+
+try:
+    __import__("readline")
+except ImportError:
+    have_readline = False
+    readline_choices = ["Prompt", "None"]
+else:
+    readline_choices = ["GNU", "Prompt", "None"]
+    have_readline = True
 
 from mathicsscript.format import format_output
 
@@ -35,13 +46,6 @@ def get_srcdir():
 
 
 from mathicsscript.version import __version__
-
-try:
-    __import__("readline")
-except ImportError:
-    have_readline = False
-else:
-    have_readline = True
 
 
 def ensure_settings():
@@ -140,14 +144,14 @@ class TerminalOutput(Output):
 )
 @click.option(
     "--readline",
-    type=click.Choice(["GNU", "Prompt", "None"], case_sensitive=False),
+    type=click.Choice(readline_choices, case_sensitive=False),
     default="Prompt",
     show_default=True,
-    help="""Readline method. "Prompt" is usually best. GNU Readline is better than "None" most of the time.""",
+    help="""Readline method. "Prompt" is usually best. None is generally available and have the fewest features.""",
 )
 @click.option(
     "--completion/--no-completion",
-    default=have_readline,
+    default=True,
     show_default=True,
     help=(
         "GNU Readline line editing. enable tab completion; "
@@ -351,7 +355,7 @@ def main(
     definitions.set_line_no(0)
     while True:
         try:
-            if shell.using_readline:
+            if have_readline and shell.using_readline:
                 import readline as GNU_readline
 
                 last_pos = GNU_readline.get_current_history_length()
@@ -371,7 +375,11 @@ def main(
             evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
             query, source_code = evaluation.parse_feeder_returning_code(shell)
 
-            if shell.using_readline and hasattr(GNU_readline, "remove_history_item"):
+            if (
+                have_readline
+                and shell.using_readline
+                and hasattr(GNU_readline, "remove_history_item")
+            ):
                 current_pos = GNU_readline.get_current_history_length()
                 for pos in range(last_pos, current_pos - 1):
                     GNU_readline.remove_history_item(pos)
