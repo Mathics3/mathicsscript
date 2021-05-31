@@ -71,7 +71,7 @@ setup(
         "prompt_toolkit",
         "pygments",
         # "mathics_pygments @ https://github.com/Mathics3/mathics-pygments/archive/master.zip#egg=mathics_pygments",
-        "mathics_pygments>=1.0.0",
+        "mathics_pygments>=1.0.2",
         "term-background >= 1.0.1",
     ],
     entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main"]},

@@ -1,3 +1,21 @@
+3.0.0
+-----
+
+The primary readline interface has been redone using the excellent [prompt-toolkit](https://pypi.org/project/prompt-toolkit/).
+This is pure Python code so it should be available everywhere.
+We still include GNU-Readline for those situations where prompt-toolkit doesn't work. Select the readline style now with the
+`--choice` option which can be one of `GNU`, `Prompt`, or `None`.
+
+Prompt toolkit allows us to color input as it is getting typed. It also has nicer completion facilites, and sports a bottom modeline status bar.
+
+There is still a bit of cleanup work to do to support GNU readline inputrc files better, or to handle completion better, but this will come later.
+
+Independent of prompt-toolkit, there better pygments colorization using [mathics-pygments](https://pypi.org/project/prompt-toolkit/). Expect
+that to improve over time too.
+
+
+
+
 2.2.0
 -----
 
