@@ -2,7 +2,7 @@
 
 import pytest
 from mathics.core.definitions import Definitions
-from mathicsscript.termshell import TerminalShell
+from mathicsscript.termshell_gnu import TerminalShellGNUReadline
 
 try:
     __import__("readline")
@@ -12,10 +12,9 @@ else:
     have_readline = True
 
 
-@pytest.mark.skip("Need to redo completion unit tests for prompt_toolkit")
-def test_completion():
+def test_completion_gnu():
     definitions = Definitions(add_builtin=True, extension_modules=[])
-    term = TerminalShell(
+    term = TerminalShellGNUReadline(
         definitions=definitions,
         style=None,
         want_readline=True,
