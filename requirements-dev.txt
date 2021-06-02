@@ -1,1 +1,3 @@
-pytest
+# Development packags
+PyYAML # Used for admin-tools/make-tables.sh to build JSON tables
+pytest # We use pytest for testing
