@@ -85,6 +85,3 @@ def read_init_file(path: str):
         ]
         add_binding(alias_expand, replacement)
     pass
-
-
-read_inputrc(use_unicode=1)

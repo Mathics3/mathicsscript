@@ -27,7 +27,7 @@ from mathics.core.expression import (
 )
 from mathics.core.rules import Rule
 
-from mathicsscript.bindkeys import bindings
+from mathicsscript.bindkeys import bindings, read_inputrc
 
 from prompt_toolkit import PromptSession, HTML, print_formatted_text
 from prompt_toolkit.application.current import get_app
@@ -341,6 +341,9 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         self.definitions.set_ownvalue(
             "Settings`PygmentsStylesAvailable", from_python(ALL_PYGMENTS_STYLES)
         )
+
+        read_inputrc(use_unicode=use_unicode)
+
         self.definitions.add_message(
             "Settings`PygmentsStylesAvailable",
             Rule(
