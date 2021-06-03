@@ -14,6 +14,7 @@ how to customize the install procedure read the output of:
 """
 
 import os.path as osp
+import re
 from setuptools import setup, find_packages
 
 
@@ -45,6 +46,13 @@ exec(read("mathicsscript/version.py"))
 
 is_PyPy = platform.python_implementation() == "PyPy"
 
+dev_requires = []
+for line in open("requirements-dev.txt").read().split("\n"):
+    if line and not line.startswith("#"):
+        requires = re.sub(r"([^#]+)(\s*#.*$)?", r"\1", line)
+        dev_requires.append(requires)
+
+
 setup(
     maintainer="Mathics Group",
     maintainer_email="mathic-devel@googlegroups.com",
@@ -75,6 +83,7 @@ setup(
         "term-background >= 1.0.1",
     ],
     entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main"]},
+    extra_requires={"dev": dev_requires},
     long_description=long_description,
     long_description_content_type="text/x-rst",
     # don't pack Mathics in egg because of media files, etc.
