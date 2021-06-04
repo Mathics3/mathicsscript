@@ -205,7 +205,8 @@ class TerminalShellCommon(MathicsLineFeeder):
             line = input(prompt)
         if line.startswith("!") and self.lineno == 0:
             raise ShellEscapeException(line)
-        return replace_unicode_with_wl(line)
+        return line
+        # return replace_unicode_with_wl(line)
 
     def print_result(
         self, result, prompt: bool, output_style="", strict_wl_output=False
@@ -363,8 +364,7 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         self.definitions.set_attribute(
             "Settings`PygmentsStylesAvailable", "System`Locked"
         )
-        self.definitions.set_attribute("Settings`$UseUnicode", "System`Locked"
-                                       )
+        self.definitions.set_attribute("Settings`$UseUnicode", "System`Locked")
         self.completer = MathicsCompleter(self.definitions) if want_completion else None
 
     # Add an additional key binding for toggling this flag.
@@ -469,4 +469,5 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         # line = self.rl_read_line(prompt)
         if line.startswith("!") and self.lineno == 0:
             raise ShellEscapeException(line)
-        return replace_unicode_with_wl(line)
+        return line
+        # return replace_unicode_with_wl(line)
