@@ -8,14 +8,10 @@ import os.path as osp
 import subprocess
 from pathlib import Path
 
-from mathicsscript.termshell import (
-    ShellEscapeException,
-    TerminalShellPromptToolKit,
-    mma_lexer,
-)
+from mathicsscript.termshell import ShellEscapeException, mma_lexer
 
-import mathicsscript.termshell_gnu
 from mathicsscript.termshell_gnu import TerminalShellGNUReadline
+from mathicsscript.termshell_prompt import TerminalShellPromptToolKit
 
 try:
     __import__("readline")

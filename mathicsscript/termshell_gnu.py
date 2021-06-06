@@ -2,13 +2,12 @@
 #   Copyright (C) 2020-2021 Rocky Bernstein <rb@dustyfeet.com>
 
 import atexit
-import os
 import os.path as osp
 import pathlib
 import sys
 import re
 from mathics_scanner import named_characters
-from mathicsscript.termshell import TerminalShellCommon
+from mathicsscript.termshell import CONFIGDIR, HISTSIZE, TerminalShellCommon
 from mathics.core.expression import strip_context
 
 from pygments.styles import get_all_styles
@@ -30,24 +29,10 @@ try:
 except ImportError:
     have_full_readline = False
 
-# Set up mathicsscript configuration directory
-CONFIGHOME = os.environ.get("XDG_CONFIG_HOME", osp.expanduser("~/.config"))
-CONFIGDIR = os.path.join(CONFIGHOME, "mathicsscript")
-os.makedirs(CONFIGDIR, exist_ok=True)
-
-try:
-    HISTSIZE = int(os.environ.get("MATHICSSCRIPT_HISTSIZE"))
-except:
-    HISTSIZE = 50
-
-HISTFILE = os.path.join(CONFIGDIR, "history")
-
-# Create HISTFILE if it doesn't exist already
-if not os.path.isfile(HISTFILE):
-    pathlib.Path(HISTFILE).touch()
-
 RL_COMPLETER_DELIMS_WITH_BRACE = " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
 RL_COMPLETER_DELIMS = " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
+
+HISTFILE = osp.join(CONFIGDIR, "history-gnu")
 
 
 class TerminalShellGNUReadline(TerminalShellCommon):
@@ -102,10 +87,9 @@ class TerminalShellGNUReadline(TerminalShellCommon):
             except:
                 # PyPy read_history_file fails
                 pass
-            else:
-                set_history_length(self.history_length)
-                atexit.register(self.user_write_history_file)
-            pass
+
+            set_history_length(self.history_length)
+            atexit.register(self.user_write_history_file)
 
     def complete_symbol_name(self, text, state):
         try:
@@ -168,6 +152,7 @@ class TerminalShellGNUReadline(TerminalShellCommon):
     def user_write_history_file(self):
         try:
             set_history_length(self.history_length)
+            # print(f"Writing {HISTFILE}")
             write_history_file(HISTFILE)
         except:
             pass

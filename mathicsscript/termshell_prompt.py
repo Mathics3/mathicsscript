@@ -1,29 +1,34 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2020-2021 Rocky Bernstein <rb@dustyfeet.com>
-
-from columnize import columnize
+#   Copyright (C) 2021 Rocky Bernstein <rb@dustyfeet.com>
 
 import locale
-import os
 import os.path as osp
-import pathlib
 import re
 import sys
 
 from mathics_pygments.lexer import MathematicaLexer, MToken
 from mathicsscript.completion import MathicsCompleter
+from mathicsscript.termshell import (
+    CONFIGDIR,
+    HISTSIZE,
+    is_pygments_style,
+    ShellEscapeException,
+    TerminalShellCommon,
+)
 from mathicsscript.version import __version__
 
-from mathics.core.expression import (
-    Expression,
-    String,
-    Symbol,
-    # strip_context,
-    from_python,
-)
+from mathics.core.expression import Expression, String, Symbol, from_python
 from mathics.core.rules import Rule
 
 from mathicsscript.bindkeys import bindings, read_inputrc
+
+from prompt_toolkit import PromptSession, HTML, print_formatted_text
+from prompt_toolkit.application.current import get_app
+from prompt_toolkit.enums import EditingMode
+from prompt_toolkit.history import FileHistory
+from prompt_toolkit.lexers import PygmentsLexer
+from prompt_toolkit.styles.pygments import style_from_pygments_cls
+
 
 from pygments import format, highlight, lex
 from pygments.styles import get_style_by_name
@@ -47,39 +52,10 @@ from colorama import init as colorama_init
 ## FIXME: __main__ shouldn't be needed. Fix term_background
 from term_background.__main__ import is_dark_background
 
-# Set up mathicsscript configuration directory
-CONFIGHOME = os.environ.get("XDG_CONFIG_HOME", osp.expanduser("~/.config"))
-CONFIGDIR = osp.join(CONFIGHOME, "mathicsscript")
-os.makedirs(CONFIGDIR, exist_ok=True)
-
-try:
-    HISTSIZE = int(os.environ.get("MATHICSSCRIPT_HISTSIZE"))
-except:
-    HISTSIZE = 50
-
-HISTFILE = osp.join(CONFIGDIR, "history")
-
-# Create HISTFILE if it doesn't exist already
-if not osp.isfile(HISTFILE):
-    pathlib.Path(HISTFILE).touch()
-
-from mathics.core.parser import MathicsLineFeeder
+HISTFILE = osp.join(CONFIGDIR, "history-ptk")
 
 
-def is_pygments_style(style: str):
-    if style not in ALL_PYGMENTS_STYLES:
-        print(f"Pygments style name '{style}' not found.")
-        print(f"Style names are:\n{columnize(ALL_PYGMENTS_STYLES)}")
-        return False
-    return True
-
-
-class ShellEscapeException(Exception):
-    def __init__(self, line):
-        self.line = line
-
-
-class TerminalShellCommon(MathicsLineFeeder):
+class TerminalShellPromptToolKit(TerminalShellCommon):
     def __init__(
         self,
         definitions,
@@ -88,11 +64,20 @@ class TerminalShellCommon(MathicsLineFeeder):
         use_unicode: bool,
         prompt: bool,
     ):
-        super().__init__("<stdin>")
+        super(TerminalShellCommon, self).__init__("<stdin>")
         self.input_encoding = locale.getpreferredencoding()
         self.lineno = 0
         self.terminal_formatter = None
+        self.mma_pygments_lexer = PygmentsLexer(MathematicaLexer)
         self.prompt = prompt
+
+        self.session = PromptSession(history=FileHistory(HISTFILE))
+
+        # Try importing readline to enable arrow keys support etc.
+        self.using_readline = False
+        self.history_length = definitions.get_config_value("$HistoryLength", HISTSIZE)
+        self.using_readline = sys.stdin.isatty() and sys.stdout.isatty()
+        self.ansi_color_re = re.compile("\033\\[[0-9;]+m")
 
         colorama_init()
         if style == "None":
@@ -128,6 +113,9 @@ class TerminalShellCommon(MathicsLineFeeder):
         self.definitions.set_ownvalue(
             "Settings`PygmentsStylesAvailable", from_python(ALL_PYGMENTS_STYLES)
         )
+
+        read_inputrc(use_unicode=use_unicode)
+
         self.definitions.add_message(
             "Settings`PygmentsStylesAvailable",
             Rule(
@@ -148,53 +136,31 @@ class TerminalShellCommon(MathicsLineFeeder):
             "Settings`PygmentsStylesAvailable", "System`Locked"
         )
         self.definitions.set_attribute("Settings`$UseUnicode", "System`Locked")
+        self.completer = MathicsCompleter(self.definitions) if want_completion else None
 
-    def change_pygments_style(self, style: str):
-        if style == self.pygments_style:
-            return False
-        if is_pygments_style(style):
-            self.terminal_formatter = Terminal256Formatter(style=style)
-            self.pygments_style = style
-            return True
-        else:
-            print("Pygments style not changed")
-            return False
+    def bottom_toolbar(self):
+        """Adds a mode-line toolbar at the bottom"""
+        # TODO: Figure out how allow user-customization
+        app = get_app()
+        edit_mode = "Vi" if app.editing_mode == EditingMode.VI else "Emacs"
+        if not hasattr(app, "group_autocomplete"):
+            app.group_autocomplete = True
 
-    def get_last_line_number(self):
-        return self.definitions.get_line_no()
+        edit_mode = "Vi" if app.editing_mode == EditingMode.VI else "Emacs"
+        return HTML(
+            f" mathicsscript: {__version__}, Style: {self.pygments_style}, Mode: {edit_mode}, Autobrace: {app.group_autocomplete}"
+        )
 
     def get_in_prompt(self):
         next_line_number = self.get_last_line_number() + 1
         if self.lineno > 0:
             return " " * len(f"In[{next_line_number}]:= ")
         else:
-            return "{1}In[{2}{0}{3}]:= {4}".format(next_line_number, *self.incolors)
-            # if have_full_readline:
-            #     return "{1}In[{2}{0}{3}]:= {4}".format(next_line_number, *self.incolors)
-            # else:
-            #     return f"In[{next_line_number}]:= "
+            return HTML(f"<ansired>In[<b>{next_line_number}</b>]:=</ansired> ")
 
     def get_out_prompt(self):
         line_number = self.get_last_line_number()
-        return "{1}Out[{2}{0}{3}]= {4}".format(line_number, *self.outcolors)
-
-    def to_output(self, text):
-        line_number = self.get_last_line_number()
-        newline = "\n" + " " * len("Out[{0}]= ".format(line_number))
-        return newline.join(text.splitlines())
-
-    def out_callback(self, out):
-        print(self.to_output(str(out)))
-
-    def read_line(self, prompt):
-        if self.using_readline:
-            line = self.rl_read_line(prompt)
-        else:
-            line = input(prompt)
-        if line.startswith("!") and self.lineno == 0:
-            raise ShellEscapeException(line)
-        return line
-        # return replace_unicode_with_wl(line)
+        return HTML(f"<ansigreen>Out[<b>{line_number}</b>]:=</ansigreen> ")
 
     def print_result(
         self, result, prompt: bool, output_style="", strict_wl_output=False
@@ -247,26 +213,26 @@ class TerminalShellCommon(MathicsLineFeeder):
             output = self.to_output(out_str)
             if output_style == "text" or not prompt:
                 print(output)
+            elif self.session:
+                print_formatted_text(self.get_out_prompt(), end="")
+                print(output + "\n")
             else:
                 print(self.get_out_prompt() + output + "\n")
 
-    def rl_read_line(self, prompt):
-        # Wrap ANSI color sequences in \001 and \002, so readline
-        # knows that they're nonprinting.
-        prompt = self.ansi_color_re.sub(lambda m: "\001" + m.group(0) + "\002", prompt)
+    def read_line(self, prompt):
+        # FIXME set and update inside self.
+        style = style_from_pygments_cls(get_style_by_name(self.pygments_style))
 
-        return input(prompt)
-
-    def reset_lineno(self):
-        self.lineno = 0
-
-    def feed(self):
-        prompt_str = self.get_in_prompt() if self.prompt else ""
-        result = self.read_line(prompt_str) + "\n"
-        if result == "\n":
-            return ""  # end of input
-        self.lineno += 1
-        return result
-
-    def empty(self):
-        return False
+        line = self.session.prompt(
+            prompt,
+            bottom_toolbar=self.bottom_toolbar,
+            completer=self.completer,
+            key_bindings=bindings,
+            lexer=self.mma_pygments_lexer,
+            style=style,
+        )
+        # line = self.rl_read_line(prompt)
+        if line.startswith("!") and self.lineno == 0:
+            raise ShellEscapeException(line)
+        return line
+        # return replace_unicode_with_wl(line)

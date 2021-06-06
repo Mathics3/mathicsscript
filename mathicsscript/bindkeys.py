@@ -22,8 +22,101 @@ import re
 bindings = KeyBindings()
 
 # bindings.add("escape", "p", "escape")(
-#     lambda event: event.current_buffer.insert_text("π")
+#     lambda event: event.current_buffer.insert_text(" ")
 # )
+
+
+@bindings.add("{")
+def curly_left(event):
+    b = event.cli.current_buffer
+    if event.app.group_autocomplete:
+        b.insert_text("{")
+        b.insert_text("}", move_cursor=False)
+    else:
+        b.insert_text("{")
+
+
+@bindings.add("}")
+def curly_right(event):
+    if event.app.group_autocomplete:
+        b = event.cli.current_buffer
+        char = b.document.current_char
+
+        if char == "}":
+            b.cursor_right()
+        else:
+            b.insert_text("}")
+
+
+@bindings.add("(")
+def paren_left(event):
+    b = event.cli.current_buffer
+    if event.app.group_autocomplete:
+        b.insert_text("(")
+        b.insert_text(")", move_cursor=False)
+    else:
+        b.insert_text("(")
+
+
+@bindings.add(")")
+def paren_right(event):
+    b = event.cli.current_buffer
+    if event.app.group_autocomplete:
+        char = b.document.current_char
+
+        if char == ")":
+            b.cursor_right()
+        else:
+            b.insert_text(")")
+    else:
+        b.insert_text(")")
+
+
+@bindings.add("[")
+def bracket_left(event):
+    b = event.cli.current_buffer
+    if event.app.group_autocomplete:
+        b.insert_text("[")
+        b.insert_text("]", move_cursor=False)
+    else:
+        b.insert_text("[")
+
+
+@bindings.add("]")
+def bracket_right(event):
+    b = event.cli.current_buffer
+    if event.app.group_autocomplete:
+        char = b.document.current_char
+
+        if char == "]":
+            b.cursor_right()
+        else:
+            b.insert_text("]")
+    else:
+        b.insert_text("]")
+
+
+# Add an additional key binding for toggling this flag.
+@bindings.add("f4")
+def _editor_toggle(event):
+    """Toggle between Emacs and Vi mode."""
+    app = event.app
+
+    if app.editing_mode == EditingMode.VI:
+        app.editing_mode = EditingMode.EMACS
+    else:
+        app.editing_mode = EditingMode.VI
+
+
+# Add an additional key binding for toggling this flag.
+@bindings.add("f3")
+def _group_autocomplete_toggle(event):
+    """Complete braces."""
+    app = event.app
+
+    if not hasattr(app, "group_autocomplete"):
+        app.group_autocomplete = False
+    app.group_autocomplete = not app.group_autocomplete
 
 
 def read_inputrc(use_unicode: bool) -> None:
@@ -50,17 +143,6 @@ def read_init_file(path: str):
             event.current_buffer.insert_text(replacement)
 
         bindings.add(*alias_expand)(self_insert)
-
-        # Add an additional key binding for toggling this flag.
-        @bindings.add("f4")
-        def _(event):
-            " Toggle between Emacs and Vi mode. "
-            app = event.app
-
-            if app.editing_mode == EditingMode.VI:
-                app.editing_mode = EditingMode.EMACS
-            else:
-                app.editing_mode = EditingMode.VI
 
     for line_no, line in enumerate(open(path, "r").readlines()):
         line = line.strip()
