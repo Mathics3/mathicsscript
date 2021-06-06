@@ -32,7 +32,7 @@ if False:  # FIXME reinstate this
     FIND_MATHICS_WORD_RE = re.compile(
         fr"({NAMED_CHARACTER_START})|(?:.*[\[\(])?({SYMBOLS}$)"
     )
-FIND_MATHICS_WORD_RE = re.compile(r"((?:\[)?[^\s]+)")
+FIND_MATHICS_WORD_RE = re.compile(r"((?:\[)?[^\s\[\(\{]+)")
 
 
 class TokenKind(Enum):
