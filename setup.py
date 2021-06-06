@@ -83,7 +83,7 @@ setup(
         "term-background >= 1.0.1",
     ],
     entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main"]},
-    extra_requires={"dev": dev_requires},
+    extras_require={"dev": dev_requires},
     long_description=long_description,
     long_description_content_type="text/x-rst",
     # don't pack Mathics in egg because of media files, etc.

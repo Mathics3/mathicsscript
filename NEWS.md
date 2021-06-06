@@ -1,3 +1,20 @@
+3.1.0
+-----
+
+Word completion detection was improved slightly. Previously, a grouping opener like "[", "(", or "{" would prevent word completion.
+
+ASCII to unicode conversion was disabled since it was flaky and turned `===` into
+garbage upon seeing `==`. Issue #38
+
+In prompt-readline by default, inserting a "[", "(", or "{" will automatically insert the corresponding closing "]", ")", and "}".
+Use f3 to toggle this behavoir.
+
+The packaging of 3.0.0 omitted some Readline inputrc files, and a JSON operator table. Issue #37
+A few other Python packaging problems were fixe.
+
+We've separated prompt_readline functions into its own module separate from the common prompt readline functions
+
+
 3.0.0
 -----
 

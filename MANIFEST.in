@@ -3,8 +3,9 @@ include NEWS.rst
 include ChangeLog
 include COPYING
 include Makefile
-include mathicsscript/inputrc-no-unicode
-include mathicsscript/inputrc-unicode
+include mathicsscript/data/inputrc-no-unicode
+include mathicsscript/data/inputrc-unicode
+include mathicsscript/data/mma-tables.json
 recursive-include mathicsscript *.py
 recursive-include test *.py *.m
 recursive-exclude __pycache__ *.pyc
