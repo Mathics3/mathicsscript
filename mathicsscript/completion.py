@@ -32,7 +32,8 @@ if False:  # FIXME reinstate this
     FIND_MATHICS_WORD_RE = re.compile(
         fr"({NAMED_CHARACTER_START})|(?:.*[\[\(])?({SYMBOLS}$)"
     )
-FIND_MATHICS_WORD_RE = re.compile(r"((?:\[)?[^\s]+)")
+FIND_MATHICS_WORD_RE = re.compile(r"((?:\[)?[^\s\[\(\{]+)")
+CHARGROUP_START = frozenset(["(", "[", "{", ","])
 
 
 class TokenKind(Enum):
@@ -145,11 +146,13 @@ class MathicsCompleter(WordCompleter):
 
         word_before_cursor = text_before_cursor[len(text_before_cursor) + start :]
         text_before_word = text_before_cursor[: len(word_before_cursor)]
-        if text_before_word.endswith(r"\["):
+        if word_before_cursor.startswith(r"\["):
             return WordToken(word_before_cursor[2:], TokenKind.NamedCharacter)
-        elif word_before_cursor.startswith(r"\["):
-            return WordToken(word_before_cursor[2:], TokenKind.NamedCharacter)
-        if word_before_cursor.startswith(r"["):
+        elif text_before_word.endswith(r"\["):
+            return WordToken(word_before_cursor, TokenKind.NamedCharacter)
+        elif text_before_word[-1:] in CHARGROUP_START:
+            word_before_cursor = word_before_cursor
+        elif word_before_cursor[1:] in CHARGROUP_START:
             word_before_cursor = word_before_cursor[1:]
 
         if word_before_cursor.isnumeric():
