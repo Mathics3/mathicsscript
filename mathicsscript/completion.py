@@ -32,7 +32,7 @@ if False:  # FIXME reinstate this
     FIND_MATHICS_WORD_RE = re.compile(
         fr"({NAMED_CHARACTER_START})|(?:.*[\[\(])?({SYMBOLS}$)"
     )
-FIND_MATHICS_WORD_RE = re.compile(r"((?:\[)?[^\s\[\(\{]+)")
+FIND_MATHICS_WORD_RE = re.compile(r"((?:\[)?[^\s]+)")
 
 
 class TokenKind(Enum):
@@ -56,7 +56,7 @@ class MathicsCompleter(WordCompleter):
     def __init__(self, definitions):
         self.definitions = definitions
         self.completer = WordCompleter([])
-        self.named_characters = [name + "]" for name in named_characters.keys()]
+        self.named_characters = sorted(named_characters.keys())
 
         # From WordCompleter, adjusted with default values
         self.ignore_case = True
@@ -144,7 +144,10 @@ class MathicsCompleter(WordCompleter):
         )
 
         word_before_cursor = text_before_cursor[len(text_before_cursor) + start :]
-        if word_before_cursor.startswith(r"\["):
+        text_before_word = text_before_cursor[: len(word_before_cursor)]
+        if text_before_word.endswith(r"\["):
+            return WordToken(word_before_cursor[2:], TokenKind.NamedCharacter)
+        elif word_before_cursor.startswith(r"\["):
             return WordToken(word_before_cursor[2:], TokenKind.NamedCharacter)
         if word_before_cursor.startswith(r"["):
             word_before_cursor = word_before_cursor[1:]
