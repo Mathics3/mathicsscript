@@ -29,19 +29,21 @@ bindings = KeyBindings()
 @bindings.add("{")
 def curly_left(event):
     b = event.cli.current_buffer
+    b.insert_text("{")
+    if not hasattr(event.app, "group_autocomplete"):
+        return
     if event.app.group_autocomplete:
-        b.insert_text("{")
         b.insert_text("}", move_cursor=False)
-    else:
-        b.insert_text("{")
 
 
 @bindings.add("}")
 def curly_right(event):
+    b = event.cli.current_buffer
+    if not hasattr(event.app, "group_autocomplete"):
+        b.insert_text("}")
+        return
     if event.app.group_autocomplete:
-        b = event.cli.current_buffer
         char = b.document.current_char
-
         if char == "}":
             b.cursor_right()
         else:
@@ -51,16 +53,19 @@ def curly_right(event):
 @bindings.add("(")
 def paren_left(event):
     b = event.cli.current_buffer
+    b.insert_text("(")
+    if not hasattr(event.app, "group_autocomplete"):
+        return
     if event.app.group_autocomplete:
-        b.insert_text("(")
         b.insert_text(")", move_cursor=False)
-    else:
-        b.insert_text("(")
 
 
 @bindings.add(")")
 def paren_right(event):
     b = event.cli.current_buffer
+    if not hasattr(event.app, "group_autocomplete"):
+        b.insert_text(")")
+        return
     if event.app.group_autocomplete:
         char = b.document.current_char
 
@@ -75,16 +80,18 @@ def paren_right(event):
 @bindings.add("[")
 def bracket_left(event):
     b = event.cli.current_buffer
+    b.insert_text("[")
+    if not hasattr(event.app, "group_autocomplete"):
+        return
     if event.app.group_autocomplete:
-        b.insert_text("[")
         b.insert_text("]", move_cursor=False)
-    else:
-        b.insert_text("[")
 
 
 @bindings.add("]")
 def bracket_right(event):
     b = event.cli.current_buffer
+    if not hasattr(event.app, "group_autocomplete"):
+        return
     if event.app.group_autocomplete:
         char = b.document.current_char
 
