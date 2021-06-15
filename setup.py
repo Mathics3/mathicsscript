@@ -51,6 +51,11 @@ for line in open("requirements-dev.txt").read().split("\n"):
     if line and not line.startswith("#"):
         requires = re.sub(r"([^#]+)(\s*#.*$)?", r"\1", line)
         dev_requires.append(requires)
+full_requires = []
+for line in open("requirements-full.txt").read().split("\n"):
+    if line and not line.startswith("#"):
+        requires = re.sub(r"([^#]+)(\s*#.*$)?", r"\1", line)
+        full_requires.append(requires)
 
 
 setup(
@@ -83,7 +88,7 @@ setup(
         "term-background >= 1.0.1",
     ],
     entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main"]},
-    extras_require={"dev": dev_requires},
+    extras_require={"dev": dev_requires, "full": full_requires},
     long_description=long_description,
     long_description_content_type="text/x-rst",
     # don't pack Mathics in egg because of media files, etc.

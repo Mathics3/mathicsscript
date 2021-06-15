@@ -91,6 +91,7 @@ def bracket_left(event):
 def bracket_right(event):
     b = event.cli.current_buffer
     if not hasattr(event.app, "group_autocomplete"):
+        b.insert_text("]")
         return
     if event.app.group_autocomplete:
         char = b.document.current_char
