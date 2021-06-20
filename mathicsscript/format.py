@@ -2,12 +2,41 @@
 Format Mathics objects
 """
 
-import random
 import math
 import networkx as nx
+import random
+from tempfile import NamedTemporaryFile
+
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    plt = None
+
+try:
+    import matplotlib.image as mpimg
+except ImportError:
+    mpimg = None
+
+try:
+    from cairosvg import svg2png
+except ImportError:
+    svg2png = None
 
 
 def format_output(obj, expr, format=None):
+    def eval_boxes(result, fn, obj, **options):
+        try:
+            boxes = fn(evaluation=obj, **options)
+        except BoxError:
+            boxes = None
+            if not hasattr(obj, "seen_box_error"):
+                obj.seen_box_error = True
+                obj.message(
+                    "General", "notboxes", Expression("FullForm", result).evaluate(obj)
+                )
+
+        return boxes
+
     if format is None:
         format = obj.format
 
@@ -28,12 +57,20 @@ def format_output(obj, expr, format=None):
         if len(leaves) == 1:
             expr = leaves[0]
     elif expr_type in ("System`Graphics", "System`Plot"):
-        result = "-System Graphics-"
-        result = Expression("StandardForm", expr)
-        result = result.format(obj, "System`MathMLForm")
-        # ml_str = result.leaves[0].leaves[0]
-        # FIXME: not quite right. Need to parse out strings
-        # display_svg(str(ml_str))
+        form_expr = Expression("StandardForm", expr)
+        result = form_expr.format(obj, "System`StandardForm")
+        svg_str = eval_boxes(result, result.boxes_to_svg, obj)
+        if plt:
+            temp_png = NamedTemporaryFile(
+                mode="w+b", suffix=".png", prefix="mathicsscript-"
+            )
+            svg2png(bytestring=svg_str, write_to=temp_png.name)
+            plt.axes().set_axis_off()
+            img = mpimg.imread(temp_png)
+            plt.imshow(img)
+            plt.show()
+            temp_png.close()
+        return expr_type
 
     if format == "text":
         result = expr.format(obj, "System`OutputForm")
@@ -359,7 +396,6 @@ def format_graph(G):
     Format a Graph
     """
     # FIXME handle graphviz as well
-    import matplotlib.pyplot as plt
 
     global node_size
     global cached_pair

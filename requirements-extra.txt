@@ -1,2 +1,0 @@
-PyYAML # Used for admin-tools/make-tables.sh to build JSON tables
-PyQT5  # For rendering graphs via matplotlib
