@@ -73,7 +73,7 @@ class TerminalShellGNUReadline(TerminalShellCommon):
                     inputrc = "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
                     try:
                         read_init_file(str(parent_dir / inputrc))
-                    except:
+                    except:  # noqa
                         pass
 
                 parse_and_bind("tab: complete")
@@ -84,7 +84,7 @@ class TerminalShellGNUReadline(TerminalShellCommon):
                 read_history_file(HISTFILE)
             except IOError:
                 pass
-            except:
+            except:  # noqa
                 # PyPy read_history_file fails
                 pass
 
@@ -104,7 +104,7 @@ class TerminalShellGNUReadline(TerminalShellCommon):
             # any exception thrown inside the completer gets silently
             # thrown away otherwise
             print("Unhandled error in readline completion")
-        except:
+        except:  # noqa
             raise
 
     def _complete_named_characters(self, prefix, text, state):
@@ -154,5 +154,5 @@ class TerminalShellGNUReadline(TerminalShellCommon):
             set_history_length(self.history_length)
             # print(f"Writing {HISTFILE}")
             write_history_file(HISTFILE)
-        except:
+        except:  # noqa
             pass

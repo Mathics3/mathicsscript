@@ -49,7 +49,7 @@ color_scheme[MToken.NUMBER] = ("ansiblue", "ansibrightblue")
 
 from colorama import init as colorama_init
 
-## FIXME: __main__ shouldn't be needed. Fix term_background
+# FIXME: __main__ shouldn't be needed. Fix term_background
 from term_background.__main__ import is_dark_background
 
 HISTFILE = osp.join(CONFIGDIR, "history-ptk")

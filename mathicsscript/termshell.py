@@ -7,12 +7,9 @@ import locale
 import os
 import os.path as osp
 import pathlib
-import re
 import sys
 
 from mathics_pygments.lexer import MathematicaLexer, MToken
-from mathicsscript.completion import MathicsCompleter
-from mathicsscript.version import __version__
 
 from mathics.core.expression import (
     Expression,
@@ -23,10 +20,7 @@ from mathics.core.expression import (
 )
 from mathics.core.rules import Rule
 
-from mathicsscript.bindkeys import bindings, read_inputrc
-
 from pygments import format, highlight, lex
-from pygments.styles import get_style_by_name
 from pygments.formatters.terminal import TERMINAL_COLORS
 from pygments.formatters import Terminal256Formatter
 from pygments.styles import get_all_styles
@@ -44,7 +38,7 @@ color_scheme[MToken.NUMBER] = ("ansiblue", "ansibrightblue")
 
 from colorama import init as colorama_init
 
-## FIXME: __main__ shouldn't be needed. Fix term_background
+# FIXME: __main__ shouldn't be needed. Fix term_background
 from term_background.__main__ import is_dark_background
 
 # Set up mathicsscript configuration directory
