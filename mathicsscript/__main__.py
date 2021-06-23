@@ -61,14 +61,14 @@ def ensure_settings():
         try:
             with open(srcfn, "r") as src:
                 buffer = src.readlines()
-        except:
+        except IOError:
             print(f"'{srcfn}' was not found.")
             return ""
         try:
             with open(settings_file, "w") as dst:
-                for l in buffer:
-                    dst.write(l)
-        except:
+                for c in buffer:
+                    dst.write(c)
+        except IOError:
             print(f" '{settings_file}'  cannot be written.")
             return ""
     return settings_file
@@ -414,8 +414,8 @@ def main(
 
                 # Should we test exit code for adding to history?
                 GNU_readline.add_history(source_code.rstrip())
-                ## FIXME add this... when in Mathics core updated
-                ## shell.defintions.increment_line(1)
+                # FIXME add this... when in Mathics core updated
+                # shell.defintions.increment_line(1)
 
         except (KeyboardInterrupt):
             print("\nKeyboardInterrupt")
