@@ -103,7 +103,7 @@ class MathicsCompleter(WordCompleter):
             words = []
 
         def word_matches(word: str) -> bool:
-            """ True when the word before the cursor matches. """
+            """True when the word before the cursor matches."""
 
             if self.match_middle:
                 return word_before_cursor in word
