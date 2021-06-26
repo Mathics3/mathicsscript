@@ -60,7 +60,7 @@ def format_output(obj, expr, format=None):
         form_expr = Expression("StandardForm", expr)
         result = form_expr.format(obj, "System`StandardForm")
         svg_str = eval_boxes(result, result.boxes_to_svg, obj)
-        if plt:
+        if plt and svg2png:
             temp_png = NamedTemporaryFile(
                 mode="w+b", suffix=".png", prefix="mathicsscript-"
             )

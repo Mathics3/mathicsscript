@@ -75,8 +75,8 @@ setup(
         ]
     },
     install_requires=[
-        "Mathics_Scanner>=1.2.0",
-        "Mathics3 >= 2.2.0,<2.3.0",
+        "Mathics_Scanner>=1.2.2",
+        "Mathics3 >= 3.0.0,<3.2.0",
         "click",
         "colorama",
         "columnize",

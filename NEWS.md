@@ -1,3 +1,11 @@
+3.2.0
+-----
+
+* Many 2D plots and graphs can now be viewed via a matplotlib shell! PR #40.
+* In prompt-toolkit:
+   - Better word-boundary detection for `NamedCharacters`, `Symbols`
+   - Include grouping start symbols "(", "{", "[" in detection
+
 3.1.0
 -----
 
