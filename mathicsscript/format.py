@@ -64,12 +64,15 @@ def format_output(obj, expr, format=None):
             temp_png = NamedTemporaryFile(
                 mode="w+b", suffix=".png", prefix="mathicsscript-"
             )
-            svg2png(bytestring=svg_str, write_to=temp_png.name)
-            plt.axes().set_axis_off()
-            img = mpimg.imread(temp_png)
-            plt.imshow(img)
-            plt.show()
-            temp_png.close()
+            try:
+                svg2png(bytestring=svg_str, write_to=temp_png.name)
+                plt.axes().set_axis_off()
+                img = mpimg.imread(temp_png)
+                plt.imshow(img)
+                plt.show()
+                temp_png.close()
+            except:  # noqa
+                pass
         return expr_type
 
     if format == "text":
