@@ -59,8 +59,8 @@ def format_output(obj, expr, format=None):
     elif expr_type in ("System`Graphics", "System`Plot"):
         form_expr = Expression("StandardForm", expr)
         result = form_expr.format(obj, "System`StandardForm")
-        svg_str = eval_boxes(result, result.boxes_to_svg, obj)
-        if plt and svg2png:
+        if plt and svg2png and hasattr(result, "boxes_to_svg"):
+            svg_str = eval_boxes(result, result.boxes_to_svg, obj)
             temp_png = NamedTemporaryFile(
                 mode="w+b", suffix=".png", prefix="mathicsscript-"
             )
