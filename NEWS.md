@@ -1,3 +1,8 @@
+3.2.1
+-----
+
+Fix packaging issues and be more tolerant matplotlib errors.
+
 3.2.0
 -----
 
