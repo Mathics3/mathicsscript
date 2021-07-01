@@ -6,9 +6,10 @@ from subprocess import Popen, PIPE
 
 
 class asy:
-    def __init__(self):
+    def __init__(self, show_help=True):
         self.session = Popen(["asy", "-quiet", "-inpipe=0", "-outpipe=2"], stdin=PIPE)
-        self.help()
+        if show_help:
+            self.help()
 
     def send(self, cmd):
         self.session.stdin.write(bytes(cmd + "\n", "utf-8"))

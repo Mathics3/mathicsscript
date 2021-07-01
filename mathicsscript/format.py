@@ -22,6 +22,9 @@ try:
 except ImportError:
     svg2png = None
 
+from mathicsscript.asymptote import asy
+asymptote_graph=asy(show_help=False)
+asymptote_graph.size(200)
 
 def format_output(obj, expr, format=None):
     def eval_boxes(result, fn, obj, **options):
@@ -73,6 +76,18 @@ def format_output(obj, expr, format=None):
                 temp_png.close()
             except:  # noqa
                 pass
+        return expr_type
+    elif expr_type in ("System`Graphics3D",):
+        form_expr = Expression("TeXForm", expr)
+        result = form_expr.format(obj, "System`OutputForm")
+        # HACK ALERT
+        # Result is Expression[RowBox[List[String ...] so the following extracts
+        # the string part by hacky navigation.
+        asy_str = result.get_leaves()[0].get_leaves()[0].to_python(string_quotes=False)
+        # More hack alert: remove \n\begin{{asy} and \end{asy}
+        asy_lines = asy_str.split("\n")[2:-2]
+        asymptote_graph.erase()
+        asymptote_graph.send("\n".join(asy_lines))
         return expr_type
 
     if format == "text":
