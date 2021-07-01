@@ -21,7 +21,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        brew install mathicsscript
+        brew install asymptote
         python -m pip install --upgrade pip
         python -m pip install -e .
         # Can remove when next Mathics is released
