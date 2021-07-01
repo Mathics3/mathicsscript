@@ -23,8 +23,10 @@ except ImportError:
     svg2png = None
 
 from mathicsscript.asymptote import asy
-asymptote_graph=asy(show_help=False)
+
+asymptote_graph = asy(show_help=False)
 asymptote_graph.size(200)
+
 
 def format_output(obj, expr, format=None):
     def eval_boxes(result, fn, obj, **options):
