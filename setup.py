@@ -46,21 +46,19 @@ exec(read("mathicsscript/version.py"))
 
 is_PyPy = platform.python_implementation() == "PyPy"
 
-dev_requires = []
-for line in open("requirements-dev.txt").read().split("\n"):
-    if line and not line.startswith("#"):
-        requires = re.sub(r"([^#]+)(\s*#.*$)?", r"\1", line)
-        dev_requires.append(requires)
-full_requires = []
-for line in open("requirements-full.txt").read().split("\n"):
-    if line and not line.startswith("#"):
-        requires = re.sub(r"([^#]+)(\s*#.*$)?", r"\1", line)
-        full_requires.append(requires)
-
+EXTRAS_REQUIRE = {}
+for kind in ("dev", "full"):
+    extras_require = []
+    requirements_file = f"requirements-{kind}.txt"
+    for line in open(requirements_file).read().split("\n"):
+        if line and not line.startswith("#"):
+            requires = re.sub(r"([^#]+)(\s*#.*$)?", r"\1", line)
+            extras_require.append(requires)
+    EXTRAS_REQUIRE[kind] = extras_require
 
 setup(
     maintainer="Mathics Group",
-    maintainer_email="mathic-devel@googlegroups.com",
+    maintainer_email="mathics-devel@googlegroups.com",
     author_email="rb@dustyfeet.com",
     name="mathicsscript",
     version=__version__,  # noqa
@@ -88,7 +86,7 @@ setup(
         "term-background >= 1.0.1",
     ],
     entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main"]},
-    extras_require={"dev": dev_requires, "full": full_requires},
+    extras_require=EXTRAS_REQUIRE,
     long_description=long_description,
     long_description_content_type="text/x-rst",
     # don't pack Mathics in egg because of media files, etc.
