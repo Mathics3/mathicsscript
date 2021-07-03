@@ -8,6 +8,7 @@ import random
 from tempfile import NamedTemporaryFile
 
 from mathics.core.expression import String
+
 try:
     import matplotlib.pyplot as plt
 except ImportError:
