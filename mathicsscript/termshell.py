@@ -115,14 +115,20 @@ class TerminalShellCommon(MathicsLineFeeder):
 
         self.pygments_style = style
         self.definitions = definitions
-        set_settings_value(self.definitions,
-                           "Settings`$PygmentsShowTokens", from_python(False))
-        set_settings_value(self.definitions,
-                           "Settings`$PygmentsStyle", from_python(style))
-        set_settings_value(self.definitions,
-                           "Settings`$UseUnicode", from_python(use_unicode))
-        set_settings_value(self.definitions,
-                           "Settings`PygmentsStylesAvailable", from_python(ALL_PYGMENTS_STYLES))
+        set_settings_value(
+            self.definitions, "Settings`$PygmentsShowTokens", from_python(False)
+        )
+        set_settings_value(
+            self.definitions, "Settings`$PygmentsStyle", from_python(style)
+        )
+        set_settings_value(
+            self.definitions, "Settings`$UseUnicode", from_python(use_unicode)
+        )
+        set_settings_value(
+            self.definitions,
+            "Settings`PygmentsStylesAvailable",
+            from_python(ALL_PYGMENTS_STYLES),
+        )
         self.definitions.add_message(
             "Settings`PygmentsStylesAvailable",
             Rule(
@@ -223,15 +229,18 @@ class TerminalShellCommon(MathicsLineFeeder):
             if eval_type == "System`Graph":
                 out_str = "-Graph-"
             elif self.terminal_formatter:  # pygmentize
-                show_pygments_tokens = get_settings_value(self.definitions,
-                                                         "Settings`$PygmentsShowTokens")
-                pygments_style = get_settings_value(self.definitions,
-                                                   "Settings`$PygmentsStyle")
+                show_pygments_tokens = get_settings_value(
+                    self.definitions, "Settings`$PygmentsShowTokens"
+                )
+                pygments_style = get_settings_value(
+                    self.definitions, "Settings`$PygmentsStyle"
+                )
                 if pygments_style != self.pygments_style:
                     if not self.change_pygments_style(pygments_style):
-                        set_settings_value(self.definitions,
-                                          "Settings`$PygmentsStyle",
-                                          String(self.pygments_style)
+                        set_settings_value(
+                            self.definitions,
+                            "Settings`$PygmentsStyle",
+                            String(self.pygments_style),
                         )
 
                 if show_pygments_tokens:
