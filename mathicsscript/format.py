@@ -7,6 +7,7 @@ import networkx as nx
 import random
 from tempfile import NamedTemporaryFile
 
+from mathics.core.expression import String
 try:
     import matplotlib.pyplot as plt
 except ImportError:
@@ -68,10 +69,9 @@ def format_output(obj, expr, format=None):
         if len(leaves) == 1:
             expr = leaves[0]
     elif expr_type in ("System`Graphics", "System`Plot"):
-        form_expr = Expression("StandardForm", expr)
-        result = form_expr.format(obj, "System`StandardForm")
-        if plt and svg2png and hasattr(result, "boxes_to_svg"):
-            svg_str = eval_boxes(result, result.boxes_to_svg, obj)
+        if plt and svg2png:
+            svg_expr = Expression("ExportString", expr, String("SVG"))
+            svg_str = svg_expr.evaluate(obj).to_python(string_quotes=False)
             temp_png = NamedTemporaryFile(
                 mode="w+b", suffix=".png", prefix="mathicsscript-"
             )
@@ -86,16 +86,10 @@ def format_output(obj, expr, format=None):
                 pass
         return expr_type
     elif expr_type in ("System`Graphics3D",) and have_asymptote:
-        form_expr = Expression("TeXForm", expr)
-        result = form_expr.format(obj, "System`OutputForm")
-        # HACK ALERT
-        # Result is Expression[RowBox[List[String ...] so the following extracts
-        # the string part by hacky navigation.
-        asy_str = result.get_leaves()[0].get_leaves()[0].to_python(string_quotes=False)
-        # More hack alert: remove \n\begin{{asy} and \end{asy}
-        asy_lines = asy_str.split("\n")[2:-2]
+        asy_expr = Expression("ExportString", expr, String("asy"))
+        asy_str = asy_expr.evaluate(obj).to_python(string_quotes=False)
         asymptote_graph.erase()
-        asymptote_graph.send("\n".join(asy_lines))
+        asymptote_graph.send(asy_str)
         return expr_type
 
     if format == "text":
