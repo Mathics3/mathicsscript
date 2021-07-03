@@ -1,3 +1,9 @@
+3.3.0
+-----
+
+* 3D Graphics is now handled if Asymptote is installed.
+* ``Settings`$UseMatplotlib`` and ``Settings`$UseAsymptote`` were added. The can disable the use of matplotlib and Asymptote when those are available.
+
 3.2.1
 -----
 
