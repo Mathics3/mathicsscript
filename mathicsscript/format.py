@@ -8,6 +8,7 @@ import random
 from tempfile import NamedTemporaryFile
 
 from mathics.core.expression import String
+from mathics.session import get_settings_value
 
 try:
     import matplotlib.pyplot as plt
@@ -70,7 +71,11 @@ def format_output(obj, expr, format=None):
         if len(leaves) == 1:
             expr = leaves[0]
     elif expr_type in ("System`Graphics", "System`Plot"):
-        if plt and svg2png:
+        if (
+            get_settings_value(obj.definitions, "Settings`$UseMatplotlib")
+            and plt
+            and svg2png
+        ):
             svg_expr = Expression("ExportString", expr, String("SVG"))
             svg_str = svg_expr.evaluate(obj).to_python(string_quotes=False)
             temp_png = NamedTemporaryFile(
@@ -86,7 +91,11 @@ def format_output(obj, expr, format=None):
             except:  # noqa
                 pass
         return expr_type
-    elif expr_type in ("System`Graphics3D",) and have_asymptote:
+    elif (
+        expr_type in ("System`Graphics3D",)
+        and have_asymptote
+        and get_settings_value(obj.definitions, "Settings`$UseAsymptote")
+    ):
         asy_expr = Expression("ExportString", expr, String("asy"))
         asy_str = asy_expr.evaluate(obj).to_python(string_quotes=False)
         asymptote_graph.erase()

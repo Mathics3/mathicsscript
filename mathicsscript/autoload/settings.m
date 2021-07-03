@@ -27,6 +27,9 @@ Settings`$UseUnicode = True
 Settings`$UseAsymptote::usage = "This Boolean variable sets whether 3D Graphics should render using Asymptote."
 Settings`$UseAsymptote = True
 
+Settings`$UseMatplotlib::usage = "This Boolean variable sets whether 2D Graphics should render using Matplotlib."
+Settings`$UseMatplotlib = True
+
 Settings`MathicsScriptVersion::usage = "This string is the version of MathicsScript we are running."
 
 System`$Notebooks::usage = "Set True if the Mathics is being used with a notebook-based front end."
