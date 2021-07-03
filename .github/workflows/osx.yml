@@ -23,9 +23,9 @@ jobs:
       run: |
         brew install asymptote
         python -m pip install --upgrade pip
-        python -m pip install -e .
         # Can comment out when next Mathics is released
         python -m pip install -e git://github.com/mathics/Mathics#egg=Mathics3
+        python -m pip install -e .
     - name: Install mathicsscript
       run: |
         make

@@ -12,12 +12,13 @@ See the `screenshot directory <https://github.com/Mathics3/mathicsscript/tree/ma
 Features
 --------
 
-* GNU Readline terminal interaction. This includes
+* `prompt_toolkit <https://python-prompt-toolkit.readthedocs.io/en/stable>`_ and GNU Readline terminal interaction. This includes:
    - saving command history between sessions.
    - variable completion, even for symbol names like `\\[Sigma]`
    - limited ESC keyboard input; for example *esc* ``p`` *esc* is π
-* Syntax highlighting using `pygments <https://pygments.org>`_.
+* Syntax highlighting using `mathics-pygments <https://pypi.org/project/mathics-pygments/>`_ which includes dynamically created variables and functions.
 * Automatic detection of light or dark `terminal background color <https://pypi.org/project/term-background/>`_.
+* Optional Graphics rendering via `matplotlib <https://matplotlib.org/>`_ for 2D graphics, and `Asymptote <https://asymptote.sourceforge.io>`_ for 3D graphcs.
 * Entering and displaying Unicode symbols such as used for Pi or Rule arrows
 * Provision for running in non-interactive batch mode which an be used inside POSIX shells
 
@@ -45,9 +46,9 @@ Once install run using ``mathicsscript``:
 ::
 
    $ mathicsscript
-   Mathicscript: 2.1.2, Mathics 2.1.1.dev0
-   on CPython 3.7.10 (default, Feb 27 2021, 08:15:51)
-   using SymPy 1.7.1, mpmath 1.2.1, numpy 1.20.1
+   Mathicscript: 3.2.2.dev0, Mathics 3.1.0.dev0
+   on CPython 3.7.10 (default, Feb 23 2021, 10:13:46)
+   using SymPy 1.8, mpmath 1.2.1, numpy 1.20.2, cython 0.29.22
 
    Copyright (C) 2011-2021 The Mathics Team.
    This program comes with ABSOLUTELY NO WARRANTY.
