@@ -1,12 +1,13 @@
 include README.rst
-include NEWS.rst
+include NEWS.md
 include ChangeLog
-include COPYING
+include COPYING.txt
 include Makefile
+include mathicsscript/autoload/settings.m
 include mathicsscript/data/inputrc-no-unicode
 include mathicsscript/data/inputrc-unicode
 include mathicsscript/data/mma-tables.json
-include mathicsscript/data/user-settings.m
+include mathicsscript/user-settings.m
 recursive-include mathicsscript *.py
 recursive-include test *.py *.m
 recursive-exclude __pycache__ *.pyc

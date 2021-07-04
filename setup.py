@@ -69,7 +69,7 @@ setup(
             "mathicsscript/data/inputrc-no-unicode",
             "mathicsscript/data/inputrc-unicode",
             "mathicsscript/user-settings.m",
-            "mathicsscript/autoload/*.m",
+            "mathicsscript/autoload/settings.m",
         ]
     },
     install_requires=[
