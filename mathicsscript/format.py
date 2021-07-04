@@ -22,7 +22,7 @@ except ImportError:
 
 try:
     from cairosvg import svg2png
-except ImportError:
+except:  # noqa
     svg2png = None
 
 from mathicsscript.asymptote import asy
