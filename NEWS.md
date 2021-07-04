@@ -1,3 +1,9 @@
+3.3.1
+-----
+
+* Packaging issues: getting setttings.m file into distribution and other missing files
+* More pervasive handling of import errors
+
 3.3.0
 -----
 

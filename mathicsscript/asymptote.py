@@ -43,7 +43,7 @@ class asy:
         )
 
     def __del__(self):
-        print("closing Asymptote session...")
+        # print("closing Asymptote session...")
         self.send("quit")
         self.session.stdin.close()
         self.session.wait()
