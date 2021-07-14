@@ -14,7 +14,7 @@ Features
 
 * `prompt_toolkit <https://python-prompt-toolkit.readthedocs.io/en/stable>`_ and GNU Readline terminal interaction. This includes:
    - saving command history between sessions.
-   - variable completion, even for symbol names like `\\[Sigma]`
+   - variable completion, even for symbol names like ``\\[Sigma]``
    - limited ESC keyboard input; for example *esc* ``p`` *esc* is π
 * Syntax highlighting using `mathics-pygments <https://pypi.org/project/mathics-pygments/>`_ which includes dynamically created variables and functions.
 * Automatic detection of light or dark `terminal background color <https://pypi.org/project/term-background/>`_.
