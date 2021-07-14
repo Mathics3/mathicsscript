@@ -103,8 +103,8 @@ needs to load the extra layers that aren't used. And when something
 goes wrong, it is harder to track down problems.
 
 At the other end of the spectrum, if the dependencies of this package
-are too onerous and you want even simpler, lighter-weight terminal interaction _without_
-and of the features mentioend above, use ``mathics`` which is distributed as part of
+are too onerous and you want even simpler, lighter-weight terminal interaction *without*
+any of the features mentioned above, use ``mathics`` which is distributed as part of
 the core Mathic3 package.
 
 
