@@ -25,11 +25,11 @@ try:
 except:  # noqa
     svg2png = None
 
-from mathicsscript.asymptote import asy
+from mathicsscript.asymptote import Asy
 
 have_asymptote = False
 try:
-    asymptote_graph = asy(show_help=False)
+    asymptote_graph = Asy(show_help=False)
 except:
     asymptote_graph = None
 else:
