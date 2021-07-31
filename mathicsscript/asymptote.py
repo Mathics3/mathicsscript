@@ -7,9 +7,7 @@ from subprocess import Popen, PIPE
 
 class Asy(object):
     def __init__(self, show_help=True):
-        self.session = Popen(
-            ["asy", "-quiet", "-noView", "-inpipe=0", "-outpipe=2"], stdin=PIPE
-        )
+        self.session = Popen(["asy", "-quiet", "-inpipe=0", "-outpipe=2"], stdin=PIPE)
         if show_help:
             self.help()
 
