@@ -5,7 +5,7 @@
 from subprocess import Popen, PIPE
 
 
-class asy:
+class Asy(object):
     def __init__(self, show_help=True):
         self.session = Popen(["asy", "-quiet", "-inpipe=0", "-outpipe=2"], stdin=PIPE)
         if show_help:
@@ -15,23 +15,23 @@ class asy:
         self.session.stdin.write(bytes(cmd + "\n", "utf-8"))
         self.session.stdin.flush()
 
-    def size(self, size):
+    def size(self, size: int):
         self.send("size(%d);" % size)
 
-    def draw(self, str):
-        self.send("draw(%s);" % str)
+    def draw(self, s: str):
+        self.send(f"draw({s});")
 
-    def fill(self, str):
-        self.send("fill(%s);" % str)
+    def fill(self, s: str):
+        self.send(f"fill({s});")
 
-    def clip(self, str):
-        self.send("clip(%s);" % str)
+    def clip(self, s: str):
+        self.send(f"clip({s});")
 
-    def label(self, str):
-        self.send("label(%s);" % str)
+    def label(self, s: str):
+        self.send(f"label({s});")
 
-    def shipout(self, str):
-        self.send('shipout("%s");' % str)
+    def shipout(self, s: str):
+        self.send(f'shipout("{s}");')
 
     def erase(self):
         self.send("erase();")
@@ -54,7 +54,7 @@ class asy:
 
 
 if __name__ == "__main__":
-    g = asy()
+    g = Asy()
     g.size(200)
     g.draw("unitcircle")
     g.send("draw(unitsquare)")
