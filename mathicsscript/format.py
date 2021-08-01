@@ -71,15 +71,14 @@ def format_output(obj, expr, format=None):
         if len(leaves) == 1:
             expr = leaves[0]
     elif expr_type == "System`Image":
-        if (
-            get_settings_value(obj.definitions, "Settings`$UseMatplotlib")
-            and plt
-        ):
+        if get_settings_value(obj.definitions, "Settings`$UseMatplotlib") and plt:
             temp_png = NamedTemporaryFile(
                 mode="w+b", suffix=".png", prefix="mathicsscript-"
             )
             try:
-                png_expr = Expression("Export", String(temp_png.name), expr, String("PNG"))
+                png_expr = Expression(
+                    "Export", String(temp_png.name), expr, String("PNG")
+                )
                 result = png_expr.evaluate(obj)
                 plt.axes().set_axis_off()
                 img = mpimg.imread(temp_png)
