@@ -70,10 +70,11 @@ setup(
             "mathicsscript/data/inputrc-unicode",
             "mathicsscript/user-settings.m",
             "mathicsscript/autoload/settings.m",
+            "mathicsscript/config.asy",
         ]
     },
     install_requires=[
-        "Mathics_Scanner>=1.2.2",
+        "Mathics_Scanner>=1.2.4",
         "Mathics3 >= 4.0.0,<4.1.0",
         "click",
         "colorama",
@@ -85,7 +86,12 @@ setup(
         "mathics_pygments>=1.0.2",
         "term-background >= 1.0.1",
     ],
-    entry_points={"console_scripts": ["mathicsscript = mathicsscript.__main__:main"]},
+    entry_points={
+        "console_scripts": [
+            "mathicsscript = mathicsscript.__main__:main",
+            "fake_psviewer.py = mathicsscript.fake_psviewer:main",
+        ]
+    },
     extras_require=EXTRAS_REQUIRE,
     long_description=long_description,
     long_description_content_type="text/x-rst",

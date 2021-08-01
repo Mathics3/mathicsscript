@@ -1,13 +1,31 @@
 #!/usr/bin/env python3
+"""Python module to feed Asymptote with commands
+(modified from gnuplot.py)
+"""
 
-# Python module to feed Asymptote with commands
-# (modified from gnuplot.py)
+import os
+import os.path as osp
+
 from subprocess import Popen, PIPE
+
+asy_program = os.environ.get("ASY_PROG", "asy")
+
+
+def get_srcdir():
+    filename = osp.normcase(osp.dirname(osp.abspath(__file__)))
+    return osp.realpath(filename)
+
+
+mydir = get_srcdir()
+asy_config = os.path.join(mydir, "config.asy")
 
 
 class Asy(object):
     def __init__(self, show_help=True):
-        self.session = Popen(["asy", "-quiet", "-inpipe=0", "-outpipe=2"], stdin=PIPE)
+        self.session = Popen(
+            [asy_program, f"-config={asy_config}", "-quiet", "-inpipe=0", "-outpipe=2"],
+            stdin=PIPE,
+        )
         if show_help:
             self.help()
 

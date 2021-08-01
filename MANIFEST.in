@@ -4,9 +4,11 @@ include ChangeLog
 include COPYING.txt
 include Makefile
 include mathicsscript/autoload/settings.m
+include mathicsscript/config.asy
 include mathicsscript/data/inputrc-no-unicode
 include mathicsscript/data/inputrc-unicode
 include mathicsscript/data/mma-tables.json
+include mathicsscript/fake_psviewer.py
 include mathicsscript/user-settings.m
 recursive-include mathicsscript *.py
 recursive-include test *.py *.m
