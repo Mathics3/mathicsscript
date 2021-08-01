@@ -1,3 +1,12 @@
+4.0.0
+-----
+
+* Handle images via PNG and matplotlib
+* Packaging: include matplotlib in full install
+* Customize Asymptote configuration and add a psviewer that removes eps trash
+* Bump minimum Mathics core version to 4.0.0
+* Bug fix: Check if `self` has `session` attribute in `asy.__del__`
+
 3.3.1
 -----
 
