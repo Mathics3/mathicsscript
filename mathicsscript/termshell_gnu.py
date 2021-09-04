@@ -72,7 +72,7 @@ class TerminalShellGNUReadline(TerminalShellCommon):
                 with parent_dir:
                     inputrc = "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
                     try:
-                        read_init_file(str(parent_dir / inputrc))
+                        read_init_file(str(parent_dir / "data" / inputrc))
                     except:  # noqa
                         pass
 
