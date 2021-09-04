@@ -52,7 +52,7 @@ try:
 except:
     HISTSIZE = 50
 
-HISTFILE = osp.join(CONFIGDIR, "history")
+HISTFILE = os.environ.get("MATHICS_HISTFILE", osp.join(CONFIGDIR, "history"))
 
 # Create HISTFILE if it doesn't exist already
 if not osp.isfile(HISTFILE):
