@@ -27,7 +27,7 @@ from mathicsscript.format import format_output
 from mathics_scanner import replace_wl_with_plain_text
 from mathics.core.parser import MathicsFileLineFeeder
 from mathics.core.definitions import autoload_files, Definitions
-from mathics.core.expression import Symbol, SymbolTrue, SymbolFalse
+from mathics.core.symbols import Symbol, SymbolTrue, SymbolFalse
 from mathics.core.evaluation import Evaluation, Output
 from mathics.core.expression import from_python
 from mathics import version_string, license_string

@@ -10,11 +10,10 @@ import pathlib
 import sys
 
 from mathics_pygments.lexer import MathematicaLexer, MToken
-
-from mathics.core.expression import (
-    Expression,
+from mathics.core.symbols import Symbol
+from mathics.core.expression import Expression
+from mathics.core.atoms import(
     String,
-    Symbol,
     # strip_context,
     from_python,
 )
