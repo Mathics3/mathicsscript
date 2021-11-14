@@ -17,7 +17,8 @@ from mathicsscript.termshell import (
 )
 from mathicsscript.version import __version__
 
-from mathics.core.expression import Expression, String, Symbol, from_python
+from mathics.core.atoms import String
+from mathics.core.expression import Expression, Symbol, from_python
 from mathics.core.rules import Rule
 
 from mathicsscript.bindkeys import bindings, read_inputrc
