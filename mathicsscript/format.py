@@ -7,7 +7,7 @@ import networkx as nx
 import random
 from tempfile import NamedTemporaryFile
 
-from mathics.core.expression import String
+from mathics.core.atoms import String
 from mathics.session import get_settings_value
 
 try:

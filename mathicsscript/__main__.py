@@ -7,6 +7,7 @@ import os
 import os.path as osp
 import subprocess
 from pathlib import Path
+from pygments import highlight
 
 from mathicsscript.termshell import ShellEscapeException, mma_lexer
 
@@ -24,16 +25,15 @@ else:
 
 from mathicsscript.format import format_output
 
-from mathics_scanner import replace_wl_with_plain_text
-from mathics.core.parser import MathicsFileLineFeeder
+from mathics.core.atoms import Symbol, SymbolTrue, SymbolFalse
 from mathics.core.definitions import autoload_files, Definitions
-from mathics.core.expression import Symbol, SymbolTrue, SymbolFalse
 from mathics.core.evaluation import Evaluation, Output
 from mathics.core.expression import from_python
+from mathics.core.parser import MathicsFileLineFeeder
 from mathics import version_string, license_string
 from mathics import settings
 
-from pygments import highlight
+from mathics_scanner import replace_wl_with_plain_text
 
 
 def get_srcdir():

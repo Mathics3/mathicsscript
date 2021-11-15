@@ -11,10 +11,9 @@ import sys
 
 from mathics_pygments.lexer import MathematicaLexer, MToken
 
+from mathics.core.atoms import String, Symbol
 from mathics.core.expression import (
     Expression,
-    String,
-    Symbol,
     # strip_context,
     from_python,
 )
