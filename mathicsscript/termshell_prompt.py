@@ -18,6 +18,7 @@ from mathicsscript.termshell import (
 from mathicsscript.version import __version__
 
 from mathics.core.atoms import String
+from mathics.core.attributes import attribute_string_to_number
 from mathics.core.expression import Expression, Symbol, from_python
 from mathics.core.rules import Rule
 
@@ -131,12 +132,12 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             ),
         )
         self.definitions.set_attribute(
-            "Settings`PygmentsStylesAvailable", "System`Protected"
+            "Settings`PygmentsStylesAvailable", attribute_string_to_number["System`Protected"]
         )
         self.definitions.set_attribute(
-            "Settings`PygmentsStylesAvailable", "System`Locked"
+            "Settings`PygmentsStylesAvailable", attribute_string_to_number["System`Locked"]
         )
-        self.definitions.set_attribute("Settings`$UseUnicode", "System`Locked")
+        self.definitions.set_attribute("Settings`$UseUnicode", attribute_string_to_number["System`Locked"])
         self.completer = MathicsCompleter(self.definitions) if want_completion else None
 
     def bottom_toolbar(self):

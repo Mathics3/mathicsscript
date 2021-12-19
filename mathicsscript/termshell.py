@@ -12,6 +12,7 @@ import sys
 from mathics_pygments.lexer import MathematicaLexer, MToken
 
 from mathics.core.atoms import String, Symbol
+from mathics.core.attributes import attribute_string_to_number
 from mathics.core.expression import (
     Expression,
     # strip_context,
@@ -142,12 +143,13 @@ class TerminalShellCommon(MathicsLineFeeder):
             ),
         )
         self.definitions.set_attribute(
-            "Settings`PygmentsStylesAvailable", "System`Protected"
+            "Settings`PygmentsStylesAvailable", attribute_string_to_number["System`Protected"]
         )
         self.definitions.set_attribute(
-            "Settings`PygmentsStylesAvailable", "System`Locked"
+            "Settings`PygmentsStylesAvailable", attribute_string_to_number["System`Locked"]
         )
-        self.definitions.set_attribute("Settings`$UseUnicode", "System`Locked")
+        self.definitions.set_attribute("Settings`$UseUnicode",
+                                       attribute_string_to_number["System`Locked"])
 
     def change_pygments_style(self, style: str):
         if style == self.pygments_style:

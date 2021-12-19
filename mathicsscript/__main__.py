@@ -9,8 +9,8 @@ import subprocess
 from pathlib import Path
 from pygments import highlight
 
+from mathics.core.attributes import attribute_string_to_number
 from mathicsscript.termshell import ShellEscapeException, mma_lexer
-
 from mathicsscript.termshell_gnu import TerminalShellGNUReadline
 from mathicsscript.termshell_prompt import TerminalShellPromptToolKit
 
@@ -344,8 +344,10 @@ def main(
         "Settings`$PygmentsShowTokens", from_python(pygments_tokens)
     )
     definitions.set_ownvalue("Settings`MathicsScriptVersion", from_python(__version__))
-    definitions.set_attribute("Settings`MathicsScriptVersion", "System`Protected")
-    definitions.set_attribute("Settings`MathicsScriptVersion", "System`Locked")
+    definitions.set_attribute("Settings`MathicsScriptVersion",
+                              attribute_string_to_number["System`Protected"])
+    definitions.set_attribute("Settings`MathicsScriptVersion",
+                              attribute_string_to_number["System`Locked"])
     TeXForm = Symbol("System`TeXForm")
 
     definitions.set_line_no(0)
