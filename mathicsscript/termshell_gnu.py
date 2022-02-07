@@ -8,7 +8,7 @@ import sys
 import re
 from mathics_scanner import named_characters
 from mathicsscript.termshell import CONFIGDIR, HISTSIZE, TerminalShellCommon
-from mathics.core.expression import strip_context
+from mathics.core.symbols import strip_context
 
 from pygments.styles import get_all_styles
 

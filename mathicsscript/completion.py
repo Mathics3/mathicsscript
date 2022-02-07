@@ -19,7 +19,7 @@ import re
 
 from typing import Iterable, NamedTuple
 
-from mathics.core.expression import strip_context
+from mathics.core.symbols import strip_context
 from mathics_scanner import named_characters
 from mathics_pygments.lexer import Regex
 from prompt_toolkit.completion import CompleteEvent, Completion, WordCompleter
