@@ -145,9 +145,12 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         # TODO: Figure out how allow user-customization
         app = get_app()
         edit_mode = "Vi" if app.editing_mode == EditingMode.VI else "Emacs"
-        if not hasattr(app, "group_autocomplete"):
-            app.group_autocomplete = True
-
+        
+       app.group_autocomplete = True
+        
+        if self.definitions.get_ownvalue("Settings`$GroupAutocomplete"):
+            app.group_autocomplete = self.definitions.get_ownvalue("Settings`$GroupAutocomplete").replace.to_python()
+            
         edit_mode = "Vi" if app.editing_mode == EditingMode.VI else "Emacs"
         return HTML(
             f" mathicsscript: {__version__}, Style: {self.pygments_style}, Mode: {edit_mode}, Autobrace: {app.group_autocomplete}"
