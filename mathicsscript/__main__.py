@@ -344,10 +344,12 @@ def main(
         "Settings`$PygmentsShowTokens", from_python(pygments_tokens)
     )
     definitions.set_ownvalue("Settings`MathicsScriptVersion", from_python(__version__))
-    definitions.set_attribute("Settings`MathicsScriptVersion",
-                              attribute_string_to_number["System`Protected"])
-    definitions.set_attribute("Settings`MathicsScriptVersion",
-                              attribute_string_to_number["System`Locked"])
+    definitions.set_attribute(
+        "Settings`MathicsScriptVersion", attribute_string_to_number["System`Protected"]
+    )
+    definitions.set_attribute(
+        "Settings`MathicsScriptVersion", attribute_string_to_number["System`Locked"]
+    )
     TeXForm = Symbol("System`TeXForm")
 
     definitions.set_line_no(0)

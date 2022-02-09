@@ -34,3 +34,6 @@ Settings`MathicsScriptVersion::usage = "This string is the version of MathicsScr
 
 System`$Notebooks::usage = "Set True if the Mathics is being used with a notebook-based front end."
 System`$Notebooks = False
+
+Settings`$GroupAutocomplete::usage = "This Boolean variable sets whether mathicsscript should automatically close braces."
+Settings`$GroupAutocomplete = True

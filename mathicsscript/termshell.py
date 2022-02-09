@@ -143,13 +143,16 @@ class TerminalShellCommon(MathicsLineFeeder):
             ),
         )
         self.definitions.set_attribute(
-            "Settings`PygmentsStylesAvailable", attribute_string_to_number["System`Protected"]
+            "Settings`PygmentsStylesAvailable",
+            attribute_string_to_number["System`Protected"],
         )
         self.definitions.set_attribute(
-            "Settings`PygmentsStylesAvailable", attribute_string_to_number["System`Locked"]
+            "Settings`PygmentsStylesAvailable",
+            attribute_string_to_number["System`Locked"],
         )
-        self.definitions.set_attribute("Settings`$UseUnicode",
-                                       attribute_string_to_number["System`Locked"])
+        self.definitions.set_attribute(
+            "Settings`$UseUnicode", attribute_string_to_number["System`Locked"]
+        )
 
     def change_pygments_style(self, style: str):
         if style == self.pygments_style:

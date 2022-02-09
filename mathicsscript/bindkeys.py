@@ -44,6 +44,8 @@ def paren_left(event):
         return
     if event.app.group_autocomplete:
         b.insert_text(")", move_cursor=False)
+
+
 @bindings.add("[")
 def bracket_left(event):
     b = event.cli.current_buffer
@@ -52,8 +54,6 @@ def bracket_left(event):
         return
     if event.app.group_autocomplete:
         b.insert_text("]", move_cursor=False)
-
-
 
 
 # Add an additional key binding for toggling this flag.
