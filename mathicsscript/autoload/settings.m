@@ -33,4 +33,7 @@ Settings`$UseMatplotlib = True
 Settings`MathicsScriptVersion::usage = "This string is the version of MathicsScript we are running."
 
 System`$Notebooks::usage = "Set True if the Mathics is being used with a notebook-based front end."
+
+Settings`$MouseSupport = False
+Settings`$MouseSupport::usage = "Set True to enable mouse support"
 System`$Notebooks = False
