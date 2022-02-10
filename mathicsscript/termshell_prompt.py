@@ -232,6 +232,7 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             key_bindings=bindings,
             lexer=self.mma_pygments_lexer,
             style=style,
+            mouse_support=self.definitions.get_ownvalue("Settings`$MouseSupport").replace.to_python()
         )
         # line = self.rl_read_line(prompt)
         if line.startswith("!") and self.lineno == 0:
