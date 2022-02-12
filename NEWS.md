@@ -1,3 +1,8 @@
+4.0.1dev
+--------
+
+* Add $GroupAutoComplete setting (default True) to disable completing closer group symbol. Feature provided by DUO Labs.
+
 4.0.0
 -----
 

@@ -132,12 +132,16 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             ),
         )
         self.definitions.set_attribute(
-            "Settings`PygmentsStylesAvailable", attribute_string_to_number["System`Protected"]
+            "Settings`PygmentsStylesAvailable",
+            attribute_string_to_number["System`Protected"],
         )
         self.definitions.set_attribute(
-            "Settings`PygmentsStylesAvailable", attribute_string_to_number["System`Locked"]
+            "Settings`PygmentsStylesAvailable",
+            attribute_string_to_number["System`Locked"],
         )
-        self.definitions.set_attribute("Settings`$UseUnicode", attribute_string_to_number["System`Locked"])
+        self.definitions.set_attribute(
+            "Settings`$UseUnicode", attribute_string_to_number["System`Locked"]
+        )
         self.completer = MathicsCompleter(self.definitions) if want_completion else None
 
     def bottom_toolbar(self):
@@ -145,8 +149,13 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         # TODO: Figure out how allow user-customization
         app = get_app()
         edit_mode = "Vi" if app.editing_mode == EditingMode.VI else "Emacs"
-        if not hasattr(app, "group_autocomplete"):
-            app.group_autocomplete = True
+
+        app.group_autocomplete = True
+
+        if self.definitions.get_ownvalue("Settings`$GroupAutocomplete"):
+            app.group_autocomplete = self.definitions.get_ownvalue(
+                "Settings`$GroupAutocomplete"
+            ).replace.to_python()
 
         edit_mode = "Vi" if app.editing_mode == EditingMode.VI else "Emacs"
         return HTML(

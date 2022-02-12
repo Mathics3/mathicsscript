@@ -25,12 +25,12 @@ from mathics_pygments.lexer import Regex
 from prompt_toolkit.completion import CompleteEvent, Completion, WordCompleter
 from prompt_toolkit.document import Document
 
-SYMBOLS = fr"[`]?({Regex.IDENTIFIER}|{Regex.NAMED_CHARACTER})(`({Regex.IDENTIFIER}|{Regex.NAMED_CHARACTER}))+[`]?"
+SYMBOLS = rf"[`]?({Regex.IDENTIFIER}|{Regex.NAMED_CHARACTER})(`({Regex.IDENTIFIER}|{Regex.NAMED_CHARACTER}))+[`]?"
 
 if False:  # FIXME reinstate this
-    NAMED_CHARACTER_START = fr"\\\[{Regex.IDENTIFIER}"
+    NAMED_CHARACTER_START = rf"\\\[{Regex.IDENTIFIER}"
     FIND_MATHICS_WORD_RE = re.compile(
-        fr"({NAMED_CHARACTER_START})|(?:.*[\[\(])?({SYMBOLS}$)"
+        rf"({NAMED_CHARACTER_START})|(?:.*[\[\(])?({SYMBOLS}$)"
     )
 FIND_MATHICS_WORD_RE = re.compile(r"((?:\[)?[^\s\[\(\{]+)")
 CHARGROUP_START = frozenset(["(", "[", "{", ","])
