@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2021 Rocky Bernstein <rb@dustyfeet.com>
+#   Copyright (C) 2021-2022 Rocky Bernstein <rb@dustyfeet.com>
 
 import locale
+import os
 import os.path as osp
 import re
 import sys
@@ -11,6 +12,7 @@ from mathicsscript.completion import MathicsCompleter
 from mathicsscript.termshell import (
     CONFIGDIR,
     HISTSIZE,
+    USER_INPUTRC,
     is_pygments_style,
     ShellEscapeException,
     TerminalShellCommon,
@@ -22,7 +24,7 @@ from mathics.core.attributes import attribute_string_to_number
 from mathics.core.expression import Expression, Symbol, from_python
 from mathics.core.rules import Rule
 
-from mathicsscript.bindkeys import bindings, read_inputrc
+from mathicsscript.bindkeys import bindings, read_inputrc, read_init_file
 
 from prompt_toolkit import PromptSession, HTML, print_formatted_text
 from prompt_toolkit.application.current import get_app
@@ -101,8 +103,8 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             try:
                 self.terminal_formatter = Terminal256Formatter(style=style)
             except ClassNotFound:
-                print(
-                    "Pygments style name '%s' not found; No pygments style set" % style
+                sys.stderr.write(
+                    f"Pygments style name '{style}' not found; No pygments style set\n"
                 )
 
         self.pygments_style = style
@@ -117,6 +119,13 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         )
 
         read_inputrc(use_unicode=use_unicode)
+        if osp.isfile(USER_INPUTRC):
+            if os.access(USER_INPUTRC, os.R_OK):
+                read_init_file(USER_INPUTRC)
+            else:
+                sys.stderr.write(
+                    f"Can't read user inputrc file {USER_INPUTRC}; skipping\n"
+                )
 
         self.definitions.add_message(
             "Settings`PygmentsStylesAvailable",

@@ -53,6 +53,7 @@ except:
     HISTSIZE = 50
 
 HISTFILE = os.environ.get("MATHICS_HISTFILE", osp.join(CONFIGDIR, "history"))
+USER_INPUTRC = os.environ.get("MATHICS_INPUTRC", osp.join(CONFIGDIR, "inputrc"))
 
 # Create HISTFILE if it doesn't exist already
 if not osp.isfile(HISTFILE):

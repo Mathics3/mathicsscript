@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2020-2021 Rocky Bernstein <rb@dustyfeet.com>
+#   Copyright (C) 2020-2022 Rocky Bernstein <rb@dustyfeet.com>
 
 import atexit
 import os.path as osp
 import pathlib
 import sys
 import re
+from mathicsscript.bindkeys import read_inputrc
 from mathics_scanner import named_characters
 from mathicsscript.termshell import CONFIGDIR, HISTSIZE, TerminalShellCommon
 from mathics.core.symbols import strip_context
@@ -68,13 +69,7 @@ class TerminalShellGNUReadline(TerminalShellCommon):
 
                 # GNU Readling inputrc $include's paths are relative to itself,
                 # so chdir to its directory before reading the file.
-                parent_dir = pathlib.Path(__file__).parent.absolute()
-                with parent_dir:
-                    inputrc = "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
-                    try:
-                        read_init_file(str(parent_dir / "data" / inputrc))
-                    except:  # noqa
-                        pass
+                read_inputrc(use_unicode)
 
                 parse_and_bind("tab: complete")
                 self.completion_candidates = []
