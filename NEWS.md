@@ -2,6 +2,9 @@
 --------
 
 * Add $GroupAutoComplete setting (default True) to disable completing closer group symbol. Feature provided by DUO Labs.
+* For prompt-toolkit users, we allow a user input binding file in CONFIGDIR/inputrc (e.g. ~/.config/mathicsscript/inputrc).
+  You can set the location this file via environment variable MATHICS_INPUTRC
+
 
 4.0.0
 -----
