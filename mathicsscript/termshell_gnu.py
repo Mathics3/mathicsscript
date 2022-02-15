@@ -2,13 +2,21 @@
 #   Copyright (C) 2020-2022 Rocky Bernstein <rb@dustyfeet.com>
 
 import atexit
+import os
 import os.path as osp
-import pathlib
 import sys
 import re
+
+try:
+    from readline import read_init_file
+except ImportError:
+    # Not sure what to do here: nothing is probably safe.
+    def read_init_file(path: str):
+        return
+
 from mathicsscript.bindkeys import read_inputrc
 from mathics_scanner import named_characters
-from mathicsscript.termshell import CONFIGDIR, HISTSIZE, TerminalShellCommon
+from mathicsscript.termshell import CONFIGDIR, HISTSIZE, TerminalShellCommon, USER_INPUTRC
 from mathics.core.symbols import strip_context
 
 from pygments.styles import get_all_styles
@@ -19,7 +27,6 @@ try:
     from readline import (
         parse_and_bind,
         read_history_file,
-        read_init_file,
         set_completer,
         set_completer_delims,
         set_history_length,
@@ -69,7 +76,14 @@ class TerminalShellGNUReadline(TerminalShellCommon):
 
                 # GNU Readling inputrc $include's paths are relative to itself,
                 # so chdir to its directory before reading the file.
-                read_inputrc(use_unicode)
+                read_inputrc(read_init_file, use_unicode)
+                if osp.isfile(USER_INPUTRC):
+                    if os.access(USER_INPUTRC, os.R_OK):
+                        read_init_file(USER_INPUTRC)
+                    else:
+                        sys.stderr.write(
+                            f"Can't read user inputrc file {USER_INPUTRC}; skipping\n"
+                        )
 
                 parse_and_bind("tab: complete")
                 self.completion_candidates = []

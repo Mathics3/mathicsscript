@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2021 Rocky Bernstein <rb@dustyfeet.com>
+# Copyright (C) 2021-2022 Rocky Bernstein <rb@dustyfeet.com>
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
@@ -13,6 +13,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Callable
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
 
@@ -79,7 +80,7 @@ def _group_autocomplete_toggle(event):
     app.group_autocomplete = not app.group_autocomplete
 
 
-def read_inputrc(use_unicode: bool) -> None:
+def read_inputrc(read_init_file_fn: Callable, use_unicode: bool) -> None:
     """
     Read GNU Readline style inputrc
     """
@@ -89,7 +90,7 @@ def read_inputrc(use_unicode: bool) -> None:
     with parent_dir:
         inputrc = "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
         try:
-            read_init_file(str(parent_dir / "data" / inputrc))
+            read_init_file_fn(str(parent_dir / "data" / inputrc))
         except:
             pass
 

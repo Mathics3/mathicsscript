@@ -118,7 +118,7 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             "Settings`PygmentsStylesAvailable", from_python(ALL_PYGMENTS_STYLES)
         )
 
-        read_inputrc(use_unicode=use_unicode)
+        read_inputrc(read_init_file, use_unicode=use_unicode)
         if osp.isfile(USER_INPUTRC):
             if os.access(USER_INPUTRC, os.R_OK):
                 read_init_file(USER_INPUTRC)
