@@ -14,9 +14,15 @@ except ImportError:
     def read_init_file(path: str):
         return
 
+
 from mathicsscript.bindkeys import read_inputrc
 from mathics_scanner import named_characters
-from mathicsscript.termshell import CONFIGDIR, HISTSIZE, TerminalShellCommon, USER_INPUTRC
+from mathicsscript.termshell import (
+    CONFIGDIR,
+    HISTSIZE,
+    TerminalShellCommon,
+    USER_INPUTRC,
+)
 from mathics.core.symbols import strip_context
 
 from pygments.styles import get_all_styles
