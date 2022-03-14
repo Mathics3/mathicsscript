@@ -16,9 +16,18 @@
 from typing import Callable
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
-
+from prompt_toolkit.filters import Condition
 import pathlib
 import re
+
+from mathicsscript.settings import definitions
+from mathics.session import get_settings_value
+
+
+@Condition
+def autocomplete_on():
+    return get_settings_value(definitions, "Settings`$GroupAutocomplete")
+
 
 bindings = KeyBindings()
 
@@ -27,34 +36,77 @@ bindings = KeyBindings()
 # )
 
 
-@bindings.add("{")
+@bindings.add("{", filter=autocomplete_on)
 def curly_left(event):
     b = event.cli.current_buffer
     b.insert_text("{")
-    if not hasattr(event.app, "group_autocomplete"):
-        return
-    if event.app.group_autocomplete:
-        b.insert_text("}", move_cursor=False)
+    b.insert_text("}", move_cursor=False)
 
 
-@bindings.add("(")
+@bindings.add("}", filter=autocomplete_on)
+def curly_right(event):
+    b = event.cli.current_buffer
+    char = b.document.current_char
+    if char == "}":
+        b.cursor_right()
+    else:
+        b.insert_text("}")
+
+
+@bindings.add("(", filter=autocomplete_on)
 def paren_left(event):
     b = event.cli.current_buffer
     b.insert_text("(")
-    if not hasattr(event.app, "group_autocomplete"):
-        return
-    if event.app.group_autocomplete:
-        b.insert_text(")", move_cursor=False)
+    b.insert_text(")", move_cursor=False)
 
 
-@bindings.add("[")
+@bindings.add(")", filter=autocomplete_on)
+def paren_right(event):
+    b = event.cli.current_buffer
+    char = b.document.current_char
+    if char == ")":
+        b.cursor_right()
+    else:
+        b.insert_text(")")
+
+
+@bindings.add("[", filter=autocomplete_on)
 def bracket_left(event):
     b = event.cli.current_buffer
     b.insert_text("[")
-    if not hasattr(event.app, "group_autocomplete"):
-        return
-    if event.app.group_autocomplete:
-        b.insert_text("]", move_cursor=False)
+    b.insert_text("]", move_cursor=False)
+
+
+@bindings.add("]", filter=autocomplete_on)
+def bracket_right(event):
+    b = event.cli.current_buffer
+    char = b.document.current_char
+    if char == "]":
+        b.cursor_right()
+    else:
+        b.insert_text("]")
+
+
+@bindings.add("'", filter=autocomplete_on)
+def single_quotation(event):
+    b = event.cli.current_buffer
+    char = b.document.current_char
+    if char == "'":
+        b.cursor_right()
+    else:
+        b.insert_text("'")
+        b.insert_text("'", move_cursor=False)
+
+
+@bindings.add('"', filter=autocomplete_on)
+def double_quotation(event):
+    b = event.cli.current_buffer
+    char = b.document.current_char
+    if char == '"':
+        b.cursor_right()
+    else:
+        b.insert_text('"')
+        b.insert_text('"', move_cursor=False)
 
 
 # Add an additional key binding for toggling this flag.

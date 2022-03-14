@@ -26,7 +26,7 @@ else:
 from mathicsscript.format import format_output
 
 from mathics.core.atoms import Symbol, SymbolTrue, SymbolFalse
-from mathics.core.definitions import autoload_files, Definitions
+from mathics.core.definitions import autoload_files
 from mathics.core.evaluation import Evaluation, Output
 from mathics.core.expression import from_python
 from mathics.core.parser import MathicsFileLineFeeder
@@ -41,6 +41,7 @@ def get_srcdir():
     return osp.realpath(filename)
 
 
+from mathicsscript.settings import definitions
 from mathicsscript.version import __version__
 
 
@@ -240,7 +241,6 @@ def main(
         for ext in pyextensions:
             extension_modules.append(ext)
 
-    definitions = Definitions(add_builtin=True)
     definitions.set_line_no(0)
     # Set a default value for $ShowFullFormInput to False.
     # Then, it can be changed by the settings file (in WL)
