@@ -3,12 +3,19 @@
 (modified from gnuplot.py)
 """
 
+import mathics
 import os
 import os.path as osp
 
 from subprocess import Popen, PIPE
 
 asy_program = os.environ.get("ASY_PROG", "asy")
+
+# Add asymptote directory to AYMPTOTE_DIR
+asymptote_dir = os.environ.get("ASYMPTOTE_DIR", "")
+mathics_asymptote_dir = osp.join(osp.dirname(mathics.__file__), "asymptote")
+with_asymptote_dir = f"""{mathics_asymptote_dir}{os.pathsep}{asymptote_dir}"""
+os.environ["ASYMPTOTE_DIR"] = with_asymptote_dir
 
 
 def get_srcdir():

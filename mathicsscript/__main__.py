@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import click
-import sys
+import mathics
 import os
 import os.path as osp
 import subprocess
+import sys
+
 from pathlib import Path
 from pygments import highlight
 
