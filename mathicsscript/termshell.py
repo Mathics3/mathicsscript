@@ -19,6 +19,7 @@ from mathics.core.expression import (
     from_python,
 )
 from mathics.core.rules import Rule
+from mathics.core.systemsymbols import SymbolMessageName
 from mathics.session import get_settings_value, set_settings_value
 
 from pygments import format, highlight, lex
@@ -134,7 +135,7 @@ class TerminalShellCommon(MathicsLineFeeder):
             "Settings`PygmentsStylesAvailable",
             Rule(
                 Expression(
-                    "System`MessageName",
+                    SymbolMessageName,
                     Symbol("Settings`PygmentsStylesAvailable"),
                     from_python("usage"),
                 ),

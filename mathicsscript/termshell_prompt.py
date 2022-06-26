@@ -23,6 +23,7 @@ from mathics.core.atoms import String
 from mathics.core.attributes import attribute_string_to_number
 from mathics.core.expression import Expression, Symbol, from_python
 from mathics.core.rules import Rule
+from mathics.core.systemsymbols import SymbolMessageName
 
 from mathicsscript.bindkeys import bindings, read_inputrc, read_init_file
 
@@ -131,7 +132,7 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             "Settings`PygmentsStylesAvailable",
             Rule(
                 Expression(
-                    "System`MessageName",
+                    SymbolMessageName,
                     Symbol("Settings`PygmentsStylesAvailable"),
                     from_python("usage"),
                 ),

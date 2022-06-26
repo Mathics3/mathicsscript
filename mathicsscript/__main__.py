@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import click
-import mathics
 import os
 import os.path as osp
 import subprocess
@@ -27,7 +26,7 @@ else:
 
 from mathicsscript.format import format_output
 
-from mathics.core.atoms import Symbol, SymbolTrue, SymbolFalse
+from mathics.core.symbols import Symbol, SymbolTrue, SymbolFalse
 from mathics.core.definitions import autoload_files
 from mathics.core.evaluation import Evaluation, Output
 from mathics.core.expression import from_python
