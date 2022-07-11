@@ -15,6 +15,7 @@ from mathicsscript.termshell import (
     USER_INPUTRC,
     is_pygments_style,
     ShellEscapeException,
+    SymbolPygmentsStylesAvailable,
     TerminalShellCommon,
 )
 from mathicsscript.version import __version__
@@ -133,7 +134,7 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             Rule(
                 Expression(
                     SymbolMessageName,
-                    Symbol("Settings`PygmentsStylesAvailable"),
+                    SymbolPygmentsStylesAvailable,
                     from_python("usage"),
                 ),
                 from_python(

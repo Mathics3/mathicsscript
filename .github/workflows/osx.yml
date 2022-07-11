@@ -25,7 +25,7 @@ jobs:
         python -m pip install --upgrade pip
         # Can comment out when next Mathics is released
         python -m pip install -e git+https://github.com/Mathics3/mathics-core#egg=Mathics3
-        python -m pip install Mathics3[full]
+        #  python -m pip install Mathics3[full]
         python -m pip install -e .
     - name: Install mathicsscript
       run: |
