@@ -90,7 +90,8 @@ def format_output(obj, expr, format=None):
                 result = png_expr.evaluate(obj)
                 plt.axes().set_axis_off()
                 img = mpimg.imread(temp_png)
-                plt.imshow(img)
+                cmap="gray" if expr.color_space == "Grayscale" else None
+                plt.imshow(img, cmap=cmap)
                 plt.show()
             except:  # noqa
                 pass
