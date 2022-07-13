@@ -8,6 +8,12 @@ import random
 from tempfile import NamedTemporaryFile
 
 from mathics.core.atoms import String
+from mathics.core.systemsymbols import (
+    SymbolExport,
+    SymbolExportString,
+    SymbolFullForm,
+    SymbolStandardForm,
+)
 from mathics.session import get_settings_value
 
 try:
@@ -46,7 +52,9 @@ def format_output(obj, expr, format=None):
             if not hasattr(obj, "seen_box_error"):
                 obj.seen_box_error = True
                 obj.message(
-                    "General", "notboxes", Expression("FullForm", result).evaluate(obj)
+                    "General",
+                    "notboxes",
+                    Expression(SymbolFullForm, result).evaluate(obj),
                 )
 
         return boxes
@@ -77,7 +85,7 @@ def format_output(obj, expr, format=None):
             )
             try:
                 png_expr = Expression(
-                    "Export", String(temp_png.name), expr, String("PNG")
+                    SymbolExport, String(temp_png.name), expr, String("PNG")
                 )
                 result = png_expr.evaluate(obj)
                 plt.axes().set_axis_off()
@@ -96,7 +104,7 @@ def format_output(obj, expr, format=None):
             and plt
             and svg2png
         ):
-            svg_expr = Expression("ExportString", expr, String("SVG"))
+            svg_expr = Expression(SymbolExportString, expr, String("SVG"))
             svg_str = svg_expr.evaluate(obj).to_python(string_quotes=False)
             temp_png = NamedTemporaryFile(
                 mode="w+b", suffix=".png", prefix="mathicsscript-"
@@ -116,7 +124,7 @@ def format_output(obj, expr, format=None):
         and have_asymptote
         and get_settings_value(obj.definitions, "Settings`$UseAsymptote")
     ):
-        asy_expr = Expression("ExportString", expr, String("asy"))
+        asy_expr = Expression(SymbolExportString, expr, String("asy"))
         asy_str = asy_expr.evaluate(obj).to_python(string_quotes=False)
         asymptote_graph.erase()
         asymptote_graph.send(asy_str)
@@ -125,9 +133,9 @@ def format_output(obj, expr, format=None):
     if format == "text":
         result = expr.format(obj, "System`OutputForm")
     elif format == "xml":
-        result = Expression("StandardForm", expr).format(obj, "System`MathMLForm")
+        result = Expression(SymbolStandardForm, expr).format(obj, "System`MathMLForm")
     elif format == "tex":
-        result = Expression("StandardForm", expr).format(obj, "System`TeXForm")
+        result = Expression(SymbolStandardForm, expr).format(obj, "System`TeXForm")
     elif format == "unformatted":
         if str(expr) == "-Graph-" and hasattr(expr, "G"):
             return format_graph(expr.G)
@@ -143,7 +151,7 @@ def format_output(obj, expr, format=None):
         if not hasattr(obj, "seen_box_error"):
             obj.seen_box_error = True
             obj.message(
-                "General", "notboxes", Expression("FullForm", result).evaluate(obj)
+                "General", "notboxes", Expression(SymbolFullForm, result).evaluate(obj)
             )
     return boxes
 

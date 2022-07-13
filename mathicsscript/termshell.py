@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2020-2021 Rocky Bernstein <rb@dustyfeet.com>
+#   Copyright (C) 2020-2022 Rocky Bernstein <rb@dustyfeet.com>
 
 from columnize import columnize
 
@@ -61,6 +61,8 @@ if not osp.isfile(HISTFILE):
     pathlib.Path(HISTFILE).touch()
 
 from mathics.core.parser import MathicsLineFeeder
+
+SymbolPygmentsStylesAvailable = Symbol("Settings`PygmentsStylesAvailable")
 
 
 def is_pygments_style(style: str):
@@ -136,7 +138,7 @@ class TerminalShellCommon(MathicsLineFeeder):
             Rule(
                 Expression(
                     SymbolMessageName,
-                    Symbol("Settings`PygmentsStylesAvailable"),
+                    SymbolPygmentsStylesAvailable,
                     from_python("usage"),
                 ),
                 from_python(
