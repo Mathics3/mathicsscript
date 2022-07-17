@@ -6,6 +6,7 @@ import os
 import os.path as osp
 import re
 import sys
+from typing import Optional
 
 from mathics_pygments.lexer import MathematicaLexer, MToken
 from mathicsscript.completion import MathicsCompleter
@@ -22,7 +23,7 @@ from mathicsscript.version import __version__
 
 from mathics.core.atoms import String
 from mathics.core.attributes import attribute_string_to_number
-from mathics.core.expression import Expression, Symbol, from_python
+from mathics.core.expression import Expression, from_python
 from mathics.core.rules import Rule
 from mathics.core.systemsymbols import SymbolMessageName
 
@@ -65,7 +66,7 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
     def __init__(
         self,
         definitions,
-        style: str,
+        style: Optional[str],
         want_completion: bool,
         use_unicode: bool,
         prompt: bool,
@@ -196,7 +197,7 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         if last_eval is not None:
             try:
                 eval_type = last_eval.get_head_name()
-            except:
+            except Exception:
                 print(sys.exc_info()[1])
                 return
 
@@ -243,6 +244,7 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
 
     def read_line(self, prompt):
         # FIXME set and update inside self.
+
         style = style_from_pygments_cls(get_style_by_name(self.pygments_style))
 
         line = self.session.prompt(

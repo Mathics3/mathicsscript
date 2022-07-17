@@ -33,7 +33,7 @@ except ImportError:
 
 try:
     from cairosvg import svg2png
-except:  # noqa
+except ImportError:
     svg2png = None
 
 from mathicsscript.asymptote import Asy
@@ -41,7 +41,7 @@ from mathicsscript.asymptote import Asy
 have_asymptote = False
 try:
     asymptote_graph = Asy(show_help=False)
-except:
+except Exception:
     asymptote_graph = None
 else:
     have_asymptote = True
@@ -81,7 +81,7 @@ def format_output(obj, expr, format=None):
     elif expr_type == "System`TeXForm":
         format = "tex"
         elements = expr.elements
-        if len(elemtns) == 1:
+        if len(elements) == 1:
             expr = elements[0]
     elif expr_type == "System`Image":
         if get_settings_value(obj.definitions, "Settings`$UseMatplotlib") and plt:
@@ -95,7 +95,7 @@ def format_output(obj, expr, format=None):
                 result = png_expr.evaluate(obj)
                 plt.axes().set_axis_off()
                 img = mpimg.imread(temp_png)
-                cmap="gray" if expr.color_space == "Grayscale" else None
+                cmap = "gray" if expr.color_space == "Grayscale" else None
                 plt.imshow(img, cmap=cmap)
                 plt.show()
             except:  # noqa

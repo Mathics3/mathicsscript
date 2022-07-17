@@ -16,4 +16,4 @@ def load_default_settings_files(definitions):
     autoload_files(definitions, root_dir, "autoload")
 
 
-__all__ = [__version__, load_default_settings_files]
+__all__ = ["__version__", "load_default_settings_files"]

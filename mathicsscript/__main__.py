@@ -436,7 +436,7 @@ def main(
             if len(source_code) and source_code[1] == "!":
                 try:
                     print(open(source_code[2:], "r").read())
-                except:
+                except Exception:
                     print(str(sys.exc_info()[1]))
             else:
                 subprocess.run(source_code[1:], shell=True)

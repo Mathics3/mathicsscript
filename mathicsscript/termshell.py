@@ -9,6 +9,8 @@ import os.path as osp
 import pathlib
 import sys
 
+from typing import Optional
+
 from mathics_pygments.lexer import MathematicaLexer, MToken
 
 from mathics.core.atoms import String, Symbol
@@ -49,7 +51,7 @@ CONFIGDIR = osp.join(CONFIGHOME, "mathicsscript")
 os.makedirs(CONFIGDIR, exist_ok=True)
 
 try:
-    HISTSIZE = int(os.environ.get("MATHICSSCRIPT_HISTSIZE"))
+    HISTSIZE = int(os.environ.get("MATHICSSCRIPT_HISTSIZE", 50))
 except:
     HISTSIZE = 50
 
@@ -82,7 +84,7 @@ class TerminalShellCommon(MathicsLineFeeder):
     def __init__(
         self,
         definitions,
-        style: str,
+        style: Optional[str],
         want_completion: bool,
         use_unicode: bool,
         prompt: bool,

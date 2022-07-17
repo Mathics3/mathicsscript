@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2021 Rocky Bernstein <rb@dustyfeet.com>
+
+# Copyright (C) 2021-2022 Rocky Bernstein <rb@dustyfeet.com>
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +18,7 @@ from enum import Enum
 import os.path as osp
 import re
 
-from typing import Iterable, NamedTuple
+from typing import Iterable, List, NamedTuple, Tuple
 
 from mathics.core.symbols import strip_context
 from mathics_scanner import named_characters
@@ -82,7 +83,7 @@ class MathicsCompleter(WordCompleter):
 
         self.escape_sequences = aliased_characters.keys()
 
-    def _is_space_before_cursor(self, document, text_before_cursor: bool) -> bool:
+    def _is_space_before_cursor(self, document, text_before_cursor: str) -> bool:
         """Space before or no text before cursor."""
         return text_before_cursor == "" or text_before_cursor[-1:].isspace()
 
@@ -121,7 +122,7 @@ class MathicsCompleter(WordCompleter):
                     display_meta=display_meta,
                 )
 
-    def get_word_before_cursor_with_kind(self, document: Document) -> WordToken:
+    def get_word_before_cursor_with_kind(self, document: Document) -> Tuple[str, TokenKind]:
         """
         Get the word before the cursor and clasify it into one of the kinds
         of tokens: NamedCharacter, AsciiOperator, Symbol, etc.
@@ -164,7 +165,7 @@ class MathicsCompleter(WordCompleter):
 
         return word_before_cursor, TokenKind.Symbol
 
-    def get_word_names(self: str):
+    def get_word_names(self) -> List[str]:
         names = self.definitions.get_names()
         short_names = [strip_context(m) for m in names]
         return list(names) + short_names
