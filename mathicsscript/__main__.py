@@ -1,16 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import click
 import os
 import os.path as osp
 import subprocess
 import sys
-
 from pathlib import Path
+
+import click
+from mathics.core.attributes import attribute_string_to_number
 from pygments import highlight
 
-from mathics.core.attributes import attribute_string_to_number
+from mathics import license_string, settings, version_info
+from mathics.core.definitions import autoload_files
+from mathics.core.evaluation import Evaluation, Output
+from mathics.core.expression import from_python
+from mathics.core.parser import MathicsFileLineFeeder
+from mathics.core.symbols import Symbol, SymbolFalse, SymbolTrue
+
+from mathics_scanner import replace_wl_with_plain_text
+
+from mathicsscript.asymptote import asymptote_version
 from mathicsscript.termshell import ShellEscapeException, mma_lexer
 from mathicsscript.termshell_gnu import TerminalShellGNUReadline
 from mathicsscript.termshell_prompt import TerminalShellPromptToolKit
@@ -24,17 +34,31 @@ else:
     readline_choices = ["GNU", "Prompt", "None"]
     have_readline = True
 
-from mathicsscript.format import format_output
 
-from mathics.core.symbols import Symbol, SymbolTrue, SymbolFalse
-from mathics.core.definitions import autoload_files
-from mathics.core.evaluation import Evaluation, Output
-from mathics.core.expression import from_python
-from mathics.core.parser import MathicsFileLineFeeder
-from mathics import version_string, license_string
-from mathics import settings
+from mathicsscript.format import format_output, matplotlib_version
 
-from mathics_scanner import replace_wl_with_plain_text
+version_string = """Mathics {mathics}
+on {python}
+
+Using:
+SymPy {sympy}, mpmath {mpmath}, numpy {numpy}
+""".format(
+    **version_info
+)
+
+
+if "cython" in version_info:
+    version_string += f"cython {version_info['cython']}, "
+
+if matplotlib_version is None:
+    version_string += "\nNo matplotlib installed,"
+else:
+    version_string += f"matplotlib {matplotlib_version},"
+
+if asymptote_version is None:
+    version_string += "\nNo asymptote installed,"
+else:
+    version_string += f"\n{asymptote_version}"
 
 
 def get_srcdir():

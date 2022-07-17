@@ -7,7 +7,7 @@ import mathics
 import os
 import os.path as osp
 
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, run
 
 asy_program = os.environ.get("ASY_PROG", "asy")
 
@@ -16,6 +16,15 @@ asymptote_dir = os.environ.get("ASYMPTOTE_DIR", "")
 mathics_asymptote_dir = osp.join(osp.dirname(mathics.__file__), "asymptote")
 with_asymptote_dir = f"""{mathics_asymptote_dir}{os.pathsep}{asymptote_dir}"""
 os.environ["ASYMPTOTE_DIR"] = with_asymptote_dir
+
+result = run([asy_program, "--version"], timeout=0.5, capture_output=True)
+if result.returncode == 0:
+    # Use the first line of output only, not all of the enabled options
+   asymptote_version = result.stderr.decode("utf-8").split("\n")[0]
+   # Just the name and version, not the copyright and authors
+   asymptote_version = asymptote_version.split("[")[0].strip()
+else:
+    asymptote_version = None
 
 
 def get_srcdir():

@@ -17,6 +17,11 @@ from mathics.core.systemsymbols import (
 from mathics.session import get_settings_value
 
 try:
+    from matplotlib import __version__ as matplotlib_version
+except ImportError:
+    matplotlib_version = None
+
+try:
     import matplotlib.pyplot as plt
 except ImportError:
     plt = None
@@ -70,14 +75,14 @@ def format_output(obj, expr, format=None):
     expr_type = expr.get_head_name()
     if expr_type == "System`MathMLForm":
         format = "xml"
-        leaves = expr.get_leaves()
-        if len(leaves) == 1:
-            expr = leaves[0]
+        elements = expr.elements
+        if len(elements) == 1:
+            expr = elements[0]
     elif expr_type == "System`TeXForm":
         format = "tex"
-        leaves = expr.get_leaves()
-        if len(leaves) == 1:
-            expr = leaves[0]
+        elements = expr.elements
+        if len(elemtns) == 1:
+            expr = elements[0]
     elif expr_type == "System`Image":
         if get_settings_value(obj.definitions, "Settings`$UseMatplotlib") and plt:
             temp_png = NamedTemporaryFile(
