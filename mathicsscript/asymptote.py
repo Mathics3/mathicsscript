@@ -18,18 +18,21 @@ mathics_asymptote_dir = osp.join(osp.dirname(mathics.__file__), "asymptote")
 with_asymptote_dir = f"""{mathics_asymptote_dir}{os.pathsep}{asymptote_dir}"""
 os.environ["ASYMPTOTE_DIR"] = with_asymptote_dir
 
-result = run(
-    [asy_program, "--version"],
-    timeout=0.5,
-    stdout=PIPE,
-    stderr=PIPE,
-)
 asymptote_version: Optional[str] = None
-if result.returncode == 0:
-    # Use the first line of output only, not all of the enabled options
-    asymptote_version = result.stderr.decode("utf-8").split("\n")[0]
-    # Just the name and version, not the copyright and authors
-    asymptote_version = asymptote_version.split("[")[0].strip()
+try:
+    result = run(
+        [asy_program, "--version"],
+        timeout=0.5,
+        stdout=PIPE,
+        stderr=PIPE,
+    )
+    if result.returncode == 0:
+        # Use the first line of output only, not all of the enabled options
+        asymptote_version = result.stderr.decode("utf-8").split("\n")[0]
+        # Just the name and version, not the copyright and authors
+        asymptote_version = asymptote_version.split("[")[0].strip()
+except Exception:
+    pass
 
 
 def get_srcdir():
