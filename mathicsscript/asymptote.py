@@ -18,7 +18,12 @@ mathics_asymptote_dir = osp.join(osp.dirname(mathics.__file__), "asymptote")
 with_asymptote_dir = f"""{mathics_asymptote_dir}{os.pathsep}{asymptote_dir}"""
 os.environ["ASYMPTOTE_DIR"] = with_asymptote_dir
 
-result = run([asy_program, "--version"], timeout=0.5, capture_output=True)
+result = run(
+    [asy_program, "--version"],
+    timeout=0.5,
+    stdout=PIPE,
+    stderr=PIPE,
+)
 asymptote_version: Optional[str] = None
 if result.returncode == 0:
     # Use the first line of output only, not all of the enabled options
