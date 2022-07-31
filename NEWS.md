@@ -1,10 +1,16 @@
-4.0.1dev
+5.0.0
 --------
 
+* Adjust for Python 5.0.0 API
+* Fixed autobrace and rewritten with Condition from prompt_toolkit.filter
 * Add $GroupAutoComplete setting (default True) to disable completing closer group symbol. Feature provided by DUO Labs and Alessandro Piras.
+* Remove bindings for the right brackets
 * For prompt-toolkit and GNU Readline users, we allow a user input binding file in CONFIGDIR/inputrc (e.g. ~/.config/mathicsscript/inputrc).
   You can set the location this file via environment variable MATHICS_INPUTRC
-
+* Handle version-getting timeout better
+* Python 3.6 tolerance
+* Create code of conduct
+* Some code linting
 
 4.0.0
 -----
