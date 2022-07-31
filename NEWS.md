@@ -1,7 +1,8 @@
 5.0.0
 --------
 
-* Adjust for Python 5.0.0 API
+* Adjust for Mathics3 core 5.0.0 API
+>>>>>>> a8e9b44 (Get ready for release 5.0.0)
 * Fixed autobrace and rewritten with Condition from prompt_toolkit.filter
 * Add $GroupAutoComplete setting (default True) to disable completing closer group symbol. Feature provided by DUO Labs and Alessandro Piras.
 * Remove bindings for the right brackets
