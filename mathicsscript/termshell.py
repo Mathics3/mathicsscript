@@ -52,7 +52,7 @@ os.makedirs(CONFIGDIR, exist_ok=True)
 
 try:
     HISTSIZE = int(os.environ.get("MATHICSSCRIPT_HISTSIZE", 50))
-except:
+except Exception:
     HISTSIZE = 50
 
 HISTFILE = os.environ.get("MATHICS_HISTFILE", osp.join(CONFIGDIR, "history"))
@@ -185,17 +185,24 @@ class TerminalShellCommon(MathicsLineFeeder):
             # else:
             #     return f"In[{next_line_number}]:= "
 
-    def get_out_prompt(self):
+    def get_out_prompt(self, form: str) -> str:
+        """
+        Return a formatted "Out" string prefix. ``form`` is either the empty string if the
+        default form, or the name of the Form which was used in output preceded by "//"
+        """
         line_number = self.get_last_line_number()
-        return "{1}Out[{2}{0}{3}]= {4}".format(line_number, *self.outcolors)
+        return "{2}Out[{3}{0}{4}]{5}{1}= ".format(line_number, form, *self.outcolors)
 
-    def to_output(self, text):
+    def to_output(self, text: str, form: str) -> str:
+        """
+        Format an 'Out=' line that it lines after the first one indent properly.
+        """
         line_number = self.get_last_line_number()
-        newline = "\n" + " " * len("Out[{0}]= ".format(line_number))
+        newline = "\n" + " " * len(f"Out[{line_number}]{form}= ")
         return newline.join(text.splitlines())
 
     def out_callback(self, out):
-        print(self.to_output(str(out)))
+        print(self.to_output(str(out), form=""))
 
     def read_line(self, prompt):
         if self.using_readline:
@@ -219,7 +226,7 @@ class TerminalShellCommon(MathicsLineFeeder):
         if last_eval is not None:
             try:
                 eval_type = last_eval.get_head_name()
-            except:
+            except Exception:
                 print(sys.exc_info()[1])
                 return
 
@@ -257,11 +264,13 @@ class TerminalShellCommon(MathicsLineFeeder):
                     print(list(lex(out_str, mma_lexer)))
                 if use_highlight:
                     out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
-            output = self.to_output(out_str)
+            form = "" if result.form is None else f"//{result.form}"
+            output = self.to_output(out_str, form)
             if output_style == "text" or not prompt:
                 print(output)
             else:
-                print(self.get_out_prompt() + output + "\n")
+                form = "" if result.form is None else f"//{result.form}"
+                print(self.get_out_prompt(form) + output + "\n")
 
     def rl_read_line(self, prompt):
         # Wrap ANSI color sequences in \001 and \002, so readline

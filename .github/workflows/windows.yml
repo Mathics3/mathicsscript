@@ -25,9 +25,11 @@ jobs:
         python -m pip install wheel
         choco install llvm
         set LLVM_DIR="C:\Program Files\LLVM"
-        # Can comment out when next Mathics is released
-        # python -m pip install -e git+https://github.com/Mathics3/mathics-core#egg=Mathics3
-        python -m pip Mathic3[full]
+        # Can comment out when next Mathics core and Mathics-scanner are released
+        python -m pip install -e git+https://github.com/Mathics3/mathics-scanner#egg=Mathics-Scanner[full]
+        python -m pip install -e git+https://github.com/Mathics3/mathics-core#egg=Mathics3[full]
+        (cd src/mathics3 && bash ./admin-tools/make-op-tables.sh)
+        # python -m pip Mathic3[full]
         pip install -e .
     - name: Install mathicsscript
       run: |

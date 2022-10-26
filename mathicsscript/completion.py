@@ -122,7 +122,9 @@ class MathicsCompleter(WordCompleter):
                     display_meta=display_meta,
                 )
 
-    def get_word_before_cursor_with_kind(self, document: Document) -> Tuple[str, TokenKind]:
+    def get_word_before_cursor_with_kind(
+        self, document: Document
+    ) -> Tuple[str, TokenKind]:
         """
         Get the word before the cursor and clasify it into one of the kinds
         of tokens: NamedCharacter, AsciiOperator, Symbol, etc.
