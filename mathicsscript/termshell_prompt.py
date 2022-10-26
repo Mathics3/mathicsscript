@@ -181,9 +181,14 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         else:
             return HTML(f"<ansired>In[<b>{next_line_number}</b>]:=</ansired> ")
 
-    def get_out_prompt(self):
+    def get_out_prompt(self, form: str) -> str:
+        """
+        Return a formatted "Out" string prefix. ``form`` is either the empty string if the
+        default form, or the name of the Form which was used in output if it wasn't then
+        default form.
+        """
         line_number = self.get_last_line_number()
-        return HTML(f"<ansigreen>Out[<b>{line_number}</b>]:=</ansigreen> ")
+        return HTML(f"<ansigreen>Out[<b>{line_number}</b>]=</ansigreen>{form} ")
 
     def print_result(
         self, result, prompt: bool, output_style="", strict_wl_output=False
@@ -233,11 +238,12 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
                     print(list(lex(out_str, mma_lexer)))
                 if use_highlight:
                     out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
-            output = self.to_output(out_str)
+            output = self.to_output(out_str, form="")
             if output_style == "text" or not prompt:
                 print(output)
             elif self.session:
-                print_formatted_text(self.get_out_prompt(), end="")
+                form = "" if result.form is None else f"//{result.form}"
+                print_formatted_text(self.get_out_prompt(form=form), end="")
                 print(output + "\n")
             else:
                 print(self.get_out_prompt() + output + "\n")
