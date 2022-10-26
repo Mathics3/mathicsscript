@@ -188,7 +188,7 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         default form.
         """
         line_number = self.get_last_line_number()
-        return HTML(f"<ansigreen>Out[<b>{line_number}</b>]=</ansigreen>{form} ")
+        return HTML(f"<ansigreen>Out[<b>{line_number}</b>]</ansigreen>{form}= ")
 
     def print_result(
         self, result, prompt: bool, output_style="", strict_wl_output=False

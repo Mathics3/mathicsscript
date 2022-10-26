@@ -191,14 +191,14 @@ class TerminalShellCommon(MathicsLineFeeder):
         default form, or the name of the Form which was used in output preceded by "//"
         """
         line_number = self.get_last_line_number()
-        return "{2}Out[{3}{0}{4}]={5}{1} ".format(line_number, form, *self.outcolors)
+        return "{2}Out[{3}{0}{4}]{5}{1}= ".format(line_number, form, *self.outcolors)
 
     def to_output(self, text: str, form: str) -> str:
         """
         Format an 'Out=' line that it lines after the first one indent properly.
         """
         line_number = self.get_last_line_number()
-        newline = "\n" + " " * len(f"Out[{line_number}]={form} ")
+        newline = "\n" + " " * len(f"Out[{line_number}]{form}= ")
         return newline.join(text.splitlines())
 
     def out_callback(self, out):
