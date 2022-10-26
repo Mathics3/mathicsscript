@@ -202,7 +202,7 @@ class TerminalShellCommon(MathicsLineFeeder):
         return newline.join(text.splitlines())
 
     def out_callback(self, out):
-        print(self.to_output(str(out, form="")))
+        print(self.to_output(str(out), form=""))
 
     def read_line(self, prompt):
         if self.using_readline:
