@@ -264,7 +264,7 @@ class TerminalShellCommon(MathicsLineFeeder):
                     print(list(lex(out_str, mma_lexer)))
                 if use_highlight:
                     out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
-            form = "" if result.form is None else f"//{result.form}"
+            form = "" if not hasattr(result, "form") or result.form is None else f"//{result.form}"
             output = self.to_output(out_str, form)
             if output_style == "text" or not prompt:
                 print(output)
