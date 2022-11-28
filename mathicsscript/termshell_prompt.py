@@ -242,7 +242,7 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             if output_style == "text" or not prompt:
                 print(output)
             elif self.session:
-                form = "" if result.form is None else f"//{result.form}"
+                form = "" if not hasattr(result, "form") or result.form is None else f"//{result.form}"
                 print_formatted_text(self.get_out_prompt(form=form), end="")
                 print(output + "\n")
             else:
