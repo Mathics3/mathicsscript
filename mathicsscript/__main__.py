@@ -288,9 +288,7 @@ def main(
             definitions, style, want_readline, completion, unicode, prompt
         )
 
-    # FIXME: why does load_settings fail when execute (-e) is set?
-    if not execute:
-        load_settings(shell)
+    load_settings(shell)
     if run:
         with open(run, "r") as ifile:
             feeder = MathicsFileLineFeeder(ifile)
