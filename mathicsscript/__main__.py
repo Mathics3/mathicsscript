@@ -288,7 +288,9 @@ def main(
             definitions, style, want_readline, completion, unicode, prompt
         )
 
-    load_settings(shell)
+    # FIXME: why does load_settings fail when execute (-e) is set?
+    if not execute:
+        load_settings(shell)
     if run:
         with open(run, "r") as ifile:
             feeder = MathicsFileLineFeeder(ifile)
@@ -378,6 +380,7 @@ def main(
     TeXForm = Symbol("System`TeXForm")
 
     definitions.set_line_no(0)
+
     while True:
         try:
             if have_readline and shell.using_readline:
@@ -389,11 +392,11 @@ def main(
                 "Settings`$ShowFullFormInput"
             ).replace.to_python()
             style = definitions.get_ownvalue("Settings`$PygmentsStyle")
-            fmt = lambda x: x
+            fmt = lambda x: x  # noqa
             if style:
                 style = style.replace.get_string_value()
                 if shell.terminal_formatter:
-                    fmt = lambda x: highlight(
+                    fmt = lambda x: highlight(  # noqa
                         str(query), mma_lexer, shell.terminal_formatter
                     )
 
