@@ -2,6 +2,7 @@
 Format Mathics objects
 """
 
+from typing import Callable
 import math
 import networkx as nx
 import random
@@ -12,7 +13,13 @@ from mathics.core.systemsymbols import (
     SymbolExport,
     SymbolExportString,
     SymbolFullForm,
+    SymbolGraphics,
+    SymbolGraphics3D,
+    SymbolImage,
+    SymbolMathMLForm,
+    SymbolPlot,
     SymbolStandardForm,
+    SymbolTeXForm,
 )
 from mathics.session import get_settings_value
 
@@ -49,7 +56,14 @@ else:
 
 
 def format_output(obj, expr, format=None):
-    def eval_boxes(result, fn, obj, **options):
+    """
+    Handle unformatted output using the *specific* capabilities of mathics-django.
+
+    evaluation.py format_output() from which this was derived is similar but
+    it can't make use of a front-ends specific capabilities.
+    """
+
+    def eval_boxes(result, fn: Callable, obj, **options):
         try:
             boxes = fn(evaluation=obj, **options)
         except BoxError:
@@ -73,17 +87,18 @@ def format_output(obj, expr, format=None):
     from mathics.core.expression import Expression, BoxError
 
     expr_type = expr.get_head_name()
-    if expr_type == "System`MathMLForm":
+    expr_head = expr.get_head()
+    if expr_head is SymbolMathMLForm:
         format = "xml"
         elements = expr.elements
         if len(elements) == 1:
             expr = elements[0]
-    elif expr_type == "System`TeXForm":
+    elif expr_head is SymbolTeXForm:
         format = "tex"
         elements = expr.elements
         if len(elements) == 1:
             expr = elements[0]
-    elif expr_type == "System`Image":
+    elif expr_head is SymbolImage:
         if get_settings_value(obj.definitions, "Settings`$UseMatplotlib") and plt:
             temp_png = NamedTemporaryFile(
                 mode="w+b", suffix=".png", prefix="mathicsscript-"
@@ -104,7 +119,7 @@ def format_output(obj, expr, format=None):
 
             pass
 
-    elif expr_type in ("System`Graphics", "System`Plot"):
+    elif expr_head in (SymbolGraphics, SymbolPlot):
         if (
             get_settings_value(obj.definitions, "Settings`$UseMatplotlib")
             and plt
@@ -126,7 +141,7 @@ def format_output(obj, expr, format=None):
                 pass
         return expr_type
     elif (
-        expr_type in ("System`Graphics3D",)
+        expr_head in (SymbolGraphics3D,)
         and have_asymptote
         and get_settings_value(obj.definitions, "Settings`$UseAsymptote")
     ):
@@ -143,7 +158,7 @@ def format_output(obj, expr, format=None):
     elif format == "tex":
         result = Expression(SymbolStandardForm, expr).format(obj, "System`TeXForm")
     elif format == "unformatted":
-        if str(expr) == "-Graph-" and hasattr(expr, "G"):
+        if expr_head is SymbolGraphics and hasattr(expr, "G"):
             return format_graph(expr.G)
         else:
             result = expr.format(obj, "System`OutputForm")
