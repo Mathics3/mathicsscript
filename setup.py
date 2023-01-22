@@ -75,7 +75,7 @@ setup(
     },
     install_requires=[
         "Mathics_Scanner>=1.2.5",
-        "Mathics3 >= 5.0.3.dev0,<5.1.0",
+        "Mathics3 > 5.0.2,<6.1.0",
         "click",
         "colorama",
         "columnize",
@@ -109,6 +109,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Scientific/Engineering",
