@@ -9,6 +9,8 @@ import random
 from tempfile import NamedTemporaryFile
 
 from mathics.core.atoms import String
+
+from mathics.core.symbols import Symbol
 from mathics.core.systemsymbols import (
     SymbolExport,
     SymbolExportString,
@@ -22,6 +24,8 @@ from mathics.core.systemsymbols import (
     SymbolTeXForm,
 )
 from mathics.session import get_settings_value
+
+PyMathicsGraph = Symbol("Pymathics`Graph")
 
 try:
     from matplotlib import __version__ as matplotlib_version
@@ -158,7 +162,7 @@ def format_output(obj, expr, format=None):
     elif format == "tex":
         result = Expression(SymbolStandardForm, expr).format(obj, "System`TeXForm")
     elif format == "unformatted":
-        if expr_head is SymbolGraphics and hasattr(expr, "G"):
+        if expr_head is PyMathicsGraph and hasattr(expr, "G"):
             return format_graph(expr.G)
         else:
             result = expr.format(obj, "System`OutputForm")
