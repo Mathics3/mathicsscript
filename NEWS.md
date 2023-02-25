@@ -1,3 +1,10 @@
+6.0.0
+-----
+
+* Adjust for Mathics3 core 6.0.0 API
+
+
+
 5.0.0
 --------
 

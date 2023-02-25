@@ -12,11 +12,11 @@ jobs:
     strategy:
       matrix:
         os: [macOS]
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: ['3.6', '3.7', '3.8', '3.9']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -24,11 +24,9 @@ jobs:
         brew install asymptote
         python -m pip install --upgrade pip
         # Can comment out when next Mathics core and Mathics-scanner are released
-        python -m pip install -e git+https://github.com/Mathics3/mathics-scanner#egg=Mathics-Scanner[full]
-        python -m pip install -e git+https://github.com/Mathics3/mathics-core#egg=Mathics3[full]
-        (cd src/mathics3 && bash ./admin-tools/make-op-tables.sh)
-        # python -m pip install Mathics3[full]
-        python -m pip install -e .
+        # python -m pip install -e git+https://github.com/Mathics3/mathics-scanner#egg=Mathics-Scanner[full]
+        # python -m pip install -e git+https://github.com/Mathics3/mathics-core#egg=Mathics3[full]
+        python -m pip install Mathics3[full]
     - name: Install mathicsscript
       run: |
         make
