@@ -36,7 +36,7 @@ install: inputrc
 
 #: Run tests. You can set environment variable "o" for pytest options
 check: inputrc
-	py.test test $o
+	$(PYTHON) -m pytest test $o
 
 inputrc: mathicsscript/data/inputrc-unicode mathicsscript/data/inputrc-no-unicode
 
