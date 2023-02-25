@@ -86,8 +86,8 @@ class Asy(object):
 
     def __del__(self):
         # print("closing Asymptote session...")
-        # Popen in __init__ can fail (e.g. asymptote is not intalled), so self
-        # potentially does not have a sesion attribute and without this check an
+        # Popen in __init__ can fail (e.g. asymptote is not installed), so self
+        # potentially does not have a session attribute and without this check an
         # AttributeError can get logged
         if hasattr(self, "session"):
             self.send("quit")

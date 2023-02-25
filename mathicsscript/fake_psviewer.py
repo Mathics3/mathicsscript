@@ -5,7 +5,7 @@ This is a replacement for a PostScript previewer like gv
 which does nothing, but remove any file argument it is
 given.
 
-Asymptote run via mathicsscript will create an embeded postscript file out.eps
+Asymptote run via mathicsscript will create an embedded postscript file out.eps
 which should be removed.
 """
 import os

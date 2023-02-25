@@ -264,7 +264,7 @@ def hierarchy_pos(
         return cached_pair
 
     # These get swapped if tree edge directions point to the root.
-    decendants = nx.descendants
+    descendants = nx.descendants
     out_degree = G.out_degree if hasattr(G, "out_degree") else G.degree
     neighbors = G.neighbors
 
@@ -276,7 +276,7 @@ def hierarchy_pos(
                 # The case where we have a one or two node graph is ambiguous.
                 root = list(nx.topological_sort(G))[-1]
                 # Swap motion functions
-                decendants = nx.ancestors
+                descendants = nx.ancestors
                 out_degree = G.in_degree
                 neighbors = G.predecessors
             else:
@@ -351,7 +351,9 @@ def hierarchy_pos(
 
     xcenter = width / 2.0
     if isinstance(G, nx.DiGraph):
-        leafcount = len([node for node in decendants(G, root) if out_degree(node) == 0])
+        leafcount = len(
+            [node for node in descendants(G, root) if out_degree(node) == 0]
+        )
     elif isinstance(G, nx.Graph):
         leafcount = len(
             [

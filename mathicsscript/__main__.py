@@ -6,24 +6,25 @@ import os.path as osp
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 import click
-from mathics.core.attributes import attribute_string_to_number
-from pygments import highlight
-
 from mathics import license_string, settings, version_info
+from mathics.core.attributes import attribute_string_to_number
 from mathics.core.definitions import autoload_files
 from mathics.core.evaluation import Evaluation, Output
 from mathics.core.expression import from_python
 from mathics.core.parser import MathicsFileLineFeeder
 from mathics.core.symbols import Symbol, SymbolFalse, SymbolTrue
-
 from mathics_scanner import replace_wl_with_plain_text
+from pygments import highlight
 
 from mathicsscript.asymptote import asymptote_version
+from mathicsscript.settings import definitions
 from mathicsscript.termshell import ShellEscapeException, mma_lexer
 from mathicsscript.termshell_gnu import TerminalShellGNUReadline
 from mathicsscript.termshell_prompt import TerminalShellPromptToolKit
+from mathicsscript.version import __version__
 
 try:
     __import__("readline")
@@ -64,10 +65,6 @@ else:
 def get_srcdir():
     filename = osp.normcase(osp.dirname(osp.abspath(__file__)))
     return osp.realpath(filename)
-
-
-from mathicsscript.settings import definitions
-from mathicsscript.version import __version__
 
 
 def ensure_settings():
@@ -169,7 +166,8 @@ class TerminalOutput(Output):
     type=click.Choice(readline_choices, case_sensitive=False),
     default="Prompt",
     show_default=True,
-    help="""Readline method. "Prompt" is usually best. None is generally available and have the fewest features.""",
+    help="""Readline method. "Prompt" is usually best. None is generally available and """
+    """have the fewest features.""",
 )
 @click.option(
     "--completion/--no-completion",
@@ -233,7 +231,7 @@ class TerminalOutput(Output):
 @click.option(
     "--strict-wl-output/--no-strict-wl-output",
     default=False,
-    help=("Most WL-output compatible (at the expense of useability)."),
+    help=("Most WL-output compatible (at the expense of usability)."),
     required=False,
 )
 @click.argument("file", nargs=1, type=click.Path(readable=True), required=False)
@@ -377,6 +375,12 @@ def main(
     )
     TeXForm = Symbol("System`TeXForm")
 
+    def identity(x: Any) -> Any:
+        return x
+
+    def fmt_fun(query: Any) -> Any:
+        return highlight(str(query), mma_lexer, shell.terminal_formatter)
+
     definitions.set_line_no(0)
     while True:
         try:
@@ -389,13 +393,11 @@ def main(
                 "Settings`$ShowFullFormInput"
             ).replace.to_python()
             style = definitions.get_ownvalue("Settings`$PygmentsStyle")
-            fmt = lambda x: x
+            fmt = identity
             if style:
                 style = style.replace.get_string_value()
                 if shell.terminal_formatter:
-                    fmt = lambda x: highlight(
-                        str(query), mma_lexer, shell.terminal_formatter
-                    )
+                    fmt = fmt_fun
 
             evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
             query, source_code = evaluation.parse_feeder_returning_code(shell)
@@ -444,7 +446,7 @@ def main(
                 # Should we test exit code for adding to history?
                 GNU_readline.add_history(source_code.rstrip())
                 # FIXME add this... when in Mathics core updated
-                # shell.defintions.increment_line(1)
+                # shell.definitions.increment_line(1)
 
         except (KeyboardInterrupt):
             print("\nKeyboardInterrupt")
