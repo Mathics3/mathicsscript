@@ -13,6 +13,9 @@ how to customize the install procedure read the output of:
     python setup.py --help install
 """
 
+import sys
+import platform
+
 import os.path as osp
 import re
 from setuptools import setup, find_packages
@@ -24,9 +27,6 @@ def get_srcdir():
 
 
 srcdir = get_srcdir()
-
-import sys
-import platform
 
 # Ensure user has the correct Python version
 if sys.version_info < (3, 6):
@@ -75,7 +75,7 @@ setup(
     },
     install_requires=[
         "Mathics_Scanner>=1.3.0",
-        "Mathics3 >= 6.0.0,<6.1.0",
+        "Mathics3 >= 6.2.0,<7.1.0",
         "click",
         "colorama",
         "columnize",
@@ -105,11 +105,11 @@ setup(
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Scientific/Engineering",

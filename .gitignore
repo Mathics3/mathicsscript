@@ -4,6 +4,8 @@
 *.pyc
 *_dis
 *~
+./mathicsscript/inputrc-no-unicode
+./mathicsscript/inputrc-unicode
 .idea*
 .idea/**/dataSources.ids
 .idea/**/dataSources.local.xml
@@ -21,8 +23,7 @@
 /.cache
 /.coverage
 /.eggs
-./mathicsscript/inputrc-no-unicode
-./mathicsscript/inputrc-unicode
+/.hypothesis
 /.mypy_cache
 /.pytest_cache
 /.python-version
