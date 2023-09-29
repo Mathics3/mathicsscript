@@ -60,6 +60,7 @@ setup(
     maintainer="Mathics Group",
     maintainer_email="mathics-devel@googlegroups.com",
     author_email="rb@dustyfeet.com",
+    data_files=["requirements-dev.txt", "requirements-full.txt"],
     name="mathicsscript",
     version=__version__,  # noqa
     packages=find_packages(),
