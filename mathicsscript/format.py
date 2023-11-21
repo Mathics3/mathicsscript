@@ -8,6 +8,7 @@ import networkx as nx
 import os
 import random
 import requests
+import sys
 from tempfile import NamedTemporaryFile
 
 from mathics.core.atoms import String
