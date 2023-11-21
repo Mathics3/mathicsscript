@@ -56,10 +56,23 @@ def download_cairo_libs():
     else:
         print("Failed to retrieve directory contents.")
 
+def set_dll_search_path():
+    # Python 3.8+ no longer searches for DLLs in PATH, so we have to add
+    # everything in PATH manually. Note that unlike PATH add_dll_directory
+    # has no defined order, so if there are two cairo DLLs in PATH we
+    # might get a random one.
+    if os.name != "nt" or not hasattr(os, "add_dll_directory"):
+        return
+    try:
+        os.add_dll_directory(cairo_libs_path)
+    except OSError:
+        pass
+
 
 if sys.version_info >= (3, 8) and os.name == 'nt' and not os.path.exists(cairo_libs_path):
     os.makedirs(cairo_libs_path)
     download_cairo_libs()
+    set_dll_search_path()
 
 try:
     from matplotlib import __version__ as matplotlib_version
