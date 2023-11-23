@@ -12,8 +12,6 @@ from importlib.util import find_spec
 import requests
 from tqdm import tqdm
 
-default_GTK_path = "C:\\Program Files\\GTK3-Runtime Win64\\bin"
-
 mathicsscript_path = find_spec("mathicsscript").submodule_search_locations[0]
 
 if platform.architecture()[0] == "64bit":
@@ -73,7 +71,7 @@ def download_GTK_installer():
         file_path = os.path.join(mathicsscript_path, name)
         download_file(file_url, file_path, name)
         print("Done.")
-        return file_path # path to GTK installer
+        return file_path
     else:
         print("Failed to retrieve directory contents.")
 
@@ -94,6 +92,32 @@ def set_dll_search_path():
             pass
 
 
+def search_folders(root_path, folder_name):
+    found_folders = []
+    with os.scandir(root_path) as entries:
+        for entry in entries:
+            if entry.is_dir() and folder_name in entry.name:
+                found_folders.append(entry.path)
+    return found_folders
+
+
+def search_file_in_folders(folders, file_name):
+    found_paths = []
+    for folder_path in folders:
+        file_paths = search_file_recursive(folder_path, file_name)
+        found_paths.extend(file_paths)
+    return found_paths
+
+
+def search_file_recursive(folder_path, file_name):
+    found_paths = []
+    for dirpath, _, filenames in os.walk(folder_path):
+        for filename in filenames:
+            if filename == file_name:
+                found_paths.append(dirpath)
+    return found_paths
+
+
 def fix_cairo():
     set_dll_search_path()
     if find_library("libcairo-2"):
@@ -110,8 +134,11 @@ def fix_cairo():
             )  # Allow users to run installer as administrators. Tried to run it directly with subprocess.run(['runas', '/user:Administrator', ...]) and failed :(
             os.remove(GTK_install_cmd)
             set_dll_search_path()
-            if os.path.exists(default_GTK_path):
-                os.environ["PATH"] += os.pathsep + default_GTK_path
+            # Manually add GTK+ for Windows dll libraries to os.environ["PATH"]
+            GTK_folders = search_folders("C:\\Program Files", "GTK")
+            GTK_dll_paths = search_file_in_folders(GTK_folders, "libcairo-2.dll")
+            if GTK_dll_paths:
+                os.environ["PATH"] += os.pathsep + GTK_dll_paths[0]
             if find_library("libcairo-2"):
                 print("Successfully fixed cairocffi for mathicsscript.")
             else:
