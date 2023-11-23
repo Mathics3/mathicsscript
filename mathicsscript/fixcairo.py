@@ -73,7 +73,7 @@ def download_GTK_installer():
         file_path = os.path.join(mathicsscript_path, name)
         download_file(file_url, file_path, name)
         print("Done.")
-        return file_path
+        return file_path # path to GTK installer
     else:
         print("Failed to retrieve directory contents.")
 
@@ -101,16 +101,13 @@ def fix_cairo():
     else:
         choice = input(fix_cairo_long_intro).lower()
         if choice == "y" or choice == "":
-            GTK_installer = os.path.join(
-                mathicsscript_path, "gtk3-runtime-3.24.31-2022-01-04-ts-win64.exe"
-            )
-            # download_GTK_installer()
+            GTK_installer = download_GTK_installer()
             GTK_install_cmd = os.path.join(mathicsscript_path, "install_GTK.cmd")
             with open(os.path.join(mathicsscript_path, "install_GTK.cmd"), "w") as file:
                 file.write(f'"{GTK_installer}"')
             subprocess.run(
                 GTK_install_cmd
-            )  # Allow users to run installer as administrators
+            )  # Allow users to run installer as administrators. Tried to run it directly with subprocess.run(['runas', '/user:Administrator', ...]) and failed :(
             os.remove(GTK_install_cmd)
             set_dll_search_path()
             if os.path.exists(default_GTK_path):
