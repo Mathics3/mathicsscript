@@ -10,7 +10,8 @@ from ctypes.util import find_library
 from importlib.util import find_spec
 
 import requests
-from tqdm import tqdm
+if os.name == "nt":
+    from tqdm import tqdm
 
 mathicsscript_path = find_spec("mathicsscript").submodule_search_locations[0]
 
