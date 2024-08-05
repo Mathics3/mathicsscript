@@ -2,14 +2,13 @@
 Format Mathics objects
 """
 
-from typing import Callable
 import math
-import networkx as nx
 import random
 from tempfile import NamedTemporaryFile
+from typing import Callable
 
+import networkx as nx
 from mathics.core.atoms import String
-
 from mathics.core.symbols import Symbol
 from mathics.core.systemsymbols import (
     SymbolExport,
@@ -19,6 +18,7 @@ from mathics.core.systemsymbols import (
     SymbolGraphics3D,
     SymbolImage,
     SymbolMathMLForm,
+    SymbolOutputForm,
     SymbolPlot,
     SymbolStandardForm,
     SymbolTeXForm,
@@ -88,7 +88,7 @@ def format_output(obj, expr, format=None):
     if isinstance(format, dict):
         return dict((k, obj.format_output(expr, f)) for k, f in format.items())
 
-    from mathics.core.expression import Expression, BoxError
+    from mathics.core.expression import BoxError, Expression
 
     expr_type = expr.get_head_name()
     expr_head = expr.get_head()
@@ -156,16 +156,16 @@ def format_output(obj, expr, format=None):
         return expr_type
 
     if format == "text":
-        result = expr.format(obj, "System`OutputForm")
+        result = expr.format(obj, SymbolOutputForm)
     elif format == "xml":
-        result = Expression(SymbolStandardForm, expr).format(obj, "System`MathMLForm")
+        result = Expression(SymbolStandardForm, expr).format(obj, SymbolMathMLForm)
     elif format == "tex":
-        result = Expression(SymbolStandardForm, expr).format(obj, "System`TeXForm")
+        result = Expression(SymbolStandardForm, expr).format(obj, SymbolTeXForm)
     elif format == "unformatted":
         if expr_head is PyMathicsGraph and hasattr(expr, "G"):
             return format_graph(expr.G)
         else:
-            result = expr.format(obj, "System`OutputForm")
+            result = expr.format(obj, SymbolOutputForm)
     else:
         raise ValueError
 
@@ -187,7 +187,6 @@ cached_pair = None
 def hierarchy_pos(
     G, root=None, width=1.0, vert_gap=0.2, vert_loc=0, leaf_vs_root_factor=0.5
 ):
-
     """Position nodes in tree layout. The root is at the top.
 
     Based on Joel's answer at https://stackoverflow.com/a/29597209/2966723,
