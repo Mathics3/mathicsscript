@@ -13,56 +13,11 @@ how to customize the install procedure read the output of:
     python setup.py --help install
 """
 
-import sys
-import platform
-
-import os.path as osp
-import re
 from setuptools import setup, find_packages
 
 
-def get_srcdir():
-    filename = osp.normcase(osp.dirname(osp.abspath(__file__)))
-    return osp.realpath(filename)
-
-
-srcdir = get_srcdir()
-
-# Ensure user has the correct Python version
-if sys.version_info < (3, 6):
-    print("mathicsscript does not support Python %d.%d" % sys.version_info[:2])
-    sys.exit(-1)
-
-
-def read(*rnames):
-    return open(osp.join(get_srcdir(), *rnames)).read()
-
-
-# stores __version__ in the current namespace
-exec(compile(read("mathicsscript/version.py"), "mathicsscript/version.py", "exec"))
-
-long_description = read("README.rst") + "\n"
-exec(read("mathicsscript/version.py"))
-
-is_PyPy = platform.python_implementation() == "PyPy"
-
-EXTRAS_REQUIRE = {}
-for kind in ("dev", "full"):
-    extras_require = []
-    requirements_file = f"requirements-{kind}.txt"
-    for line in open(requirements_file).read().split("\n"):
-        if line and not line.startswith("#"):
-            requires = re.sub(r"([^#]+)(\s*#.*$)?", r"\1", line)
-            extras_require.append(requires)
-    EXTRAS_REQUIRE[kind] = extras_require
-
 setup(
-    maintainer="Mathics Group",
-    maintainer_email="mathics-devel@googlegroups.com",
-    author_email="rb@dustyfeet.com",
-    data_files=["requirements-dev.txt", "requirements-full.txt"],
     name="mathicsscript",
-    version=__version__,  # noqa
     packages=find_packages(),
     include_package_data=True,
     package_data={
@@ -74,27 +29,12 @@ setup(
             "mathicsscript/config.asy",
         ]
     },
-    install_requires=[
-        "Mathics_Scanner>=1.3.0",
-        "Mathics3 >= 6.2.0,<7.1.0",
-        "click",
-        "colorama",
-        "columnize",
-        "networkx",
-        "prompt_toolkit>=3.0.18",
-        "Pygments>=2.9.0",  # Want something late enough that has the "inkpot" style
-        # "mathics_pygments @ https://github.com/Mathics3/mathics-pygments/archive/master.zip#egg=mathics_pygments",
-        "mathics_pygments>=1.0.2",
-        "term-background >= 1.0.1",
-    ],
     entry_points={
         "console_scripts": [
             "mathicsscript = mathicsscript.__main__:main",
             "fake_psviewer.py = mathicsscript.fake_psviewer:main",
         ]
     },
-    extras_require=EXTRAS_REQUIRE,
-    long_description=long_description,
     long_description_content_type="text/x-rst",
     # don't pack Mathics in egg because of media files, etc.
     zip_safe=False,
