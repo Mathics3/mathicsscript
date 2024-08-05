@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2021-2022 Rocky Bernstein <rb@dustyfeet.com>
+# Copyright (C) 2021-2022, 2024 Rocky Bernstein <rb@dustyfeet.com>
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
@@ -126,7 +126,7 @@ class MathicsCompleter(WordCompleter):
         self, document: Document
     ) -> Tuple[str, TokenKind]:
         """
-        Get the word before the cursor and clasify it into one of the kinds
+        Get the word before the cursor and classify it into one of the kinds
         of tokens: NamedCharacter, AsciiOperator, Symbol, etc.
 
 
