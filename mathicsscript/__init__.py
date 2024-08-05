@@ -2,7 +2,7 @@
 """
 mathicsscript is a command-line interface to Mathics.
 
-Copyright 2020-2021, 2024 The Mathics Team
+Copyright 2020-2021, 2024 The Mathics3 Team
 """
 
 import os.path as osp
