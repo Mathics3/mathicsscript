@@ -53,7 +53,7 @@ dev = [
 ]
 full = [
      "PyYAML", # Used for admin-tools/make-tables.sh to build JSON tables
-     "PyQT5",  # For interactive display of graphs via matplotlib
+     "PyQT6",  # For interactive display of graphs via matplotlib
      "cairosvg",  # For rendering Plots and Graphs as SVGs via matplotlib
      "cson", # for xasy
      "matplotlib" # For rendering SVG plots
