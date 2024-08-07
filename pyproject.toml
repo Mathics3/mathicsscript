@@ -60,8 +60,8 @@ full = [
 ]
 
 [project.scripts]
-mathicsscript = "mathicsscript.__main__:main"
-# fake_psviewer.py = "mathicsscript.fake_psviewer:main"
+ mathicsscript = "mathicsscript.__main__:main"
+"fake_psviewer.py" = "mathicsscript.fake_psviewer:main"
 
 [project.urls]
 Homepage = "https://mathics.org/"
