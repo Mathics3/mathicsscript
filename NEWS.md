@@ -1,3 +1,12 @@
+7.0.0
+-----
+
+* Adjust for Mathics3 core 7.0.0 API
+* Drop support for 3.6 and 3.7 and add support for 3.11
+* Use pyproject.toml for packaging to be able to support 3.12
+
+
+
 6.0.0
 -----
 
@@ -31,7 +40,7 @@
 3.3.1
 -----
 
-* Packaging issues: getting setttings.m file into distribution and other missing files
+* Packaging issues: getting settings.m file into distribution and other missing files
 * More pervasive handling of import errors
 
 3.3.0
@@ -62,10 +71,10 @@ ASCII to unicode conversion was disabled since it was flaky and turned `===` int
 garbage upon seeing `==`. Issue #38
 
 In prompt-readline by default, inserting a "[", "(", or "{" will automatically insert the corresponding closing "]", ")", and "}".
-Use f3 to toggle this behavoir.
+Use f3 to toggle this behavior.
 
 The packaging of 3.0.0 omitted some Readline inputrc files, and a JSON operator table. Issue #37
-A few other Python packaging problems were fixe.
+A few other Python packaging problems were fixed.
 
 We've separated prompt_readline functions into its own module separate from the common prompt readline functions
 
@@ -90,8 +99,7 @@ Independent of prompt-toolkit, there better pygments colorization using [mathics
 
 * There are now system setting and user settings. User settings take precedence over system settings.
 * String output is now shown in quotes to make it more distinguishable from symbol and unexpanded
-  expressssion output. This does not follow how `wolframscript` works. Option `strict-wl-output` wil
-  disable this.
+  expressssion output. This does not follow how `wolframscript` works. Option `strict-wl-output` will disable this.
 * Syntax and Highlighting is now done via the Python
   [mathics-pygments](https://pypi.org/project/mathics-pygments/)
   package.  I think you'll find colorization more complete and
@@ -154,7 +162,7 @@ Incompatible changes:
 
 * We require Mathics3 1.1.1 for features added in that to support unicode and user-formatting
 * Start to support Unicode as a CLI option: `--unicode/--no-unicode`. The setting name is ``Settings`$UseUnicode``.
-* Add a lot of Unicode symbols and the WL esc sequences. For example letters with dots under them. These are the "Formal" parmaters/letters.
+* Add a lot of Unicode symbols and the WL esc sequences. For example letters with dots under them. These are the "Formal" parameters/letters.
 * Handle Unicode versus WL character code mismatches, , in particular Unicode directed and undirected edges.
 * Support for ``PyMathics`Graph`` (to be released on PyPI soon).
 * Some XDG compatibility
@@ -168,7 +176,7 @@ Incompatible changes:
   - ``Settings`$PygmentsShowTokens``
   - ``Settings`$UseUnicode`` (also mentioned above)
 
-A lot of code for handling graph formatting is here but will eventually be moved to a backend formattting module which hasn't been written yet.
+A lot of code for handling graph formating is here but will eventually be moved to a backend formattting module which hasn't been written yet.
 
 
 1.1.0
@@ -176,7 +184,7 @@ A lot of code for handling graph formatting is here but will eventually be moved
 
 Now that Mathic3 1.1.0 is released depend on that.
 
-Some interal prepartion work was done to support changing settings inside the REPL.
+Some internal preparation work was done to support changing settings inside the REPL.
 Not ready for release yet.
 
 1.1.0 rc1
