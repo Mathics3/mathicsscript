@@ -46,11 +46,11 @@ Once install run using ``mathicsscript``:
 ::
 
    $ mathicsscript
-   Mathicscript: 3.2.2.dev0, Mathics 3.1.0.dev0
+   Mathicscript: 7.0.0, Mathics 7.0.0
    on CPython 3.7.10 (default, Feb 23 2021, 10:13:46)
    using SymPy 1.8, mpmath 1.2.1, numpy 1.20.2, cython 0.29.22
 
-   Copyright (C) 2011-2021 The Mathics Team.
+   Copyright (C) 2011-2024 The Mathics Team.
    This program comes with ABSOLUTELY NO WARRANTY.
    This is free software, and you are welcome to redistribute it
    under certain conditions.
