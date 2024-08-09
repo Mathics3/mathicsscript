@@ -30,6 +30,8 @@
 /.tox
 /.venv*/*
 /ChangeLog
+/ChangeLog.orig
+/ChangeLog.rej
 /PKG-INFO
 /README
 /README.html
