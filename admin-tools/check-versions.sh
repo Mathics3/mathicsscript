@@ -1,10 +1,10 @@
 #!/bin/bash
 function finish {
-  cd $owd
+  cd $mathicsscript_owd
 }
 
 # FIXME put some of the below in a common routine
-owd=$(pwd)
+mathicsscript_owd=$(pwd)
 trap finish EXIT
 
 cd $(dirname ${BASH_SOURCE[0]})
@@ -24,3 +24,4 @@ for version in $PYVERSIONS; do
     fi
     echo === $version ===
 done
+finish
