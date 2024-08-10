@@ -26,10 +26,10 @@ jobs:
         set LLVM_DIR="C:\Program Files\LLVM"
         # Can comment out when next Mathics core and Mathics-scanner are released
         # python -m pip install -e git+https://github.com/Mathics3/mathics-scanner#egg=Mathics-Scanner[full]
-        git clone https://github.com/Mathics3/mathics-core
-        bash -c '(cd mathics-core && pip3 install -e .[full])'
-        bash -c '(cd mathics-core && bash ./admin-tools/make-op-tables.sh)'
-        # python -m pip install Mathic3[full]
+        # git clone https://github.com/Mathics3/mathics-core
+        # bash -c '(cd mathics-core && pip3 install -e .[full])'
+        # bash -c '(cd mathics-core && bash ./admin-tools/make-op-tables.sh)'
+        python -m pip install Mathics3[full]
     - name: Install mathicsscript
       run: |
         make
