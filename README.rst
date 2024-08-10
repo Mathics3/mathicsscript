@@ -2,7 +2,7 @@
 
 |Packaging status|
 
-mathicsscript is a command-line interface to `Mathics <https://mathics.org>`_.
+mathicsscript is a command-line interface to `Mathics3 <https://mathics.org>`_.
 
 |screenshot|
 
@@ -25,10 +25,10 @@ Features
 Installing
 ----------
 
-To install, run
+To install with the full dependencies, run:
 ::
 
-    $ make install
+    $ make install[full]
 
 To install from git sources so that you run from the git source tree:
 
@@ -47,8 +47,11 @@ Once install run using ``mathicsscript``:
 
    $ mathicsscript
    Mathicscript: 7.0.0, Mathics 7.0.0
-   on CPython 3.7.10 (default, Feb 23 2021, 10:13:46)
-   using SymPy 1.8, mpmath 1.2.1, numpy 1.20.2, cython 0.29.22
+   on CPython 3.11.9 (main, May  6 2024, 12:58:03) [GCC 13.2.0]
+   Using:
+   SymPy 1.12.1, mpmath 1.3.0, numpy 1.26.4
+   cython 3.0.10, matplotlib 3.8.4,
+   Asymptote version 2.87
 
    Copyright (C) 2011-2024 The Mathics Team.
    This program comes with ABSOLUTELY NO WARRANTY.
