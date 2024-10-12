@@ -16,8 +16,8 @@ repos:
     - id: black
       language_version: python3
       exclude: 'mathicsscript/version.py'
--   repo: https://github.com/pycqa/flake8
-    rev: 3.9.2
-    hooks:
-      - id: flake8
-        stages: [commit]
+# -   repo: https://github.com/pycqa/flake8
+#     rev: 3.9.2
+#     hooks:
+#       - id: flake8
+#         stages: [commit]

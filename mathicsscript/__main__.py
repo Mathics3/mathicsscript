@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 import click
+import mathics.core as mathics_core
 from mathics import license_string, settings, version_info
 from mathics.core.attributes import attribute_string_to_number
 from mathics.core.definitions import autoload_files
@@ -16,6 +17,7 @@ from mathics.core.evaluation import Evaluation, Output
 from mathics.core.expression import from_python
 from mathics.core.parser import MathicsFileLineFeeder
 from mathics.core.symbols import Symbol, SymbolFalse, SymbolTrue
+from mathics.core.systemsymbols import SymbolTeXForm
 from mathics_scanner import replace_wl_with_plain_text
 from pygments import highlight
 
@@ -23,7 +25,10 @@ from mathicsscript.asymptote import asymptote_version
 from mathicsscript.settings import definitions
 from mathicsscript.termshell import ShellEscapeException, mma_lexer
 from mathicsscript.termshell_gnu import TerminalShellGNUReadline
-from mathicsscript.termshell_prompt import TerminalShellPromptToolKit
+from mathicsscript.termshell_prompt import (
+    TerminalShellCommon,
+    TerminalShellPromptToolKit,
+)
 from mathicsscript.version import __version__
 
 try:
@@ -46,7 +51,6 @@ SymPy {sympy}, mpmath {mpmath}, numpy {numpy}
 """.format(
     **version_info
 )
-
 
 if "cython" in version_info:
     version_string += f"cython {version_info['cython']}, "
@@ -135,6 +139,100 @@ class TerminalOutput(Output):
         return self.shell.out_callback(out)
 
 
+def interactive_eval_loop(
+    shell: TerminalShellCommon, unicode, prompt, strict_wl_output: bool
+):
+    def identity(x: Any) -> Any:
+        return x
+
+    def fmt_fun(query: Any) -> Any:
+        return highlight(str(query), mma_lexer, shell.terminal_formatter)
+
+    while True:
+        try:
+            if have_readline and shell.using_readline:
+                import readline as GNU_readline
+
+                last_pos = GNU_readline.get_current_history_length()
+
+            full_form = definitions.get_ownvalue(
+                "Settings`$ShowFullFormInput"
+            ).replace.to_python()
+            style = definitions.get_ownvalue("Settings`$PygmentsStyle")
+            fmt = identity
+            if style:
+                style = style.replace.get_string_value()
+                if shell.terminal_formatter:
+                    fmt = fmt_fun
+
+            evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
+            query, source_code = evaluation.parse_feeder_returning_code(shell)
+            if mathics_core.PRE_EVALUATION_HOOK is not None:
+                mathics_core.PRE_EVALUATION_HOOK(query, evaluation)
+
+            if (
+                have_readline
+                and shell.using_readline
+                and hasattr(GNU_readline, "remove_history_item")
+            ):
+                current_pos = GNU_readline.get_current_history_length()
+                for pos in range(last_pos, current_pos - 1):
+                    GNU_readline.remove_history_item(pos)
+                wl_input = source_code.rstrip()
+                if unicode:
+                    wl_input = replace_wl_with_plain_text(wl_input)
+                GNU_readline.add_history(wl_input)
+
+            if query is None:
+                continue
+
+            if hasattr(query, "head") and query.head == SymbolTeXForm:
+                output_style = "//TeXForm"
+            else:
+                output_style = ""
+
+            if full_form:
+                print(fmt(query))
+            result = evaluation.evaluate(
+                query, timeout=settings.TIMEOUT, format="unformatted"
+            )
+            if result is not None:
+                shell.print_result(
+                    result, prompt, output_style, strict_wl_output=strict_wl_output
+                )
+
+        except ShellEscapeException as e:
+            source_code = e.line
+            if len(source_code) and source_code[1] == "!":
+                try:
+                    print(open(source_code[2:], "r").read())
+                except Exception:
+                    print(str(sys.exc_info()[1]))
+            else:
+                subprocess.run(source_code[1:], shell=True)
+
+                # Should we test exit code for adding to history?
+                GNU_readline.add_history(source_code.rstrip())
+                # FIXME add this... when in Mathics core updated
+                # shell.definitions.increment_line(1)
+
+        except (KeyboardInterrupt):
+            print("\nKeyboardInterrupt")
+        except EOFError:
+            if prompt:
+                print("\n\nGoodbye!\n")
+            break
+        except SystemExit:
+            print("\n\nGoodbye!\n")
+            # raise to pass the error code on, e.g. Quit[1]
+            raise
+        finally:
+            # Reset the input line that would be shown in a parse error.
+            # This is not to be confused with the number of complete
+            # inputs that have been seen, i.e. In[]
+            shell.reset_lineno()
+
+
 @click.command()
 @click.version_option(version=__version__)
 @click.option(
@@ -183,6 +281,11 @@ class TerminalOutput(Output):
     default=sys.getdefaultencoding() == "utf-8",
     show_default=True,
     help="Accept Unicode operators in input and show unicode in output.",
+)
+@click.option(
+    "--post-mortem/--no-unicode",
+    show_default=True,
+    help="go to post-mortem debug on a terminating system exception (needs trepan3k)",
 )
 @click.option(
     "--prompt/--no-prompt",
@@ -242,6 +345,7 @@ def main(
     readline,
     completion,
     unicode,
+    post_mortem,
     prompt,
     pyextensions,
     execute,
@@ -274,6 +378,17 @@ def main(
     definitions.set_ownvalue(
         "Settings`$PygmentsShowTokens", from_python(True if pygments_tokens else False)
     )
+
+    if post_mortem:
+        try:
+            from trepan.post_mortem import post_mortem_excepthook
+        except ImportError:
+            print(
+                "trepan3k is needed for post-mortem debugging --post-mortem option ignored."
+            )
+            print("And you may want also trepan3k-mathics3-plugin as well.")
+        else:
+            sys.excepthook = post_mortem_excepthook
 
     readline = "none" if (execute or file and not persist) else readline.lower()
     if readline == "prompt":
@@ -373,96 +488,9 @@ def main(
     definitions.set_attribute(
         "Settings`MathicsScriptVersion", attribute_string_to_number["System`Locked"]
     )
-    TeXForm = Symbol("System`TeXForm")
-
-    def identity(x: Any) -> Any:
-        return x
-
-    def fmt_fun(query: Any) -> Any:
-        return highlight(str(query), mma_lexer, shell.terminal_formatter)
 
     definitions.set_line_no(0)
-    while True:
-        try:
-            if have_readline and shell.using_readline:
-                import readline as GNU_readline
-
-                last_pos = GNU_readline.get_current_history_length()
-
-            full_form = definitions.get_ownvalue(
-                "Settings`$ShowFullFormInput"
-            ).replace.to_python()
-            style = definitions.get_ownvalue("Settings`$PygmentsStyle")
-            fmt = identity
-            if style:
-                style = style.replace.get_string_value()
-                if shell.terminal_formatter:
-                    fmt = fmt_fun
-
-            evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
-            query, source_code = evaluation.parse_feeder_returning_code(shell)
-
-            if (
-                have_readline
-                and shell.using_readline
-                and hasattr(GNU_readline, "remove_history_item")
-            ):
-                current_pos = GNU_readline.get_current_history_length()
-                for pos in range(last_pos, current_pos - 1):
-                    GNU_readline.remove_history_item(pos)
-                wl_input = source_code.rstrip()
-                if unicode:
-                    wl_input = replace_wl_with_plain_text(wl_input)
-                GNU_readline.add_history(wl_input)
-
-            if query is None:
-                continue
-
-            if hasattr(query, "head") and query.head == TeXForm:
-                output_style = "//TeXForm"
-            else:
-                output_style = ""
-
-            if full_form:
-                print(fmt(query))
-            result = evaluation.evaluate(
-                query, timeout=settings.TIMEOUT, format="unformatted"
-            )
-            if result is not None:
-                shell.print_result(
-                    result, prompt, output_style, strict_wl_output=strict_wl_output
-                )
-
-        except ShellEscapeException as e:
-            source_code = e.line
-            if len(source_code) and source_code[1] == "!":
-                try:
-                    print(open(source_code[2:], "r").read())
-                except Exception:
-                    print(str(sys.exc_info()[1]))
-            else:
-                subprocess.run(source_code[1:], shell=True)
-
-                # Should we test exit code for adding to history?
-                GNU_readline.add_history(source_code.rstrip())
-                # FIXME add this... when in Mathics core updated
-                # shell.definitions.increment_line(1)
-
-        except (KeyboardInterrupt):
-            print("\nKeyboardInterrupt")
-        except EOFError:
-            if prompt:
-                print("\n\nGoodbye!\n")
-            break
-        except SystemExit:
-            print("\n\nGoodbye!\n")
-            # raise to pass the error code on, e.g. Quit[1]
-            raise
-        finally:
-            # Reset the input line that would be shown in a parse error.
-            # This is not to be confused with the number of complete
-            # inputs that have been seen, i.e. In[]
-            shell.reset_lineno()
+    interactive_eval_loop(shell, unicode, prompt, strict_wl_output)
     return exit_rc
 
 
