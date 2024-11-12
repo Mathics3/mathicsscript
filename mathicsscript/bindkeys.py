@@ -13,6 +13,11 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+Keyboard input binding routines for prompt_toolkit which are
+analogous to GNU Readlines' parse_and_bind().
+"""
+
 from typing import Callable
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
@@ -136,7 +141,7 @@ def read_inputrc(read_init_file_fn: Callable, use_unicode: bool) -> None:
     """
     Read GNU Readline style inputrc
     """
-    # GNU Readling inputrc $include's paths are relative to itself,
+    # GNU Readline inputrc $include's paths are relative to itself,
     # so chdir to its directory before reading the file.
     parent_dir = pathlib.Path(__file__).parent.absolute()
     with parent_dir:

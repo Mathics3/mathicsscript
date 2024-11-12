@@ -83,7 +83,7 @@ class MathicsCompleter(WordCompleter):
 
         self.escape_sequences = aliased_characters.keys()
 
-    def _is_space_before_cursor(self, document, text_before_cursor: str) -> bool:
+    def _is_space_before_cursor(self, text_before_cursor: str) -> bool:
         """Space before or no text before cursor."""
         return text_before_cursor == "" or text_before_cursor[-1:].isspace()
 
@@ -135,9 +135,7 @@ class MathicsCompleter(WordCompleter):
 
         text_before_cursor = document.text_before_cursor
 
-        if self._is_space_before_cursor(
-            document=document, text_before_cursor=text_before_cursor
-        ):
+        if self._is_space_before_cursor(text_before_cursor=text_before_cursor):
             return WordToken("", TokenKind.Null)
 
         start = (
