@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2020-2022 Rocky Bernstein <rb@dustyfeet.com>
+#   Copyright (C) 2020-2022, 2024 Rocky Bernstein <rb@dustyfeet.com>
 
 from columnize import columnize
 
@@ -115,17 +115,12 @@ class TerminalShellCommon(MathicsLineFeeder):
             try:
                 self.terminal_formatter = Terminal256Formatter(style=style)
             except ClassNotFound:
-                print(
-                    "Pygments style name '%s' not found; No pygments style set" % style
-                )
+                print(f"Pygments style name '{style}' not found; No pygments style set")
 
         self.pygments_style = style
         self.definitions = definitions
         set_settings_value(
             self.definitions, "Settings`$PygmentsShowTokens", from_python(False)
-        )
-        set_settings_value(
-            self.definitions, "Settings`$PygmentsStyle", from_python(style)
         )
         set_settings_value(
             self.definitions, "Settings`$UseUnicode", from_python(use_unicode)

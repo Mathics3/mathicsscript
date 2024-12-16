@@ -1,8 +1,10 @@
+(* -*- wolfram -*- *)
 (**********************************************************************)
 (*                                                                    *)
 (*                     Settings for mathicsscript                     *)
 (*                                                                    *)
-(*                                                                    *)
+(* Values that can be set from the command line should not have a     *)
+(* default value set here, just the "usage" value.                    *)
 (*                                                                    *)
 (**********************************************************************)
 
@@ -24,11 +26,11 @@ Settings`$PygmentsShowTokens = False
 Settings`$UseUnicode::usage = "This Boolean variable sets whether Unicode is used in terminal input and output."
 Settings`$UseUnicode = True
 
-Settings`$UseAsymptote::usage = "This Boolean variable sets whether 3D Graphics should render using Asymptote."
-Settings`$UseAsymptote = True
+Settings`$UseAsymptote::usage = "This Boolean variable sets whether 2D and 3D Graphics should render using Asymptote."
+Settings`$UseMatplotlib::usage = "This Boolean variable sets whether 2D Graphics should render using Matplotlib.
 
-Settings`$UseMatplotlib::usage = "This Boolean variable sets whether 2D Graphics should render using Matplotlib."
-Settings`$UseMatplotlib = True
+If set, and $UseAsymptote is also set, matplotlib will take precedence for 2D graphics.
+"
 
 Settings`MathicsScriptVersion::usage = "This string is the version of MathicsScript we are running."
 

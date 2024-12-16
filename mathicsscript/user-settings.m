@@ -1,3 +1,4 @@
+(* -*- wolfram -*- *)
 (***********************************************************)
 (* User settings config for mathicsscript                  *)
 (* Customize this with Mathics definitions as desired.     *)

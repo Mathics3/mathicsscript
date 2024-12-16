@@ -6,8 +6,10 @@
 import mathics
 import os
 import os.path as osp
+import subprocess
 
 from subprocess import Popen, PIPE, run
+from tempfile import NamedTemporaryFile
 from typing import Optional
 
 asy_program = os.environ.get("ASY_PROG", "asy")
@@ -93,6 +95,16 @@ class Asy(object):
             self.send("quit")
             self.session.stdin.close()
             self.session.wait()
+
+
+def write_asy_and_view(asy_string: str):
+    # TODO: add option to let user decide whether or not to delete
+    # image afterwards.
+    with NamedTemporaryFile(
+        mode="w", prefix="Mathics3-Graph-", suffix=".asy", delete=False
+    ) as asy_fp:
+        asy_fp.write(asy_string + "\n")
+    subprocess.run(args=[asy_program, "-View", asy_fp.name])
 
 
 if __name__ == "__main__":
