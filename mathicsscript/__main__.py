@@ -140,7 +140,12 @@ class TerminalOutput(Output):
 
 
 def interactive_eval_loop(
-    shell: TerminalShellCommon, unicode, prompt, strict_wl_output: bool
+    shell: TerminalShellCommon,
+    unicode,
+    prompt,
+    matplotlib: bool,
+    asymptote: bool,
+    strict_wl_output: bool,
 ):
     def identity(x: Any) -> Any:
         return x
@@ -337,6 +342,25 @@ def interactive_eval_loop(
     help=("Most WL-output compatible (at the expense of usability)."),
     required=False,
 )
+@click.option(
+    "--asymptote/--no-asymptote",
+    default=True,
+    show_default=True,
+    help=(
+        "Use asymptote for 2D and 3D Graphics; "
+        "you need a working asymptote for this option."
+    ),
+)
+@click.option(
+    "--matplotlib/--no-matplotlib",
+    default=True,
+    show_default=True,
+    help=(
+        "Use matplotlib for 2D Graphics; "
+        "you need a working matplotlib for this option. "
+        "If set, this will take precedence over asymptote for 2D Graphics."
+    ),
+)
 @click.argument("file", nargs=1, type=click.Path(readable=True), required=False)
 def main(
     full_form,
@@ -353,6 +377,8 @@ def main(
     style,
     pygments_tokens,
     strict_wl_output,
+    asymptote,
+    matplotlib,
     file,
 ) -> int:
     """A command-line interface to Mathics.
@@ -372,12 +398,14 @@ def main(
     # Set a default value for $ShowFullFormInput to False.
     # Then, it can be changed by the settings file (in WL)
     # and overwritten by the command line parameter.
-    definitions.set_ownvalue(
-        "Settings`$ShowFullFormInput", from_python(True if full_form else False)
-    )
-    definitions.set_ownvalue(
-        "Settings`$PygmentsShowTokens", from_python(True if pygments_tokens else False)
-    )
+    for setting_name, setting_value in (
+        ("$ShowFullFormInput", full_form),
+        ("$UseAsymptote", asymptote),
+        ("$UseMatplotlib", matplotlib),
+    ):
+        definitions.set_ownvalue(
+            f"Settings`{setting_name}", from_python(True if setting_value else False)
+        )
 
     if post_mortem:
         try:
@@ -476,9 +504,6 @@ def main(
     )
 
     definitions.set_ownvalue(
-        "Settings`$PygmentsStyle", from_python(shell.pygments_style)
-    )
-    definitions.set_ownvalue(
         "Settings`$PygmentsShowTokens", from_python(pygments_tokens)
     )
     definitions.set_ownvalue("Settings`MathicsScriptVersion", from_python(__version__))
@@ -490,7 +515,9 @@ def main(
     )
 
     definitions.set_line_no(0)
-    interactive_eval_loop(shell, unicode, prompt, strict_wl_output)
+    interactive_eval_loop(
+        shell, unicode, prompt, asymptote, matplotlib, strict_wl_output
+    )
     return exit_rc
 
 

@@ -47,7 +47,7 @@ try:
 except ImportError:
     svg2png = None
 
-from mathicsscript.asymptote import Asy
+from mathicsscript.asymptote import Asy, write_asy_and_view
 
 have_asymptote = False
 try:
@@ -92,6 +92,7 @@ def format_output(obj, expr, format=None):
 
     expr_type = expr.get_head_name()
     expr_head = expr.get_head()
+
     if expr_head is SymbolMathMLForm:
         format = "xml"
         elements = expr.elements
@@ -102,57 +103,62 @@ def format_output(obj, expr, format=None):
         elements = expr.elements
         if len(elements) == 1:
             expr = elements[0]
-    elif expr_head is SymbolImage:
-        if get_settings_value(obj.definitions, "Settings`$UseMatplotlib") and plt:
-            temp_png = NamedTemporaryFile(
-                mode="w+b", suffix=".png", prefix="mathicsscript-"
+    elif (
+        expr_head is SymbolImage
+        and get_settings_value(obj.definitions, "Settings`$UseMatplotlib")
+        and plt
+    ):
+        temp_png = NamedTemporaryFile(
+            mode="w+b", suffix=".png", prefix="mathicsscript-"
+        )
+        try:
+            png_expr = Expression(
+                SymbolExport, String(temp_png.name), expr, String("PNG")
             )
-            try:
-                png_expr = Expression(
-                    SymbolExport, String(temp_png.name), expr, String("PNG")
-                )
-                result = png_expr.evaluate(obj)
-                plt.axes().set_axis_off()
-                img = mpimg.imread(temp_png)
-                cmap = "gray" if expr.color_space == "Grayscale" else None
-                plt.imshow(img, cmap=cmap)
-                plt.show()
-            except:  # noqa
-                pass
-            temp_png.close()
-
+            result = png_expr.evaluate(obj)
+            plt.axes().set_axis_off()
+            img = mpimg.imread(temp_png)
+            cmap = "gray" if expr.color_space == "Grayscale" else None
+            plt.imshow(img, cmap=cmap)
+            plt.show()
+        except:  # noqa
             pass
+        temp_png.close()
 
-    elif expr_head in (SymbolGraphics, SymbolPlot):
-        if (
-            get_settings_value(obj.definitions, "Settings`$UseMatplotlib")
-            and plt
-            and svg2png
-        ):
-            svg_expr = Expression(SymbolExportString, expr, String("SVG"))
-            svg_str = svg_expr.evaluate(obj).to_python(string_quotes=False)
-            temp_png = NamedTemporaryFile(
-                mode="w+b", suffix=".png", prefix="mathicsscript-"
-            )
-            try:
-                svg2png(bytestring=svg_str, write_to=temp_png.name)
-                plt.axes().set_axis_off()
-                img = mpimg.imread(temp_png)
-                plt.imshow(img)
-                plt.show()
-                temp_png.close()
-            except:  # noqa
-                pass
+    elif (
+        expr_head in (SymbolGraphics, SymbolPlot)
+        and get_settings_value(obj.definitions, "Settings`$UseMatplotlib")
+        and plt
+        and svg2png
+    ):
+        svg_expr = Expression(SymbolExportString, expr, String("SVG"))
+        svg_str = svg_expr.evaluate(obj).to_python(string_quotes=False)
+        temp_png = NamedTemporaryFile(
+            mode="w+b", suffix=".png", prefix="mathicsscript-"
+        )
+        try:
+            svg2png(bytestring=svg_str, write_to=temp_png.name)
+            plt.axes().set_axis_off()
+            img = mpimg.imread(temp_png)
+            plt.imshow(img)
+            plt.show()
+            temp_png.close()
+        except:  # noqa
+            pass
         return expr_type
     elif (
-        expr_head in (SymbolGraphics3D,)
+        expr_head in (SymbolGraphics, SymbolPlot, SymbolGraphics3D)
         and have_asymptote
         and get_settings_value(obj.definitions, "Settings`$UseAsymptote")
     ):
         asy_expr = Expression(SymbolExportString, expr, String("asy"))
         asy_str = asy_expr.evaluate(obj).to_python(string_quotes=False)
-        asymptote_graph.erase()
-        asymptote_graph.send(asy_str)
+
+        # Alternate older version
+        # asymptote_graph.erase()
+        # asymptote_graph.send(asy_str)
+
+        write_asy_and_view(asy_str)
         return expr_type
 
     if format == "text":
