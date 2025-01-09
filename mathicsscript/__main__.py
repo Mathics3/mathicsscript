@@ -162,11 +162,11 @@ def interactive_eval_loop(
 
             full_form = definitions.get_ownvalue(
                 "Settings`$ShowFullFormInput"
-            ).replace.to_python()
+            ).to_python()
             style = definitions.get_ownvalue("Settings`$PygmentsStyle")
             fmt = identity
             if style:
-                style = style.replace.get_string_value()
+                style = style.get_string_value()
                 if shell.terminal_formatter:
                     fmt = fmt_fun
 

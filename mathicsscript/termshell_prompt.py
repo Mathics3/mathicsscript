@@ -167,7 +167,7 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         if self.definitions.get_ownvalue("Settings`$GroupAutocomplete"):
             app.group_autocomplete = self.definitions.get_ownvalue(
                 "Settings`$GroupAutocomplete"
-            ).replace.to_python()
+            ).to_python()
 
         edit_mode = "Vi" if app.editing_mode == EditingMode.VI else "Emacs"
         return HTML(
@@ -224,10 +224,10 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             elif self.terminal_formatter:  # pygmentize
                 show_pygments_tokens = self.definitions.get_ownvalue(
                     "Settings`$PygmentsShowTokens"
-                ).replace.to_python()
+                ).to_python()
                 pygments_style = self.definitions.get_ownvalue(
                     "Settings`$PygmentsStyle"
-                ).replace.get_string_value()
+                ).get_string_value()
                 if pygments_style != self.pygments_style:
                     if not self.change_pygments_style(pygments_style):
                         self.definitions.set_ownvalue(
