@@ -119,17 +119,15 @@ class TerminalShellCommon(MathicsLineFeeder):
 
         self.pygments_style = style
         self.definitions = definitions
-        set_settings_value(
-            self.definitions, "Settings`$PygmentsShowTokens", from_python(False)
+        self.definitions.set_ownvalue(
+            "Settings`$PygmentsShowTokens", from_python(False)
         )
-        set_settings_value(
-            self.definitions, "Settings`$UseUnicode", from_python(use_unicode)
+        self.definitions.set_ownvalue("Settings`$PygmentsStyle", from_python(style))
+        self.definitions.set_ownvalue("Settings`$UseUnicode", from_python(use_unicode))
+        self.definitions.set_ownvalue(
+            "Settings`PygmentsStylesAvailable", from_python(ALL_PYGMENTS_STYLES)
         )
-        set_settings_value(
-            self.definitions,
-            "Settings`PygmentsStylesAvailable",
-            from_python(ALL_PYGMENTS_STYLES),
-        )
+
         self.definitions.add_message(
             "Settings`PygmentsStylesAvailable",
             Rule(
