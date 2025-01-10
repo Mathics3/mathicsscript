@@ -7,7 +7,7 @@ Copyright 2020-2021, 2024 The Mathics3 Team
 
 import os.path as osp
 
-from mathics.core.definitions import autoload_files
+from mathics.session import autoload_files
 
 from mathicsscript.version import __version__
 

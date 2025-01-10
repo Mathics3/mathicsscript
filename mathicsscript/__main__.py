@@ -12,12 +12,13 @@ import click
 import mathics.core as mathics_core
 from mathics import license_string, settings, version_info
 from mathics.core.attributes import attribute_string_to_number
-from mathics.core.definitions import autoload_files
 from mathics.core.evaluation import Evaluation, Output
 from mathics.core.expression import from_python
 from mathics.core.parser import MathicsFileLineFeeder
 from mathics.core.symbols import Symbol, SymbolFalse, SymbolTrue
 from mathics.core.systemsymbols import SymbolTeXForm
+from mathics.session import autoload_files
+
 from mathics_scanner import replace_wl_with_plain_text
 from pygments import highlight
 
