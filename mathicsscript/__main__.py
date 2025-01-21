@@ -289,7 +289,7 @@ def interactive_eval_loop(
     help="Accept Unicode operators in input and show unicode in output.",
 )
 @click.option(
-    "--post-mortem/--no-unicode",
+    "--post-mortem/--no-post-mortem",
     show_default=True,
     help="go to post-mortem debug on a terminating system exception (needs trepan3k)",
 )
