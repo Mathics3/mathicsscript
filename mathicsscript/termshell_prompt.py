@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2021-2022 Rocky Bernstein <rb@dustyfeet.com>
+#   Copyright (C) 2021-2022, 2025 Rocky Bernstein <rb@dustyfeet.com>
 
 import locale
 import os
@@ -8,41 +8,40 @@ import re
 import sys
 from typing import Optional
 
-from mathics_pygments.lexer import MathematicaLexer, MToken
-from mathicsscript.completion import MathicsCompleter
-from mathicsscript.termshell import (
-    CONFIGDIR,
-    HISTSIZE,
-    USER_INPUTRC,
-    is_pygments_style,
-    ShellEscapeException,
-    SymbolPygmentsStylesAvailable,
-    TerminalShellCommon,
-)
-from mathicsscript.version import __version__
-
+from colorama import init as colorama_init
 from mathics.core.atoms import String
 from mathics.core.attributes import attribute_string_to_number
 from mathics.core.expression import Expression, from_python
 from mathics.core.rules import Rule
 from mathics.core.systemsymbols import SymbolMessageName
-
-from mathicsscript.bindkeys import bindings, read_inputrc, read_init_file
-
-from prompt_toolkit import PromptSession, HTML, print_formatted_text
+from mathics_pygments.lexer import MathematicaLexer, MToken
+from prompt_toolkit import HTML, PromptSession, print_formatted_text
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.styles.pygments import style_from_pygments_cls
-
-
 from pygments import format, highlight, lex
-from pygments.styles import get_style_by_name
-from pygments.formatters.terminal import TERMINAL_COLORS
 from pygments.formatters import Terminal256Formatter
-from pygments.styles import get_all_styles
+from pygments.formatters.terminal import TERMINAL_COLORS
+from pygments.styles import get_all_styles, get_style_by_name
 from pygments.util import ClassNotFound
+
+# FIXME: __main__ shouldn't be needed. Fix term_background
+from term_background.__main__ import is_dark_background
+
+from mathicsscript.bindkeys import bindings, read_init_file, read_inputrc
+from mathicsscript.completion import MathicsCompleter
+from mathicsscript.termshell import (
+    CONFIGDIR,
+    HISTSIZE,
+    USER_INPUTRC,
+    ShellEscapeException,
+    SymbolPygmentsStylesAvailable,
+    TerminalShellCommon,
+    is_pygments_style,
+)
+from mathicsscript.version import __version__
 
 mma_lexer = MathematicaLexer()
 
@@ -53,11 +52,6 @@ color_scheme[MToken.SYMBOL] = ("yellow", "ansibrightyellow")
 color_scheme[MToken.BUILTIN] = ("ansigreen", "ansibrightgreen")
 color_scheme[MToken.OPERATOR] = ("magenta", "ansibrightmagenta")
 color_scheme[MToken.NUMBER] = ("ansiblue", "ansibrightblue")
-
-from colorama import init as colorama_init
-
-# FIXME: __main__ shouldn't be needed. Fix term_background
-from term_background.__main__ import is_dark_background
 
 HISTFILE = osp.join(CONFIGDIR, "history-ptk")
 
@@ -70,6 +64,7 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         want_completion: bool,
         use_unicode: bool,
         prompt: bool,
+        edit_mode: Optional[str],
     ):
         super(TerminalShellCommon, self).__init__("<stdin>")
         self.input_encoding = locale.getpreferredencoding()
@@ -79,6 +74,10 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         self.prompt = prompt
 
         self.session = PromptSession(history=FileHistory(HISTFILE))
+        if edit_mode is not None:
+            self.session.editing_mode = (
+                EditingMode.VI if edit_mode == "vi" else EditingMode.EMACS
+            )
 
         # Try importing readline to enable arrow keys support etc.
         self.using_readline = False
