@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#   Copyright (C) 2025 Rocky Bernstein <rb@dustyfeet.com>
 # -*- coding: utf-8 -*-
 
 import os
@@ -239,7 +240,19 @@ def interactive_eval_loop(
             shell.reset_lineno()
 
 
+if click.__version__ >= "7.":
+    case_sensitive = {"case_sensitive": False}
+else:
+    case_sensitive = {}
+
+
 @click.command()
+@click.option(
+    "--edit-mode",
+    "-e",
+    type=click.Choice(["emacs", "vi"], **case_sensitive),
+    help="Set initial edit mode (when using prompt toolkit only)",
+)
 @click.version_option(version=__version__)
 @click.option(
     "--full-form",
@@ -364,6 +377,7 @@ def interactive_eval_loop(
 )
 @click.argument("file", nargs=1, type=click.Path(readable=True), required=False)
 def main(
+    edit_mode,
     full_form,
     persist,
     quiet,
@@ -422,7 +436,7 @@ def main(
     readline = "none" if (execute or file and not persist) else readline.lower()
     if readline == "prompt":
         shell = TerminalShellPromptToolKit(
-            definitions, style, completion, unicode, prompt
+            definitions, style, completion, unicode, prompt, edit_mode
         )
     else:
         want_readline = readline == "gnu"
