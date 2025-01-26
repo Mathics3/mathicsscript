@@ -43,12 +43,12 @@ The "cast" screenshot was made with asciienema and then running through `asciica
 For example:
 
 ```
-$ asciinema play mathicsscript1.cast
+$ asciinema play mathicsscript1.caste
 ```
 
 You can edit the `.cast` files. The specific commands used after this were:
 
 ```console
-$ asciicast2gif -w 93 -h 37 mathicsscript1.{cast,gif}
-$ asciicast2gif -w 93 -h 19 mathicsscript2.{cast,gif}
+$ agg mathicsscript1.{cast,gif}
+$ agg mathicsscript2.{cast,gif}
 ```

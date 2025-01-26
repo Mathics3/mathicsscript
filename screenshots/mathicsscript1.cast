@@ -4,7 +4,7 @@
 [1.062212, "o", "ics"]
 [1.502028, "o", "script"]
 [2.034574, "o", "\r\n"]
-[2.82522, "o", "\r\nMathics 1.1.0rc1\r\non CPython 3.9.0 (default, Oct 23 2020, 23:15:06) \r\nusing SymPy 1.6.2, mpmath 1.1.0, cython 0.29.21\r\n\r\nCopyright (C) 2011-2020 The Mathics Team.\r\nThis program comes with ABSOLUTELY NO WARRANTY.\r\nThis is free software, and you are welcome to redistribute it\r\nunder certain conditions.\r\nSee the documentation for the full license.\r\n\r\nQuit by pressing CONTROL-D\r\n\r\n"]
+[2.82522, "o", "\r\nMathicsscript: 8.0.0, Mathics 8.0.0\r\non CPython 3.12.8 (main, Dec  9 2024, 11:38:23) [GCC 13.2.0]\r\nusing SymPy 1.13.3, mpmath 1.130, cython 3.0.11\r\n\r\nCopyright (C) 2011-2025 The Mathics Team.\r\nThis program comes with ABSOLUTELY NO WARRANTY.\r\nThis is free software, and you are welcome to redistribute it\r\nunder certain conditions.\r\nSee the documentation for the full license.\r\n\r\nQuit by pressing CONTROL-D\r\n\r\n"]
 [2.825361, "o", "\u001b[32mIn[\u001b[1m1\u001b[22m]:= \u001b[39m"]
 [3.695122, "o", "I"]
 [3.967145, "o", "n"]

@@ -1,5 +1,21 @@
+8.0.0
+-----
+
+Jan 26, 2025
+
+This release tracks the API changes in the Mathics Kernel, and to support enhanged debugging
+
+* `--edit-mode [emacs|vi]` or was added to `mathicsscript` to specify which initial edit mode for prompt-toolkit to start in
+* `--post-mortem` was added `mathicsscript` to go into a trepan3k debugger on error
+* Add aliases for all of the 100 or so "no-meaning" operators
+* Allow 2D rendering from asymptote
+
+
+
 7.0.0
 -----
+
+Aug 10, 2025
 
 * Adjust for Mathics3 core 7.0.0 API
 * Drop support for 3.6 and 3.7 and add support for 3.11
