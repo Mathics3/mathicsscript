@@ -9,6 +9,7 @@ This release tracks the API changes in the Mathics Kernel, and to support enhang
 * `--post-mortem` was added `mathicsscript` to go into a trepan3k debugger on error
 * Add aliases for all of the 100 or so "no-meaning" operators
 * Allow 2D rendering from asymptote
+* Add/update material in README's and screencast
 
 
 
