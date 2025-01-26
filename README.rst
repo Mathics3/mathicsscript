@@ -1,4 +1,4 @@
-|CI status| |Pypi Installs| |Latest Version| |Supported Python Versions|
+|CI status| |PyPI Installs| |Latest Version| |Supported Python Versions|
 
 |Packaging status|
 
@@ -18,7 +18,7 @@ Features
    - limited ESC keyboard input; for example *esc* ``p`` *esc* is π
 * Syntax highlighting using `mathics-pygments <https://pypi.org/project/mathics-pygments/>`_ which includes dynamically created variables and functions.
 * Automatic detection of light or dark `terminal background color <https://pypi.org/project/term-background/>`_.
-* Optional Graphics rendering via `matplotlib <https://matplotlib.org/>`_ for 2D graphics, and `Asymptote <https://asymptote.sourceforge.io>`_ for 3D graphcs.
+* Optional Graphics rendering via `matplotlib <https://matplotlib.org/>`_ for 2D graphics, and `Asymptote <https://asymptote.sourceforge.io>`_ for 3D and 2D graphics.
 * Entering and displaying Unicode symbols such as used for Pi or Rule arrows
 * Provision for running in non-interactive batch mode which an be used inside POSIX shells
 
@@ -94,6 +94,35 @@ Feeding this into ``mathicsscript``:
 For a full list of options, type ``mathicsscript --help``.
 
 
+Asymptote key bindings
+----------------------
+
+In asymptote graphs keyboard bindings are (copied from the asymptote
+doc under `8.29 three
+<https://asymptote.sourceforge.io/doc/three.html#index-keyboard-bindings_003a>`_::
+
+    h: home
+    f: toggle fitscreen
+    x: spin about the X axis
+    y: spin about the Y axis
+    z: spin about the Z axis
+    s: stop spinning
+    m: rendering mode (solid/patch/mesh)
+    e: export
+    c: show camera parameters
+    p: play animation
+    r: reverse animation
+    : step animation
+    +: expand
+    =: expand
+    >: expand
+    -: shrink
+    _: shrink
+    <: shrink
+    q: exit
+    Ctrl-q: exit
+
+
 Why not IPython via Jupyter?
 ----------------------------
 
@@ -114,7 +143,7 @@ the core Mathic3 package.
 .. |screenshot| image:: https://mathics.org/images/mathicsscript1.gif
 .. |Latest Version| image:: https://badge.fury.io/py/mathicsscript.svg
 		 :target: https://badge.fury.io/py/mathicsscript
-.. |Pypi Installs| image:: https://pepy.tech/badge/mathicsscript
+.. |PyPI Installs| image:: https://pepy.tech/badge/mathicsscript
 .. |Supported Python Versions| image:: https://img.shields.io/pypi/pyversions/mathicsscript.svg
 .. |CI status| image:: https://github.com/Mathics3/mathicsscript/workflows/mathicsscript%20(ubuntu)/badge.svg
 		       :target: https://github.com/Mathics3/mathicsscript/actions
