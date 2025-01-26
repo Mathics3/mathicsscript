@@ -9,97 +9,7 @@
  	flake8 things
 
  2023-02-25  rocky <rb@dustyfeet.com>
-@@ -83,7 +83,7 @@
-
- 2022-12-10  rocky <rb@dustyfeet.com>
-
--	* mathicsscript/termshell.py, mathicsscript/termshell_prompt.py:
-+	* mathicsscript/termshell.py, mathicsscript/termshell_prompt.py:
- 	black
-
- 2022-11-28  rocky <rb@dustyfeet.com>
-@@ -189,7 +189,7 @@
- 2022-02-15  rocky <rb@dustyfeet.com>
-
- 	* NEWS.md, mathicsscript/bindkeys.py,
--	mathicsscript/termshell_gnu.py, mathicsscript/termshell_prompt.py:
-+	mathicsscript/termshell_gnu.py, mathicsscript/termshell_prompt.py:
- 	Handle keybindings in GNU Readline
-
- 2022-02-15  R. Bernstein <rocky@users.noreply.github.com>
-@@ -227,7 +227,7 @@
-
- 2022-02-06  rocky <rb@dustyfeet.com>
-
--	* mathicsscript/completion.py, mathicsscript/termshell_gnu.py:
-+	* mathicsscript/completion.py, mathicsscript/termshell_gnu.py:
- 	Imports in core have changed Specifically where strip_context is located
-
- 2021-12-19  rocky <rb@dustyfeet.com>
-@@ -253,7 +253,7 @@
- 2021-09-04  rocky <rb@dustyfeet.com>
-
- 	* mathicsscript/data/inputrc-no-unicode,
--	mathicsscript/data/inputrc-unicode, mathicsscript/termshell_gnu.py:
-+	mathicsscript/data/inputrc-unicode, mathicsscript/termshell_gnu.py:
- 	GNU readline was reading inputrc from wrong place Update readline tables.  Warning: input-no-unicode is probably wrong
-
- 2021-09-04  rocky <rb@dustyfeet.com>
-@@ -415,7 +415,7 @@
-
- 2021-06-30  rocky <rb@dustyfeet.com>
-
--	* .pre-commit-config.yaml, mathicsscript/asymptote.py, setup.py:
-+	* .pre-commit-config.yaml, mathicsscript/asymptote.py, setup.py:
- 	Start using Asymptote
-
- 2021-06-30  rocky <rb@dustyfeet.com>
-@@ -500,7 +500,7 @@
-
- 2021-06-15  rocky <rb@dustyfeet.com>
-
--	* mathicsscript/bindkeys.py, requirements-extra.txt, setup.py:
-+	* mathicsscript/bindkeys.py, requirements-extra.txt, setup.py:
- 	PyQT5: extra module for matplotlib
-
- 2021-06-15  rocky <rb@dustyfeet.com>
-@@ -621,7 +621,7 @@
-
- 2021-05-27  rocky <rb@dustyfeet.com>
-
--	* mathicsscript/mmalexer.py, mathicsscript/termshell.py, setup.py:
-+	* mathicsscript/mmalexer.py, mathicsscript/termshell.py, setup.py:
- 	WIP start using prompt-toolkit
-
- 2021-05-15  R. Bernstein <rocky@users.noreply.github.com>
-@@ -959,7 +959,7 @@
-
- 2021-01-09  rocky <rb@dustyfeet.com>
-
--	* NEWS.md, mathicsscript/__main__.py, mathicsscript/termshell.py:
-+	* NEWS.md, mathicsscript/__main__.py, mathicsscript/termshell.py:
- 	`-e` `--execute` is better suited for embedded use This options adds `--quiet` and shows just evaluation output as
- 	text--execute
-
-@@ -988,7 +988,7 @@
-
- 2021-01-03  rocky <rb@dustyfeet.com>
-
--	* mathicsscript/termshell.py: Guard agains None eval returns
-+	* mathicsscript/termshell.py: Guard against "None" eval returns
-
- 2021-01-02  rocky <rb@dustyfeet.com>
-
-@@ -1071,7 +1071,7 @@
-
- 2020-12-22  R. Bernstein <rocky@users.noreply.github.com>
-
--	* : Merge pull request #7 from Mathics3/unicode-option Start to suport Unicode as a CLI option
-+	* : Merge pull request #7 from Mathics3/unicode-option Start to support Unicode as a CLI option
-
- 2020-12-22  rocky <rb@dustyfeet.com>
-
-@@ -1088,13 +1088,13 @@
+@@ -1088,12 +1088,12 @@
  	* mathicsscript/__main__.py, mathicsscript/format.py,
  	mathicsscript/inputrc, mathicsscript/inputrc-no-unicode,
  	mathicsscript/inputrc-unicode, mathicsscript/termshell.py,
@@ -115,25 +25,7 @@
 
  2020-12-12  rocky <rb@dustyfeet.com>
 
-@@ -1112,7 +1112,7 @@
-
- 2020-12-08  rocky <rb@dustyfeet.com>
-
--	* mathicsscript/format.py: Use equal aspect ratio on ciruclar graphs
-+	* mathicsscript/format.py: Use equal aspect ratio on circular graphs
-
- 2020-12-07  rocky <rb@dustyfeet.com>
-
-@@ -1120,7 +1120,7 @@
-
- 2020-12-07  rocky <rb@dustyfeet.com>
-
--	* mathicsscript/__main__.py, mathicsscript/format.py:
-+	* mathicsscript/__main__.py, mathicsscript/format.py:
- 	FindSpannngTree: use layout style of parent graph
-
- 2020-12-07  rocky <rb@dustyfeet.com>
-@@ -1154,7 +1154,7 @@
+@@ -1154,6 +1154,6 @@
 
  2020-12-04  rocky <rb@dustyfeet.com>
 
@@ -141,36 +33,3 @@
 +	* mathicsscript/format.py: Handle labeled nodes better Change color to white if we have node labels Change code slightly to facilitate expanding.
 
  2020-12-04  rocky <rb@dustyfeet.com>
-
-@@ -1226,7 +1226,7 @@
-
- 2020-11-27  rocky <rb@dustyfeet.com>
-
--	* mathicsscript/mmalexer.py, mathicsscript/termshell.py, setup.py:
-+	* mathicsscript/mmalexer.py, mathicsscript/termshell.py, setup.py:
- 	Can't use mathematica.lexer for now..  Sigh. It has promise. But recent Python gives now gives these...      FutureWarning: Possible nested set at position ...
-
- 2020-11-27  rocky <rb@dustyfeet.com>
-@@ -1309,7 +1309,7 @@
- 2020-11-18  rocky <rb@dustyfeet.com>
-
- 	* mathicsscript/__main__.py, mathicsscript/settings.m,
--	mathicsscript/termshell.py, settings/settings.m, setup.py:
-+	mathicsscript/termshell.py, settings/settings.m, setup.py:
- 	Miscellaneous changes Settings`$ShowFullForm -> Settings`$ShowFullFormInput The old name has already caused too much confusion.  Check Pygments style and give a columnized list when the name is
- 	invalid. Also make sure to reset the Mathics variable to a the last
- 	valid value when an invalid one is set.
-@@ -1401,7 +1401,7 @@
-
- 	* NEWS.md, admin-tools/git2cl, admin-tools/make-dist.sh,
- 	admin-tools/pyenv-versions, mathicsscript/term_background.py,
--	mathicsscript/version.py, setup.py, test/test_term_background.py:
-+	mathicsscript/version.py, setup.py, test/test_term_background.py:
- 	Get ready for release 1.1.0rc1
-
- 2020-10-21  R. Bernstein <rocky@users.noreply.github.com>
-@@ -1492,4 +1492,3 @@
-
- 	* Cull code from Mathics/main and revise ...  colorama is no longer optional.  We'll be using click soon.  Start
- 	to pull in my better terminal-detection script.
--
