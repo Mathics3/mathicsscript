@@ -15,6 +15,12 @@ Note this is for input entered, not the output of the evaluated result.
 "
 
 Settings`$ShowFullFormInput = False
+
+(* This is a workarund for a bug in mathicsscript of mathics-core.
+ Remove this and we get error:
+ Set::setraw: Cannot assign to raw object colorful. *)
+Settings`$PygmentsStyle = False
+
 Settings`$PygmentsStyle::usage = "This variable sets the Pygments style used to colorize output. The value should be a string.
 
 The default value changes background depending on whether the terminal has a light or dark background. You can also set the color style used on the command with the ``--style`` option, or look at the variable ```Settings`PygmentsStylesAvailable```. Or it can be set in the settings.m file."
