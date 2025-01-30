@@ -12,7 +12,7 @@ I hit the _Tab_ key after `Inte` to get the completions
 
 Ater adding `gr` though there was just one completion: `Integrate`.
 
-To get the theta (θ), I entered: _escape_ theta _escape_.
+To get the theta (θ), I entered: _escape_ .Theta _escape_.
 
 The next time around I entered `\[The` and the _Tab_ key.
 

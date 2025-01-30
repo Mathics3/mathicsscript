@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2020-2022, 2024 Rocky Bernstein <rb@dustyfeet.com>
+#   Copyright (C) 2020-2022, 2024, 2025 Rocky Bernstein <rb@dustyfeet.com>
 
 from columnize import columnize
 
@@ -67,7 +67,7 @@ from mathics.core.parser import MathicsLineFeeder
 SymbolPygmentsStylesAvailable = Symbol("Settings`PygmentsStylesAvailable")
 
 
-def is_pygments_style(style: str):
+def is_pygments_style(style: str) -> bool:
     if style not in ALL_PYGMENTS_STYLES:
         print(f"Pygments style name '{style}' not found.")
         print(f"Style names are:\n{columnize(ALL_PYGMENTS_STYLES)}")
@@ -154,7 +154,7 @@ class TerminalShellCommon(MathicsLineFeeder):
         )
 
     def change_pygments_style(self, style: str):
-        if style == self.pygments_style:
+        if not style or style == self.pygments_style:
             return False
         if is_pygments_style(style):
             self.terminal_formatter = Terminal256Formatter(style=style)

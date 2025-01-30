@@ -16,10 +16,10 @@ Note this is for input entered, not the output of the evaluated result.
 
 Settings`$ShowFullFormInput = False
 
-(* This is a workarund for a bug in mathicsscript of mathics-core.
+(* This is a workaround for a bug in mathicsscript of mathics-core.
  Remove this and we get error:
  Set::setraw: Cannot assign to raw object colorful. *)
-Settings`$PygmentsStyle = False
+Settings`$PygmentsStyle = Null
 
 Settings`$PygmentsStyle::usage = "This variable sets the Pygments style used to colorize output. The value should be a string.
 
