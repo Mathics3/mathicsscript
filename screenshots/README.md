@@ -1,6 +1,6 @@
 ## Character entry and highlighting
 
-![demo session - part 1](mathicsscript1.gif)
+![demo session - part 1](mathicsscript1-gnu.gif)
 
 ### Demo Notes
 
@@ -12,9 +12,7 @@ I hit the _Tab_ key after `Inte` to get the completions
 
 Ater adding `gr` though there was just one completion: `Integrate`.
 
-To get the theta (θ), I entered: _escape_ theta _escape_.
-
-The next time around I entered `\[The` and the _Tab_ key.
+To get the theta (θ), I entered: _escape_ .Theta _escape_.
 
 The orange color is in output is the color the Pygments default dark style `paraiso-dark` uses for numbers.
 
@@ -43,7 +41,7 @@ The "cast" screenshot was made with asciienema and then running through `asciica
 For example:
 
 ```
-$ asciinema play mathicsscript1.caste
+$ asciinema play mathicsscript1.cast
 ```
 
 You can edit the `.cast` files. The specific commands used after this were:

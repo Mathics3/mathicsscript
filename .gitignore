@@ -25,6 +25,7 @@
 /.eggs
 /.hypothesis
 /.mypy_cache
+/.pyodide-xbuildenv*
 /.pytest_cache
 /.python-version
 /.tox
@@ -32,6 +33,7 @@
 /ChangeLog
 /ChangeLog.orig
 /ChangeLog.rej
+/ChangeLog.spell-corrected
 /PKG-INFO
 /README
 /README.html
