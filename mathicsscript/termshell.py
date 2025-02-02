@@ -21,6 +21,7 @@ from mathics.core.expression import (
     from_python,
 )
 from mathics.core.rules import Rule
+from mathics.core.symbols import SymbolNull
 from mathics.core.systemsymbols import SymbolMessageName
 from mathics.session import get_settings_value, set_settings_value
 
@@ -210,8 +211,9 @@ class TerminalShellCommon(MathicsLineFeeder):
     def print_result(
         self, result, prompt: bool, output_style="", strict_wl_output=False
     ):
-        if result is None:
-            # FIXME decide what to do here
+        if result is None or result.last_eval is SymbolNull:
+            # Following WMA CLI, if the result is `SymbolNull`, just print an empty line.
+            print("")
             return
 
         last_eval = result.last_eval
