@@ -13,6 +13,7 @@ from mathics.core.atoms import String
 from mathics.core.attributes import attribute_string_to_number
 from mathics.core.expression import Expression, from_python
 from mathics.core.rules import Rule
+from mathics.core.symbols import SymbolNull
 from mathics.core.systemsymbols import SymbolMessageName
 from mathics_pygments.lexer import MathematicaLexer, MToken
 from prompt_toolkit import HTML, PromptSession, print_formatted_text
@@ -192,8 +193,9 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
     def print_result(
         self, result, prompt: bool, output_style="", strict_wl_output=False
     ):
-        if result is None:
-            # FIXME decide what to do here
+        if result is None or result.last_eval is SymbolNull:
+            # Following WMA CLI, if the result is `SymbolNull`, just print an empty line.
+            print("")
             return
 
         last_eval = result.last_eval
