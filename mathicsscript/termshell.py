@@ -1,35 +1,34 @@
 # -*- coding: utf-8 -*-
 #   Copyright (C) 2020-2022, 2024, 2025 Rocky Bernstein <rb@dustyfeet.com>
 
-from columnize import columnize
-
 import locale
 import os
 import os.path as osp
 import pathlib
 import sys
-
 from typing import Optional
 
-from mathics_pygments.lexer import MathematicaLexer, MToken
+import mathics_scanner.location
 
+from colorama import init as colorama_init
+from columnize import columnize
 from mathics.core.atoms import String, Symbol
 from mathics.core.attributes import attribute_string_to_number
-from mathics.core.expression import (
-    Expression,
-    # strip_context,
-    from_python,
-)
+from mathics.core.expression import Expression, from_python  # strip_context,
 from mathics.core.rules import Rule
 from mathics.core.symbols import SymbolNull
 from mathics.core.systemsymbols import SymbolMessageName
+from mathics_scanner.location import ContainerKind
 from mathics.session import get_settings_value, set_settings_value
-
+from mathics_pygments.lexer import MathematicaLexer, MToken
 from pygments import format, highlight, lex
-from pygments.formatters.terminal import TERMINAL_COLORS
 from pygments.formatters import Terminal256Formatter
+from pygments.formatters.terminal import TERMINAL_COLORS
 from pygments.styles import get_all_styles
 from pygments.util import ClassNotFound
+
+# FIXME: __main__ shouldn't be needed. Fix term_background
+from term_background.__main__ import is_dark_background
 
 mma_lexer = MathematicaLexer()
 
@@ -40,11 +39,6 @@ color_scheme[MToken.SYMBOL] = ("yellow", "ansibrightyellow")
 color_scheme[MToken.BUILTIN] = ("ansigreen", "ansibrightgreen")
 color_scheme[MToken.OPERATOR] = ("magenta", "ansibrightmagenta")
 color_scheme[MToken.NUMBER] = ("ansiblue", "ansibrightblue")
-
-from colorama import init as colorama_init
-
-# FIXME: __main__ shouldn't be needed. Fix term_background
-from term_background.__main__ import is_dark_background
 
 # Set up mathicsscript configuration directory
 CONFIGHOME = os.environ.get("XDG_CONFIG_HOME", osp.expanduser("~/.config"))
@@ -86,11 +80,11 @@ class TerminalShellCommon(MathicsLineFeeder):
         self,
         definitions,
         style: Optional[str],
-        want_completion: bool,
+        _: bool,
         use_unicode: bool,
         prompt: bool,
     ):
-        super().__init__("<stdin>")
+        super().__init__([], ContainerKind.STREAM)
         self.input_encoding = locale.getpreferredencoding()
         self.lineno = 0
         self.terminal_formatter = None
@@ -284,6 +278,8 @@ class TerminalShellCommon(MathicsLineFeeder):
     def feed(self):
         prompt_str = self.get_in_prompt() if self.prompt else ""
         result = self.read_line(prompt_str) + "\n"
+        if mathics_scanner.location.TRACK_LOCATIONS:
+            self.container.append(self.source_text)
         if result == "\n":
             return ""  # end of input
         self.lineno += 1
