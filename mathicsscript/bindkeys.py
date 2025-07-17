@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2021-2022, 2024 Rocky Bernstein <rb@dustyfeet.com>
+# Copyright (C) 2021-2022, 2024-2025 Rocky Bernstein <rb@dustyfeet.com>
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
@@ -22,6 +22,8 @@ from typing import Callable
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.filters import Condition
+from sys import version_info
+import contextlib
 import pathlib
 import re
 
@@ -144,7 +146,10 @@ def read_inputrc(read_init_file_fn: Callable, use_unicode: bool) -> None:
     # GNU Readline inputrc $include's paths are relative to itself,
     # so chdir to its directory before reading the file.
     parent_dir = pathlib.Path(__file__).parent.absolute()
-    with parent_dir:
+    path_context_fn = (
+        parent_dir if version_info < (3, 11) else contextlib.chdir(parent_dir)
+    )
+    with path_context_fn:
         inputrc = "inputrc-unicode" if use_unicode else "inputrc-no-unicode"
         try:
             read_init_file_fn(str(parent_dir / "data" / inputrc))

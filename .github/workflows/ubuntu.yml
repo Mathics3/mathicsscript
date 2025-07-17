@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.13', '3.9', '3.10', '3.11', '3.12']
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -22,14 +22,11 @@ jobs:
       run: |
         sudo apt-get update -qq && sudo apt-get install -qq liblapack-dev llvm-dev asymptote
         python3 -m pip install --upgrade pip
-        # Can comment out when next Mathics core and Mathics-scanner are released
-        # python -m pip install -e git+https://github.com/Mathics3/mathics-scanner#egg=Mathics-Scanner[full]
-        # python -m pip install -e git+https://github.com/Mathics3/mathics-core#egg=Mathics3[full]
-        # git clone https://github.com/Mathics3/mathics-core
-        # (cd mathics-core && pip3 install -e .[full])
-        # (cd mathics-core && bash ./admin-tools/make-op-tables.sh)
-        # python -m pip install Mathics3[full]
-        pip install -e .
+        # We can comment out when next Mathics core and Mathics-scanner are released
+        git clone https://github.com/Mathics3/mathics-scanner
+        (cd mathics-scanner && pip install -e . && bash ./admin-tools/make-JSON-tables.sh)
+        git clone https://github.com/Mathics3/mathics-core
+        (cd mathics-core && bash ./admin-tools/make-JSON-tables.sh && pip install -e .[full])
     - name: Install mathicsscript
       run: |
         make
