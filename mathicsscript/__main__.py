@@ -122,7 +122,7 @@ def load_settings(shell):
                 if query is None:
                     continue
                 evaluation.evaluate(query)
-        except (KeyboardInterrupt):
+        except KeyboardInterrupt:
             print("\nKeyboardInterrupt")
     return True
 
@@ -223,7 +223,7 @@ def interactive_eval_loop(
                 # FIXME add this... when in Mathics core updated
                 # shell.definitions.increment_line(1)
 
-        except (KeyboardInterrupt):
+        except KeyboardInterrupt:
             print("\nKeyboardInterrupt")
         except EOFError:
             if prompt:
@@ -240,10 +240,7 @@ def interactive_eval_loop(
             shell.reset_lineno()
 
 
-if click.__version__ >= "7.":
-    case_sensitive = {"case_sensitive": False}
-else:
-    case_sensitive = {}
+case_sensitive = {"case_sensitive": False}
 
 
 @click.command()
@@ -256,7 +253,7 @@ else:
 @click.version_option(version=__version__)
 @click.option(
     "--full-form",
-    "-f",
+    "-F",
     "full_form",
     flag_value="full_form",
     default=False,
@@ -296,10 +293,11 @@ else:
     ),
 )
 @click.option(
-    "--unicode/--no-unicode",
+    "-charset",
+    metavar="ENCODING",
     default=sys.getdefaultencoding() == "utf-8",
     show_default=True,
-    help="Accept Unicode operators in input and show unicode in output.",
+    help="Use encoding for output. Encodings can be any entry in $CharacterEncodings.",
 )
 @click.option(
     "--post-mortem/--no-post-mortem",
@@ -321,20 +319,19 @@ else:
 )
 @click.option(
     "-c",
-    "-e",
-    "--execute",
-    help="evaluate EXPR before processing any input files (may be given "
-    "multiple times). Sets --quiet and --no-completion",
+    "-code",
+    "--code",
+    help="Give Mathics3 source code to execute. This may be given "
+    "multiple times. Sets --quiet and --no-completion",
     multiple=True,
     required=False,
 )
 @click.option(
-    "--run",
+    "-f",
+    "-file",
+    "--file",
     type=click.Path(readable=True),
-    help=(
-        "go to interactive shell after evaluating PATH but leave "
-        "history empty and set $Line to 1"
-    ),
+    help=("Give a file containing Mathics3 source code to execute."),
 )
 @click.option(
     "-s",
@@ -383,18 +380,17 @@ def main(
     quiet,
     readline,
     completion,
-    unicode,
+    charset,
     post_mortem,
     prompt,
     pyextensions,
-    execute,
-    run,
+    code,
+    file,
     style,
     pygments_tokens,
     strict_wl_output,
     asymptote,
     matplotlib,
-    file,
 ) -> int:
     """A command-line interface to Mathics.
 
@@ -433,20 +429,20 @@ def main(
         else:
             sys.excepthook = post_mortem_excepthook
 
-    readline = "none" if (execute or file and not persist) else readline.lower()
+    readline = "none" if (code or file and not persist) else readline.lower()
     if readline == "prompt":
         shell = TerminalShellPromptToolKit(
-            definitions, style, completion, unicode, prompt, edit_mode
+            definitions, style, completion, charset, prompt, edit_mode
         )
     else:
         want_readline = readline == "gnu"
         shell = TerminalShellGNUReadline(
-            definitions, style, want_readline, completion, unicode, prompt
+            definitions, style, want_readline, completion, charset, prompt
         )
 
     load_settings(shell)
-    if run:
-        with open(run, "r") as ifile:
+    if file:
+        with open(file, "r") as ifile:
             feeder = MathicsFileLineFeeder(ifile)
             try:
                 while not feeder.empty():
@@ -460,13 +456,13 @@ def main(
                     if query is None:
                         continue
                     evaluation.evaluate(query, timeout=settings.TIMEOUT)
-            except (KeyboardInterrupt):
+            except KeyboardInterrupt:
                 print("\nKeyboardInterrupt")
 
         definitions.set_line_no(0)
 
-    if execute:
-        for expr in execute:
+    if code:
+        for expr in code:
             evaluation = Evaluation(
                 shell.definitions, output=TerminalOutput(shell), format="text"
             )
@@ -503,7 +499,7 @@ def main(
                     if query is None:
                         continue
                     evaluation.evaluate(query, timeout=settings.TIMEOUT)
-            except (KeyboardInterrupt):
+            except KeyboardInterrupt:
                 print("\nKeyboardInterrupt")
 
         if not persist:
@@ -531,7 +527,7 @@ def main(
 
     definitions.set_line_no(0)
     interactive_eval_loop(
-        shell, unicode, prompt, asymptote, matplotlib, strict_wl_output
+        shell, charset, prompt, asymptote, matplotlib, strict_wl_output
     )
     return exit_rc
 

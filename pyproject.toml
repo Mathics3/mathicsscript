@@ -13,7 +13,7 @@ description = "Command-line interface to Mathics3"
 dependencies = [
     "Mathics_Scanner>1.4.1",
     "Mathics3 >= 8.0.1",
-    "click",
+    "click >= 8.0.0",
     "colorama",
     "columnize",
     "networkx",
