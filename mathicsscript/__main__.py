@@ -243,7 +243,7 @@ def interactive_eval_loop(
 case_sensitive = {"case_sensitive": False}
 
 
-@click.command()
+@click.command(context_settings=dict(help_option_names=["-h", "-help", "--help"]))
 @click.option(
     "--edit-mode",
     "-e",
