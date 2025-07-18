@@ -1,5 +1,5 @@
 include README.rst
-include NEWS.md
+include CHANGES.rst
 include ChangeLog
 include COPYING.txt
 include Makefile
