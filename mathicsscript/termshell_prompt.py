@@ -16,6 +16,7 @@ from mathics.core.rules import Rule
 from mathics.core.symbols import SymbolNull
 from mathics.core.systemsymbols import SymbolMessageName
 from mathics_pygments.lexer import MathematicaLexer, MToken
+from mathics_scanner.location import ContainerKind
 from prompt_toolkit import HTML, PromptSession, print_formatted_text
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.enums import EditingMode
@@ -67,7 +68,7 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         prompt: bool,
         edit_mode: Optional[str],
     ):
-        super(TerminalShellCommon, self).__init__("<stdin>")
+        super(TerminalShellCommon, self).__init__([], ContainerKind.STREAM)
         self.input_encoding = locale.getpreferredencoding()
         self.lineno = 0
         self.terminal_formatter = None
