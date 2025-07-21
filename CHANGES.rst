@@ -14,8 +14,9 @@ Option ``--read`` with alias ``-r`` is now ``-code`` and short option `-c`.
 
 Toggling Autobrace using f4 was fixed.
 
-You can cycle now through pygments styles up using f5 (next style) and f6 (previous style). f1 (help) now show function key
+You can cycle now through pygments styles up using f5 (next style) and f6 (previous style). f1 (help) now shows function key
 bindings in bottom bar.
+
 
 
 Bugs
