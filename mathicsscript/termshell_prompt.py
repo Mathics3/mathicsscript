@@ -13,7 +13,7 @@ from mathics.core.atoms import String
 from mathics.core.attributes import attribute_string_to_number
 from mathics.core.expression import Expression, from_python
 from mathics.core.rules import Rule
-from mathics.core.symbols import SymbolNull
+from mathics.core.symbols import SymbolNull, SymbolFalse, SymbolTrue
 from mathics.core.systemsymbols import SymbolMessageName
 from mathics_pygments.lexer import MathematicaLexer, MToken
 from mathics_scanner.location import ContainerKind
@@ -35,6 +35,7 @@ from term_background.__main__ import is_dark_background
 from mathicsscript.bindkeys import bindings, read_init_file, read_inputrc
 from mathicsscript.completion import MathicsCompleter
 from mathicsscript.termshell import (
+    ALL_PYGMENTS_STYLES,
     CONFIGDIR,
     HISTSIZE,
     USER_INPUTRC,
@@ -46,8 +47,6 @@ from mathicsscript.termshell import (
 from mathicsscript.version import __version__
 
 mma_lexer = MathematicaLexer()
-
-ALL_PYGMENTS_STYLES = list(get_all_styles())
 
 color_scheme = TERMINAL_COLORS.copy()
 color_scheme[MToken.SYMBOL] = ("yellow", "ansibrightyellow")
@@ -163,16 +162,43 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         app = get_app()
         edit_mode = "Vi" if app.editing_mode == EditingMode.VI else "Emacs"
 
-        app.group_autocomplete = True
-
-        if self.definitions.get_ownvalue("Settings`$GroupAutocomplete"):
+        # The first time around, app.group_autocomplete has not been set,
+        # so use the value from Settings`GroupAutocomplete.
+        # However, after that we may have changed this value internally using
+        # function key f3, so update Settings`GroupAutocomplete from that.
+        if hasattr(app, "group_autocomplete"):
+            self.definitions.set_ownvalue(
+                "Settings`$GroupAutocomplete",
+                SymbolTrue if app.group_autocomplete else SymbolFalse,
+            )
+        elif self.definitions.get_ownvalue("Settings`$GroupAutocomplete"):
             app.group_autocomplete = self.definitions.get_ownvalue(
                 "Settings`$GroupAutocomplete"
             ).to_python()
+        else:
+            # First time around and there is no value set via
+            # Settings`GroupAutocomplete.
+            app.group_autocomplete = True
+            self.definitions.set_ownvalue("Settings`$GroupAutocomplete", SymbolTrue)
+
+        if hasattr(app, "pygments_style"):
+            self.definitions.set_ownvalue(
+                "Settings`$PygmentsStyle", String(app.pygments_style)
+            )
+        elif self.definitions.get_ownvalue("Settings`$PygmentsStyle") is not SymbolNull:
+            app.pygments_style = self.definitions.get_ownvalue(
+                "Settings`$PygmentsStyle"
+            )
+        else:
+            # First time around and there is no value set via
+            app.pygments_style = self.pygments_style
+            self.definitions.set_ownvalue(
+                "Settings`$PygmentsStyle", String(app.pygments_style)
+            )
 
         edit_mode = "Vi" if app.editing_mode == EditingMode.VI else "Emacs"
         return HTML(
-            f" mathicsscript: {__version__}, Style: {self.pygments_style}, Mode: {edit_mode}, Autobrace: {app.group_autocomplete}"
+            f" mathicsscript: {__version__}, Style: {app.pygments_style}, Mode: {edit_mode}, Autobrace: {app.group_autocomplete}"
         )
 
     def get_in_prompt(self):

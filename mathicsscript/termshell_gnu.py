@@ -11,7 +11,7 @@ try:
     from readline import read_init_file
 except ImportError:
     # Not sure what to do here: nothing is probably safe.
-    def read_init_file(path: str):
+    def read_init_file(_: str):
         return
 
 
@@ -24,10 +24,6 @@ from mathicsscript.termshell import (
     USER_INPUTRC,
 )
 from mathics.core.symbols import strip_context
-
-from pygments.styles import get_all_styles
-
-ALL_PYGMENTS_STYLES = list(get_all_styles())
 
 try:
     from readline import (
