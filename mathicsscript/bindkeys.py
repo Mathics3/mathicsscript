@@ -64,7 +64,10 @@ def curly_right(event):
 def paren_left(event):
     b = event.cli.current_buffer
     b.insert_text("(")
-    b.insert_text(")", move_cursor=False)
+    if len(b.text) > 1 and b.text[-2] == "\\":
+        b.insert_text("\\)", move_cursor=False)
+    else:
+        b.insert_text(")", move_cursor=False)
 
 
 @bindings.add(")", filter=autocomplete_on)
