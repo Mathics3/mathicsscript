@@ -12,6 +12,9 @@ Make CLI options more like wolframscript. This is an incompatible change. Single
 are now accepted. Short option ``-f`` is associated with ``-file`` rather than ``--fullform``; ``-F`` is is now used for Fullform.
 Option ``--read`` with alias ``-r`` is now ``-code`` and short option `-c`.
 
+Toggling Autobrace using f4 was fixed.
+You can cycle now through pygments styles up using f5 (next style) and f6 (previous style).
+
 
 Bugs
 ++++
