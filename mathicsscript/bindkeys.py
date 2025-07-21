@@ -27,6 +27,7 @@ import contextlib
 import pathlib
 import re
 
+from mathicsscript.termshell import ALL_PYGMENTS_STYLES
 from mathicsscript.settings import definitions
 from mathics.session import get_settings_value
 
@@ -136,10 +137,22 @@ def _editor_toggle(event):
 def _group_autocomplete_toggle(event):
     """Complete braces."""
     app = event.app
-
-    if not hasattr(app, "group_autocomplete"):
-        app.group_autocomplete = False
     app.group_autocomplete = not app.group_autocomplete
+
+
+# Add an additional key binding for toggling this flag.
+@bindings.add("f2")
+def _next_pygements_style(event):
+    """Set Pygments style to the next sytle in ."""
+    app = event.app
+
+    try:
+        i = ALL_PYGMENTS_STYLES.index(app.pygments_style)
+    except ValueError:
+        pass
+    else:
+        i = (i + 1) % len(ALL_PYGMENTS_STYLES)
+        app.pygments_style = ALL_PYGMENTS_STYLES[i]
 
 
 def read_inputrc(read_init_file_fn: Callable, use_unicode: bool) -> None:
