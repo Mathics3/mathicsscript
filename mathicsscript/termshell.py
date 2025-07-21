@@ -278,7 +278,7 @@ class TerminalShellCommon(MathicsLineFeeder):
     def feed(self):
         prompt_str = self.get_in_prompt() if self.prompt else ""
         result = self.read_line(prompt_str) + "\n"
-        if mathics_scanner.location.TRACK_LOCATIONS:
+        if mathics_scanner.location.TRACK_LOCATIONS and self.source_text is not None:
             self.container.append(self.source_text)
         if result == "\n":
             return ""  # end of input
