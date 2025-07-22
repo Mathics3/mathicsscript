@@ -26,7 +26,7 @@ from prompt_toolkit.styles.pygments import style_from_pygments_cls
 from pygments import format, highlight, lex
 from pygments.formatters import Terminal256Formatter
 from pygments.formatters.terminal import TERMINAL_COLORS
-from pygments.styles import get_all_styles, get_style_by_name
+from pygments.styles import get_style_by_name
 from pygments.util import ClassNotFound
 
 # FIXME: __main__ shouldn't be needed. Fix term_background
@@ -161,6 +161,13 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         # TODO: Figure out how allow user-customization
         app = get_app()
         edit_mode = "Vi" if app.editing_mode == EditingMode.VI else "Emacs"
+        if not hasattr(app, "help_mode"):
+            app.help_mode = False
+
+        if app.help_mode:
+            return HTML(
+                "f1: help, f3: toggle autocomplete, f4: toggle edit mode, f5: next style, f6: previous style"
+            )
 
         # The first time around, app.group_autocomplete has not been set,
         # so use the value from Settings`GroupAutocomplete.
