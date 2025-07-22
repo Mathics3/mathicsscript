@@ -18,7 +18,6 @@ You can cycle now through pygments styles up using f5 (next style) and f6 (previ
 bindings in bottom bar.
 
 
-
 Bugs
 ++++
 
