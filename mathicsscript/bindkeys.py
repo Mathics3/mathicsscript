@@ -143,7 +143,7 @@ def _group_autocomplete_toggle(event):
 # Add an additional key binding for toggling this flag.
 @bindings.add("f2")
 def _next_pygements_style(event):
-    """Set Pygments style to the next sytle in ."""
+    """Set Pygments style to the next sytle in ALL_PYGMENTS_STYLE."""
     app = event.app
 
     try:
