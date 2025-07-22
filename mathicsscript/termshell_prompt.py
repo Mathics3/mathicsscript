@@ -197,6 +197,7 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             )
 
         edit_mode = "Vi" if app.editing_mode == EditingMode.VI else "Emacs"
+        os.environ["TREPAN_PYGMENTS_STYLE"] = app.pygments_style
         return HTML(
             f" mathicsscript: {__version__}, Style: {app.pygments_style}, Mode: {edit_mode}, Autobrace: {app.group_autocomplete}"
         )

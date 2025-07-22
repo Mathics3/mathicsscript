@@ -141,9 +141,9 @@ def _group_autocomplete_toggle(event):
 
 
 # Add an additional key binding for toggling this flag.
-@bindings.add("f2")
-def _next_pygements_style(event):
-    """Set Pygments style to the next sytle in ."""
+@bindings.add("f6")
+def _next_pyements_style(event):
+    """Set Pygments style to the next style in ."""
     app = event.app
 
     try:
@@ -152,6 +152,21 @@ def _next_pygements_style(event):
         pass
     else:
         i = (i + 1) % len(ALL_PYGMENTS_STYLES)
+        app.pygments_style = ALL_PYGMENTS_STYLES[i]
+
+
+# Add an additional key binding for toggling this flag.
+@bindings.add("f5")
+def _prev_pygments_style(event):
+    """Set Pygments style to the previous style in ."""
+    app = event.app
+
+    try:
+        i = ALL_PYGMENTS_STYLES.index(app.pygments_style)
+    except ValueError:
+        pass
+    else:
+        i = (i - 1) % len(ALL_PYGMENTS_STYLES)
         app.pygments_style = ALL_PYGMENTS_STYLES[i]
 
 
