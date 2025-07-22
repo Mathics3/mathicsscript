@@ -161,6 +161,11 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         # TODO: Figure out how allow user-customization
         app = get_app()
         edit_mode = "Vi" if app.editing_mode == EditingMode.VI else "Emacs"
+        if not hasattr(app, "help_mode"):
+            app.help_mode = False
+
+        if app.help_mode:
+            return HTML(f" f1: help, f2: ")
 
         # The first time around, app.group_autocomplete has not been set,
         # so use the value from Settings`GroupAutocomplete.

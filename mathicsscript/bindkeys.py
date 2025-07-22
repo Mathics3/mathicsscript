@@ -22,6 +22,8 @@ from typing import Callable
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.filters import Condition
+from prompt_toolkit.layout import Float, FloatContainer
+from prompt_toolkit.widgets import Dialog, Button, Label
 from sys import version_info
 import contextlib
 import pathlib
@@ -120,7 +122,7 @@ def double_quotation(event):
         b.insert_text('"', move_cursor=False)
 
 
-# Add an additional key binding for toggling this flag.
+# Add an additional key binding for toggling the Edit mode flag.
 @bindings.add("f4")
 def _editor_toggle(event):
     """Toggle between Emacs and Vi mode."""
@@ -132,7 +134,14 @@ def _editor_toggle(event):
         app.editing_mode = EditingMode.VI
 
 
-# Add an additional key binding for toggling this flag.
+@bindings.add("f1")
+def _toggle_help(event):
+    """Toggles bottom bar from showing help or showing information"""
+    app = event.app
+    app.help_mode = not app.help_mode
+
+
+# Add an additional key binding for toggling the braces completion flag.
 @bindings.add("f3")
 def _group_autocomplete_toggle(event):
     """Complete braces."""
