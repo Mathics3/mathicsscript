@@ -53,7 +53,6 @@ def inspect_eval_loop(evaluation: Evaluation):
             if result is not None and shell is not None:
                 shell.print_result(result, prompt=False, strict_wl_output=True)
         except TimeoutInterrupt:
-            print("\nTimeout occurred - ignored.")
             pass
         except ReturnInterrupt:
             evaluation.last_eval = None

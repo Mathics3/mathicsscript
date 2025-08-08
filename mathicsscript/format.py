@@ -11,6 +11,7 @@ import networkx as nx
 from mathics.core.atoms import String
 from mathics.core.symbols import Symbol
 from mathics.core.systemsymbols import (
+    SymbolAborted,
     SymbolExport,
     SymbolExportString,
     SymbolFullForm,
@@ -21,6 +22,7 @@ from mathics.core.systemsymbols import (
     SymbolOutputForm,
     SymbolPlot,
     SymbolStandardForm,
+    SymbolStringForm,
     SymbolTeXForm,
 )
 from mathics.session import get_settings_value
@@ -61,7 +63,7 @@ else:
 
 def format_output(obj, expr, format=None):
     """
-    Handle unformatted output using the *specific* capabilities of mathics-django.
+    Handle unformatted output using the *specific* capabilities of mathicsscript
 
     evaluation.py format_output() from which this was derived is similar but
     it can't make use of a front-ends specific capabilities.
@@ -161,7 +163,13 @@ def format_output(obj, expr, format=None):
         write_asy_and_view(asy_str)
         return expr_type
 
+    if expr is SymbolAborted:
+        return "$Aborted"
     if format == "text":
+        if expr_head is SymbolStringForm:
+            return expr.elements[0].value
+        elif isinstance(expr, String):
+            return expr.value
         result = expr.format(obj, SymbolOutputForm)
     elif format == "xml":
         result = Expression(SymbolStandardForm, expr).format(obj, SymbolMathMLForm)
