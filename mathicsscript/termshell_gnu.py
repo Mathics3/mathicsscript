@@ -39,6 +39,16 @@ try:
 except ImportError:
     have_full_readline = False
 
+    def null_fn(*_):
+        return
+
+    def write_history_file(_: str):
+        return
+
+    parse_and_bind = read_history_file = set_history_length = null_fn
+    set_completer = set_completer_delims = null_fn
+
+
 RL_COMPLETER_DELIMS_WITH_BRACE = " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
 RL_COMPLETER_DELIMS = " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
 
@@ -93,6 +103,10 @@ class TerminalShellGNUReadline(TerminalShellCommon):
             # History
             try:
                 read_history_file(HISTFILE)
+            except FileNotFoundError:
+                # Create an empty history file.
+                with open(HISTFILE, "w"):
+                    pass
             except IOError:
                 pass
             except:  # noqa

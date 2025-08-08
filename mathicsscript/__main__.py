@@ -24,13 +24,12 @@ from mathics_scanner import replace_wl_with_plain_text
 from pygments import highlight
 
 from mathicsscript.asymptote import asymptote_version
+from mathicsscript.interrupt import setup_signal_handler
 from mathicsscript.settings import definitions
 from mathicsscript.termshell import ShellEscapeException, mma_lexer
 from mathicsscript.termshell_gnu import TerminalShellGNUReadline
-from mathicsscript.termshell_prompt import (
-    TerminalShellCommon,
-    TerminalShellPromptToolKit,
-)
+from mathicsscript.termshell import TerminalShellCommon
+from mathicsscript.termshell_prompt import TerminalShellPromptToolKit
 from mathicsscript.version import __version__
 
 try:
@@ -123,7 +122,7 @@ def load_settings(shell):
                     continue
                 evaluation.evaluate(query)
         except KeyboardInterrupt:
-            print("\nKeyboardInterrupt")
+            shell.errmsg("\nKeyboardInterrupt")
     return True
 
 
@@ -145,16 +144,17 @@ def interactive_eval_loop(
     shell: TerminalShellCommon,
     unicode,
     prompt,
-    matplotlib: bool,
-    asymptote: bool,
     strict_wl_output: bool,
 ):
+    setup_signal_handler()
+
     def identity(x: Any) -> Any:
         return x
 
     def fmt_fun(query: Any) -> Any:
         return highlight(str(query), mma_lexer, shell.terminal_formatter)
 
+    shell.fmt_fn = fmt_fun
     while True:
         try:
             if have_readline and shell.using_readline:
@@ -173,6 +173,11 @@ def interactive_eval_loop(
                     fmt = fmt_fun
 
             evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
+
+            # Store shell into the evaluation so that an interrupt handler
+            # has access to this
+            evaluation.shell = shell
+
             query, source_code = evaluation.parse_feeder_returning_code(shell)
             if mathics_core.PRE_EVALUATION_HOOK is not None:
                 mathics_core.PRE_EVALUATION_HOOK(query, evaluation)
@@ -214,7 +219,7 @@ def interactive_eval_loop(
                 try:
                     print(open(source_code[2:], "r").read())
                 except Exception:
-                    print(str(sys.exc_info()[1]))
+                    shell.errmsg(str(sys.exc_info()[1]))
             else:
                 subprocess.run(source_code[1:], shell=True)
 
@@ -224,13 +229,13 @@ def interactive_eval_loop(
                 # shell.definitions.increment_line(1)
 
         except KeyboardInterrupt:
-            print("\nKeyboardInterrupt")
+            shell.errmsg("\nKeyboardInterrupt")
         except EOFError:
             if prompt:
-                print("\n\nGoodbye!\n")
+                shell.errmsg("\n\nGoodbye!\n")
             break
         except SystemExit:
-            print("\n\nGoodbye!\n")
+            shell.errmsg("\n\nGoodbye!\n")
             # raise to pass the error code on, e.g. Quit[1]
             raise
         finally:
@@ -526,9 +531,7 @@ def main(
     )
 
     definitions.set_line_no(0)
-    interactive_eval_loop(
-        shell, charset, prompt, asymptote, matplotlib, strict_wl_output
-    )
+    interactive_eval_loop(shell, charset, prompt, strict_wl_output)
     return exit_rc
 
 

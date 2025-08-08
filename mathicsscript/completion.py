@@ -23,7 +23,12 @@ from typing import Iterable, List, NamedTuple, Tuple
 from mathics.core.symbols import strip_context
 from mathics_scanner import named_characters
 from mathics_pygments.lexer import Regex
-from prompt_toolkit.completion import CompleteEvent, Completion, WordCompleter
+from prompt_toolkit.completion import (
+    CompleteEvent,
+    Completer,
+    Completion,
+    WordCompleter,
+)
 from prompt_toolkit.document import Document
 
 SYMBOLS = rf"[`]?({Regex.IDENTIFIER}|{Regex.NAMED_CHARACTER})(`({Regex.IDENTIFIER}|{Regex.NAMED_CHARACTER}))+[`]?"
@@ -52,6 +57,28 @@ WordToken = NamedTuple("WordToken", [("text", str), ("kind", TokenKind)])
 def get_datadir():
     datadir = osp.normcase(osp.join(osp.dirname(osp.abspath(__file__)), "data"))
     return osp.realpath(datadir)
+
+
+class InterruptCompleter(Completer):
+    """
+    Completer for the simple command set: 'continue', 'abort', 'exit', 'show'.
+    """
+
+    COMMANDS = [
+        "abort",
+        "continue",
+        "exit",
+        "inspect",
+        "show",
+    ]
+
+    def get_completions(
+        self, document: Document, complete_event
+    ) -> Iterable[Completion]:
+        word = document.get_word_before_cursor()
+        for cmd in self.COMMANDS:
+            if cmd.startswith(word):
+                yield Completion(cmd, -len(word))
 
 
 class MathicsCompleter(WordCompleter):

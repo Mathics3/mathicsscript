@@ -6,7 +6,7 @@ import os
 import os.path as osp
 import pathlib
 import sys
-from typing import Optional
+from typing import Any, Optional, Union
 
 import mathics_scanner.location
 
@@ -42,7 +42,7 @@ color_scheme[MToken.NUMBER] = ("ansiblue", "ansibrightblue")
 
 # Set up mathicsscript configuration directory
 CONFIGHOME = os.environ.get("XDG_CONFIG_HOME", osp.expanduser("~/.config"))
-CONFIGDIR = osp.join(CONFIGHOME, "mathicsscript")
+CONFIGDIR = osp.join(CONFIGHOME, "Mathics3")
 os.makedirs(CONFIGDIR, exist_ok=True)
 
 try:
@@ -50,8 +50,8 @@ try:
 except Exception:
     HISTSIZE = 50
 
-HISTFILE = os.environ.get("MATHICS_HISTFILE", osp.join(CONFIGDIR, "history"))
-USER_INPUTRC = os.environ.get("MATHICS_INPUTRC", osp.join(CONFIGDIR, "inputrc"))
+HISTFILE = os.environ.get("MATHICS3_HISTFILE", osp.join(CONFIGDIR, "history"))
+USER_INPUTRC = os.environ.get("MATHICS3_INPUTRC", osp.join(CONFIGDIR, "inputrc"))
 
 # Create HISTFILE if it doesn't exist already
 if not osp.isfile(HISTFILE):
@@ -86,6 +86,11 @@ class TerminalShellCommon(MathicsLineFeeder):
     ):
         super().__init__([], ContainerKind.STREAM)
         self.input_encoding = locale.getpreferredencoding()
+
+        # is_inside_interrupt is set True when shell has been
+        # interrupted via an interrupt handler.
+        self.is_inside_interrupt = False
+
         self.lineno = 0
         self.terminal_formatter = None
         self.prompt = prompt
@@ -159,11 +164,36 @@ class TerminalShellCommon(MathicsLineFeeder):
             print("Pygments style not changed")
             return False
 
-    def get_last_line_number(self):
-        return self.definitions.get_line_no()
+    def empty(self):
+        return False
 
-    def get_in_prompt(self):
-        next_line_number = self.get_last_line_number() + 1
+    def errmsg(self, message: str):
+        print(f"{self.outcolors[0]}{message}{self.outcolors[3]}")
+        return
+
+    def feed(self):
+        prompt_str = self.in_prompt if self.prompt else ""
+        result = self.read_line(prompt_str) + "\n"
+        if mathics_scanner.location.TRACK_LOCATIONS and self.source_text is not None:
+            self.container.append(self.source_text)
+        if result == "\n":
+            return ""  # end of input
+        self.lineno += 1
+        return result
+
+    # prompt-toolkit returns a HTML object. Therefore, we include Any
+    # to cover that.
+    def get_out_prompt(self, form: str) -> Union[str, Any]:
+        """
+        Return a formatted "Out" string prefix. ``form`` is either the empty string if the
+        default form, or the name of the Form which was used in output preceded by "//"
+        """
+        line_number = self.last_line_number
+        return "{2}Out[{3}{0}{4}]{5}{1}= ".format(line_number, form, *self.outcolors)
+
+    @property
+    def in_prompt(self) -> Union[str, Any]:
+        next_line_number = self.last_line_number + 1
         if self.lineno > 0:
             return " " * len(f"In[{next_line_number}]:= ")
         else:
@@ -173,26 +203,17 @@ class TerminalShellCommon(MathicsLineFeeder):
             # else:
             #     return f"In[{next_line_number}]:= "
 
-    def get_out_prompt(self, form: str) -> str:
+    @property
+    def last_line_number(self) -> int:
         """
-        Return a formatted "Out" string prefix. ``form`` is either the empty string if the
-        default form, or the name of the Form which was used in output preceded by "//"
+        Return the next Out[] line number
         """
-        line_number = self.get_last_line_number()
-        return "{2}Out[{3}{0}{4}]{5}{1}= ".format(line_number, form, *self.outcolors)
-
-    def to_output(self, text: str, form: str) -> str:
-        """
-        Format an 'Out=' line that it lines after the first one indent properly.
-        """
-        line_number = self.get_last_line_number()
-        newline = "\n" + " " * len(f"Out[{line_number}]{form}= ")
-        return newline.join(text.splitlines())
+        return self.definitions.get_line_no()
 
     def out_callback(self, out):
         print(self.to_output(str(out), form=""))
 
-    def read_line(self, prompt):
+    def read_line(self, prompt, completer=None, use_html=None):
         if self.using_readline:
             line = self.rl_read_line(prompt)
         else:
@@ -275,15 +296,10 @@ class TerminalShellCommon(MathicsLineFeeder):
     def reset_lineno(self):
         self.lineno = 0
 
-    def feed(self):
-        prompt_str = self.get_in_prompt() if self.prompt else ""
-        result = self.read_line(prompt_str) + "\n"
-        if mathics_scanner.location.TRACK_LOCATIONS and self.source_text is not None:
-            self.container.append(self.source_text)
-        if result == "\n":
-            return ""  # end of input
-        self.lineno += 1
-        return result
-
-    def empty(self):
-        return False
+    def to_output(self, text: str, form: str) -> str:
+        """
+        Format an 'Out=' line that it lines after the first one indent properly.
+        """
+        line_number = self.last_line_number
+        newline = "\n" + " " * len(f"Out[{line_number}]{form}= ")
+        return newline.join(text.splitlines())
