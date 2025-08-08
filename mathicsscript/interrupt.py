@@ -228,4 +228,5 @@ def Mathics3_USR1_signal_handler(sig: int, interrupted_frame: Optional[FrameType
 
 def setup_signal_handler():
     signal.signal(signal.SIGINT, Mathics3_basic_signal_handler)
-    signal.signal(signal.SIGUSR1, Mathics3_USR1_signal_handler)
+    if hasattr(signal, "SIGUSR1"):
+        signal.signal(signal.SIGUSR1, Mathics3_USR1_signal_handler)
