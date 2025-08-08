@@ -39,6 +39,16 @@ try:
 except ImportError:
     have_full_readline = False
 
+    def null_fn(*_):
+        return
+
+    def write_history_file(_: str):
+        return
+
+    parse_and_bind = read_history_file = set_history_length = null_fn
+    set_completer = set_completer_delims = null_fn
+
+
 RL_COMPLETER_DELIMS_WITH_BRACE = " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
 RL_COMPLETER_DELIMS = " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
 
@@ -93,6 +103,10 @@ class TerminalShellGNUReadline(TerminalShellCommon):
             # History
             try:
                 read_history_file(HISTFILE)
+            except FileNotFoundError:
+                # Create an empty history file.
+                with open(HISTFILE, "w"):
+                    pass
             except IOError:
                 pass
             except:  # noqa
@@ -101,6 +115,18 @@ class TerminalShellGNUReadline(TerminalShellCommon):
 
             set_history_length(self.history_length)
             atexit.register(self.user_write_history_file)
+
+    def complete_interrupt_command(self, text, state):
+        # Only complete from this fixed set
+        completions = [
+            w
+            for w in ["abort", "continue", "exit", "inspect", "show"]
+            if w.startswith(text)
+        ]
+        try:
+            return completions[state]
+        except IndexError:
+            return None
 
     def complete_symbol_name(self, text, state):
         try:

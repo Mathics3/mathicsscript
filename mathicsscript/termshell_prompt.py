@@ -6,7 +6,7 @@ import os
 import os.path as osp
 import re
 import sys
-from typing import Optional
+from typing import Optional, Union
 
 from colorama import init as colorama_init
 from mathics.core.atoms import String
@@ -69,6 +69,11 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
     ):
         super(TerminalShellCommon, self).__init__([], ContainerKind.STREAM)
         self.input_encoding = locale.getpreferredencoding()
+
+        # is_inside_interrupt is set True when shell has been
+        # interrupted via an interrupt handler.
+        self.is_inside_interrupt = False
+
         self.lineno = 0
         self.terminal_formatter = None
         self.mma_pygments_lexer = PygmentsLexer(MathematicaLexer)
@@ -208,21 +213,25 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             f" mathicsscript: {__version__}, Style: {app.pygments_style}, Mode: {edit_mode}, Autobrace: {app.group_autocomplete}"
         )
 
-    def get_in_prompt(self):
-        next_line_number = self.get_last_line_number() + 1
-        if self.lineno > 0:
-            return " " * len(f"In[{next_line_number}]:= ")
-        else:
-            return HTML(f"<ansired>In[<b>{next_line_number}</b>]:=</ansired> ")
+    def errmsg(self, message: str):
+        print_formatted_text(HTML(f"<ansired><b>{message}</b></ansired>"))
 
-    def get_out_prompt(self, form: str) -> str:
+    def get_out_prompt(self, form: str) -> Union[str, HTML]:
         """
         Return a formatted "Out" string prefix. ``form`` is either the empty string if the
         default form, or the name of the Form which was used in output if it wasn't then
         default form.
         """
-        line_number = self.get_last_line_number()
+        line_number = self.last_line_number
         return HTML(f"<ansigreen>Out[<b>{line_number}</b>]</ansigreen>{form}= ")
+
+    @property
+    def in_prompt(self) -> Union[str, HTML]:
+        next_line_number = self.last_line_number + 1
+        if self.lineno > 0:
+            return " " * len(f"In[{next_line_number}]:= ")
+        else:
+            return HTML(f"<ansired>In[<b>{next_line_number}</b>]:=</ansired> ")
 
     def print_result(
         self, result, prompt: bool, output_style="", strict_wl_output=False
@@ -287,15 +296,20 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             else:
                 print(self.get_out_prompt() + output + "\n")
 
-    def read_line(self, prompt):
+    def read_line(self, prompt, completer=None, use_html: bool = False):
         # FIXME set and update inside self.
 
         style = style_from_pygments_cls(get_style_by_name(self.pygments_style))
+        if completer is None:
+            completer = self.completer
+
+        if use_html:
+            prompt = HTML(prompt)
 
         line = self.session.prompt(
             prompt,
             bottom_toolbar=self.bottom_toolbar,
-            completer=self.completer,
+            completer=completer,
             key_bindings=bindings,
             lexer=self.mma_pygments_lexer,
             style=style,
