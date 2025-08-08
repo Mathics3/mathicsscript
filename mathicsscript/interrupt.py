@@ -10,8 +10,6 @@ import sys
 from types import FrameType
 from typing import Callable, Optional
 
-from numpy import true_divide
-
 from mathics import settings
 from mathics.core.evaluation import Evaluation
 from mathics.core.interrupt import AbortInterrupt, ReturnInterrupt, TimeoutInterrupt
@@ -53,6 +51,7 @@ def inspect_eval_loop(evaluation: Evaluation):
             if result is not None and shell is not None:
                 shell.print_result(result, prompt=False, strict_wl_output=True)
         except TimeoutInterrupt:
+            print("\nTimeout occurred - ignored.")
             pass
         except ReturnInterrupt:
             evaluation.last_eval = None
@@ -79,6 +78,7 @@ def Mathics3_interrupt_handler(
 
     shell = evaluation.shell
     incolors = shell.incolors
+    is_gnu_readline = False
     if hasattr(shell, "bottom_toolbar"):
         from mathicsscript.completion import InterruptCompleter
 
@@ -87,8 +87,13 @@ def Mathics3_interrupt_handler(
         completer = InterruptCompleter()
     else:
         is_prompt_toolkit = False
+        is_gnu_readline = shell.using_readline
         use_HTML = False
+        from readline import set_completer
+
+        set_completer(lambda text, state: shell.complete_interrupt_command(text, state))
         completer = None
+
     while True:
         try:
             prompt = (
@@ -162,6 +167,12 @@ def Mathics3_interrupt_handler(
         except RuntimeError:
             break
         finally:
+            if is_gnu_readline:
+                from readline import set_completer
+
+                set_completer(
+                    lambda text, state: shell.complete_symbol_name(text, state)
+                )
             pass
 
 

@@ -164,6 +164,8 @@ def format_output(obj, expr, format=None):
         return expr_type
 
     if expr is SymbolAborted:
+        obj.out = ["$Aborted"]
+        obj.last_eval = SymbolAborted
         return "$Aborted"
     if format == "text":
         if expr_head is SymbolStringForm:

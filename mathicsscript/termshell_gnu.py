@@ -116,6 +116,18 @@ class TerminalShellGNUReadline(TerminalShellCommon):
             set_history_length(self.history_length)
             atexit.register(self.user_write_history_file)
 
+    def complete_interrupt_command(self, text, state):
+        # Only complete from this fixed set
+        completions = [
+            w
+            for w in ["abort", "continue", "exit", "inspect", "show"]
+            if w.startswith(text)
+        ]
+        try:
+            return completions[state]
+        except IndexError:
+            return None
+
     def complete_symbol_name(self, text, state):
         try:
             match = re.match(r"^(.*\\\[)([A-Z][a-z]*)$", text)
