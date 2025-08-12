@@ -1,3 +1,16 @@
+# Copyright (C) 2025 Rocky Bernstein <rb@dustyfeet.com>
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 mathicsscript Interrupt routines.
 
@@ -108,6 +121,8 @@ def Mathics3_interrupt_handler(
             elif user_input in ("continue", "c"):
                 print_fn("continuing")
                 break
+            elif user_input in ("debugger", "d"):
+                breakpoint()
             elif user_input in ("exit", "quit"):
                 print_fn("Mathics3 exited because of an interrupt.")
                 sys.exit(3)
@@ -138,6 +153,7 @@ def Mathics3_interrupt_handler(
                     """Your options are:
 	abort (or a) to abort current calculation
 	continue (or c) to continue
+	debugger (or d) to to enter a Python debugger
 	exit (or quit) to exit Mathics3
 	inspect (or i) to enter an interactive dialog
 	show (or s) to show current operation (and then continue)
