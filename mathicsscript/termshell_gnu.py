@@ -120,7 +120,7 @@ class TerminalShellGNUReadline(TerminalShellCommon):
         # Only complete from this fixed set
         completions = [
             w
-            for w in ["abort", "continue", "exit", "inspect", "show"]
+            for w in ["abort", "continue", "debugger", "exit", "inspect", "show"]
             if w.startswith(text)
         ]
         try:
