@@ -55,7 +55,7 @@ else:
 
 from mathicsscript.format import format_output, matplotlib_version
 
-version_string = """Mathics {mathics}
+version_string = """Mathics3 {mathics}
 on {python}
 
 Using:
@@ -410,7 +410,7 @@ def main(
 ) -> int:
     """A command-line interface to Mathics.
 
-    Mathics is a general-purpose computer algebra system
+    Mathics3 is a general-purpose computer algebra system.
     """
 
     exit_rc = 0
