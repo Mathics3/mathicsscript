@@ -115,7 +115,7 @@ def ensure_settings():
 
 def load_settings_file(shell):
     """
-    Read in an autoload
+    Read in or "autoload" Mathics3 code to initialize some settings.
     """
     autoload_files(shell.definitions, get_srcdir(), "autoload")
     settings_file = ensure_settings()
