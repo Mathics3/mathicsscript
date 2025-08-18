@@ -22,8 +22,6 @@ from typing import Callable
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.filters import Condition
-from prompt_toolkit.layout import Float, FloatContainer
-from prompt_toolkit.widgets import Dialog, Button, Label
 from sys import version_info
 import contextlib
 import pathlib

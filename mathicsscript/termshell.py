@@ -5,14 +5,12 @@ import locale
 import os
 import os.path as osp
 import pathlib
-import sys
-from typing import Any, Optional, Union
+from typing import Any, Union
 
 import mathics_scanner.location
 
-from colorama import init as colorama_init
 from columnize import columnize
-from mathics.core.atoms import String, Symbol
+from mathics.core.atoms import Symbol
 from mathics.core.attributes import attribute_string_to_number
 from mathics.core.expression import Expression, from_python  # strip_context,
 from mathics.core.rules import Rule
@@ -32,7 +30,7 @@ from term_background.__main__ import is_dark_background
 
 mma_lexer = MathematicaLexer()
 
-ALL_PYGMENTS_STYLES = list(get_all_styles())
+ALL_PYGMENTS_STYLES = list(get_all_styles()) + ["None"]
 
 color_scheme = TERMINAL_COLORS.copy()
 color_scheme[MToken.SYMBOL] = ("yellow", "ansibrightyellow")
@@ -79,8 +77,7 @@ class TerminalShellCommon(MathicsLineFeeder):
     def __init__(
         self,
         definitions,
-        style: Optional[str],
-        _: bool,
+        want_completion: bool,
         use_unicode: bool,
         prompt: bool,
     ):
@@ -94,38 +91,16 @@ class TerminalShellCommon(MathicsLineFeeder):
         self.lineno = 0
         self.terminal_formatter = None
         self.prompt = prompt
+        self.want_completion = want_completion
 
-        colorama_init()
-        if style == "None":
-            self.terminal_formatter = None
-            self.incolors = self.outcolors = ["", "", "", ""]
-        else:
-            # self.incolors = ["\033[34m", "\033[1m", "\033[22m", "\033[39m"]
-            self.incolors = ["\033[32m", "\033[1m", "\033[22m", "\033[39m"]
-            self.outcolors = ["\033[31m", "\033[1m", "\033[22m", "\033[39m"]
-            if style is not None and not is_pygments_style(style):
-                style = None
-
-            if style is None:
-                dark_background = is_dark_background()
-                if dark_background:
-                    style = "inkpot"
-                else:
-                    style = "colorful"
-            try:
-                self.terminal_formatter = Terminal256Formatter(style=style)
-            except ClassNotFound:
-                print(f"Pygments style name '{style}' not found; No pygments style set")
-
-        self.pygments_style = style
         self.definitions = definitions
         self.definitions.set_ownvalue(
             "Settings`$PygmentsShowTokens", from_python(False)
         )
-        self.definitions.set_ownvalue("Settings`$PygmentsStyle", from_python(style))
         self.definitions.set_ownvalue("Settings`$UseUnicode", from_python(use_unicode))
         self.definitions.set_ownvalue(
-            "Settings`PygmentsStylesAvailable", from_python(ALL_PYGMENTS_STYLES)
+            "Settings`PygmentsStylesAvailable",
+            from_python(ALL_PYGMENTS_STYLES),
         )
 
         self.definitions.add_message(
@@ -149,6 +124,7 @@ class TerminalShellCommon(MathicsLineFeeder):
             "Settings`PygmentsStylesAvailable",
             attribute_string_to_number["System`Locked"],
         )
+
         self.definitions.set_attribute(
             "Settings`$UseUnicode", attribute_string_to_number["System`Locked"]
         )
@@ -156,13 +132,20 @@ class TerminalShellCommon(MathicsLineFeeder):
     def change_pygments_style(self, style: str):
         if not style or style == self.pygments_style:
             return False
+        if style == "None":
+            self.terminal_formatter = None
+            self.pygments_style = style
+            self.incolors = self.outcolors = ["", "", "", ""]
+            return True
         if is_pygments_style(style):
+            self.incolors = ["\033[32m", "\033[1m", "\033[22m", "\033[39m"]
+            self.outcolors = ["\033[31m", "\033[1m", "\033[22m", "\033[39m"]
             self.terminal_formatter = Terminal256Formatter(style=style)
             self.pygments_style = style
             return True
-        else:
-            print("Pygments style not changed")
-            return False
+
+        print("Pygments style not changed")
+        return False
 
     def empty(self):
         return False
@@ -189,19 +172,30 @@ class TerminalShellCommon(MathicsLineFeeder):
         default form, or the name of the Form which was used in output preceded by "//"
         """
         line_number = self.last_line_number
-        return "{2}Out[{3}{0}{4}]{5}{1}= ".format(line_number, form, *self.outcolors)
+        if self.is_styled:
+            return "{2}Out[{3}{0}{4}]{5}{1}= ".format(
+                line_number, form, *self.outcolors
+            )
+        else:
+            return f"Out[{line_number}]= "
 
     @property
     def in_prompt(self) -> Union[str, Any]:
         next_line_number = self.last_line_number + 1
         if self.lineno > 0:
             return " " * len(f"In[{next_line_number}]:= ")
-        else:
+        elif self.is_styled:
             return "{1}In[{2}{0}{3}]:= {4}".format(next_line_number, *self.incolors)
-            # if have_full_readline:
-            #     return "{1}In[{2}{0}{3}]:= {4}".format(next_line_number, *self.incolors)
-            # else:
-            #     return f"In[{next_line_number}]:= "
+        else:
+            return f"In[{next_line_number}]:= "
+
+    @property
+    def is_styled(self):
+        """
+        Returns True if a Pygments style (other than SymbolNull or "None" has been set.
+        """
+        style = self.definitions.get_ownvalue("Settings`$PygmentsStyle")
+        return not (style is SymbolNull or style.value == "None")
 
     @property
     def last_line_number(self) -> int:
@@ -213,7 +207,8 @@ class TerminalShellCommon(MathicsLineFeeder):
     def out_callback(self, out):
         print(self.to_output(str(out), form=""))
 
-    def read_line(self, prompt, completer=None, use_html=None):
+    # noinspection PyUnusedLocal
+    def read_line(self, prompt, _completer=None, _use_html: bool = False):
         if self.using_readline:
             line = self.rl_read_line(prompt)
         else:
@@ -253,6 +248,19 @@ class TerminalShellCommon(MathicsLineFeeder):
                     use_highlight = False
                 else:
                     out_str = '"' + out_str.replace('"', r"\"") + '"'
+
+            show_pygments_tokens = self.definitions.get_ownvalue(
+                "Settings`$PygmentsShowTokens"
+            ).to_python()
+            pygments_style = self.definitions.get_ownvalue(
+                "Settings`$PygmentsStyle"
+            ).get_string_value()
+            if pygments_style != self.pygments_style:
+                if not self.change_pygments_style(pygments_style):
+                    self.definitions.set_ownvalue(
+                        "Settings`$PygmentsStyle", String(self.pygments_style)
+                    )
+
             if eval_type == "System`Graph":
                 out_str = "-Graph-"
             elif self.terminal_formatter:  # pygmentize
@@ -273,7 +281,8 @@ class TerminalShellCommon(MathicsLineFeeder):
                 if show_pygments_tokens:
                     print(list(lex(out_str, mma_lexer)))
                 if use_highlight:
-                    out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
+                    if self.terminal_formatter is not None:
+                        out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
             form = (
                 ""
                 if not hasattr(result, "form") or result.form is None
@@ -296,10 +305,49 @@ class TerminalShellCommon(MathicsLineFeeder):
     def reset_lineno(self):
         self.lineno = 0
 
+    def setup_pygments_style(self, style):
+        """Goes through what we need to do to setup or change a
+        Pygments style.
+        """
+        if (
+            isinstance(style, str)
+            and style.lower() == "none"
+            or style is None
+            and os.environ.get("NO_COLOR", False)
+        ):
+            style = "None"  # Canonicalize spelling
+            self.terminal_formatter = None
+            self.incolors = self.outcolors = ["", "", "", ""]
+        else:
+            # self.incolors = ["\033[34m", "\033[1m", "\033[22m", "\033[39m"]
+            self.incolors = ["\033[32m", "\033[1m", "\033[22m", "\033[39m"]
+            self.outcolors = ["\033[31m", "\033[1m", "\033[22m", "\033[39m"]
+            if style is not None and not is_pygments_style(style):
+                style = None
+
+            # If no style given, choose one based on the background.
+            if style is None:
+                dark_background = is_dark_background()
+                if dark_background:
+                    style = "inkpot"
+                else:
+                    style = "colorful"
+            try:
+                self.terminal_formatter = Terminal256Formatter(style=style)
+            except ClassNotFound:
+                print(f"Pygments style name '{style}' not found; No pygments style set")
+                style = "None"
+
+        self.definitions.set_ownvalue("Settings`$PygmentsStyle", from_python(style))
+        self.pygments_style = style
+
     def to_output(self, text: str, form: str) -> str:
         """
         Format an 'Out=' line that it lines after the first one indent properly.
         """
         line_number = self.last_line_number
-        newline = "\n" + " " * len(f"Out[{line_number}]{form}= ")
+        if self.is_styled:
+            newline = "\n" + " " * len(f"Out[{line_number}]{form}= ")
+        else:
+            newline = "\n" + " " * len(f"Out[{line_number}]= ")
         return newline.join(text.splitlines())

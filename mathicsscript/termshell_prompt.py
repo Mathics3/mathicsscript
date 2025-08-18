@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 #   Copyright (C) 2021-2022, 2025 Rocky Bernstein <rb@dustyfeet.com>
 
-import locale
 import os
 import os.path as osp
 import re
@@ -10,13 +9,8 @@ from typing import Optional, Union
 
 from colorama import init as colorama_init
 from mathics.core.atoms import String
-from mathics.core.attributes import attribute_string_to_number
-from mathics.core.expression import Expression, from_python
-from mathics.core.rules import Rule
 from mathics.core.symbols import SymbolNull, SymbolFalse, SymbolTrue
-from mathics.core.systemsymbols import SymbolMessageName
 from mathics_pygments.lexer import MathematicaLexer, MToken
-from mathics_scanner.location import ContainerKind
 from prompt_toolkit import HTML, PromptSession, print_formatted_text
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.enums import EditingMode
@@ -24,60 +18,34 @@ from prompt_toolkit.history import FileHistory
 from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.styles.pygments import style_from_pygments_cls
 from pygments import format, highlight, lex
-from pygments.formatters import Terminal256Formatter
-from pygments.formatters.terminal import TERMINAL_COLORS
 from pygments.styles import get_style_by_name
-from pygments.util import ClassNotFound
-
-# FIXME: __main__ shouldn't be needed. Fix term_background
-from term_background.__main__ import is_dark_background
 
 from mathicsscript.bindkeys import bindings, read_init_file, read_inputrc
 from mathicsscript.completion import MathicsCompleter
 from mathicsscript.termshell import (
-    ALL_PYGMENTS_STYLES,
-    CONFIGDIR,
+    HISTFILE,
     HISTSIZE,
     USER_INPUTRC,
     ShellEscapeException,
-    SymbolPygmentsStylesAvailable,
     TerminalShellCommon,
-    is_pygments_style,
+    mma_lexer,
 )
 from mathicsscript.version import __version__
-
-mma_lexer = MathematicaLexer()
-
-color_scheme = TERMINAL_COLORS.copy()
-color_scheme[MToken.SYMBOL] = ("yellow", "ansibrightyellow")
-color_scheme[MToken.BUILTIN] = ("ansigreen", "ansibrightgreen")
-color_scheme[MToken.OPERATOR] = ("magenta", "ansibrightmagenta")
-color_scheme[MToken.NUMBER] = ("ansiblue", "ansibrightblue")
-
-HISTFILE = osp.join(CONFIGDIR, "history-ptk")
 
 
 class TerminalShellPromptToolKit(TerminalShellCommon):
     def __init__(
         self,
         definitions,
-        style: Optional[str],
         want_completion: bool,
         use_unicode: bool,
         prompt: bool,
         edit_mode: Optional[str],
     ):
-        super(TerminalShellCommon, self).__init__([], ContainerKind.STREAM)
-        self.input_encoding = locale.getpreferredencoding()
+        super().__init__(definitions, want_completion, use_unicode, prompt)
 
-        # is_inside_interrupt is set True when shell has been
-        # interrupted via an interrupt handler.
-        self.is_inside_interrupt = False
-
-        self.lineno = 0
-        self.terminal_formatter = None
+        colorama_init()
         self.mma_pygments_lexer = PygmentsLexer(MathematicaLexer)
-        self.prompt = prompt
 
         self.session = PromptSession(history=FileHistory(HISTFILE))
         if edit_mode is not None:
@@ -91,41 +59,6 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         self.using_readline = sys.stdin.isatty() and sys.stdout.isatty()
         self.ansi_color_re = re.compile("\033\\[[0-9;]+m")
 
-        colorama_init()
-        if style == "None":
-            self.terminal_formatter = None
-            self.incolors = self.outcolors = ["", "", "", ""]
-        else:
-            # self.incolors = ["\033[34m", "\033[1m", "\033[22m", "\033[39m"]
-            self.incolors = ["\033[32m", "\033[1m", "\033[22m", "\033[39m"]
-            self.outcolors = ["\033[31m", "\033[1m", "\033[22m", "\033[39m"]
-            if style is not None and not is_pygments_style(style):
-                style = None
-
-            if style is None:
-                dark_background = is_dark_background()
-                if dark_background:
-                    style = "inkpot"
-                else:
-                    style = "colorful"
-            try:
-                self.terminal_formatter = Terminal256Formatter(style=style)
-            except ClassNotFound:
-                sys.stderr.write(
-                    f"Pygments style name '{style}' not found; No pygments style set\n"
-                )
-
-        self.pygments_style = style
-        self.definitions = definitions
-        self.definitions.set_ownvalue(
-            "Settings`$PygmentsShowTokens", from_python(False)
-        )
-        self.definitions.set_ownvalue("Settings`$PygmentsStyle", from_python(style))
-        self.definitions.set_ownvalue("Settings`$UseUnicode", from_python(use_unicode))
-        self.definitions.set_ownvalue(
-            "Settings`PygmentsStylesAvailable", from_python(ALL_PYGMENTS_STYLES)
-        )
-
         read_inputrc(read_init_file, use_unicode=use_unicode)
         if osp.isfile(USER_INPUTRC):
             if os.access(USER_INPUTRC, os.R_OK):
@@ -135,30 +68,6 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
                     f"Can't read user inputrc file {USER_INPUTRC}; skipping\n"
                 )
 
-        self.definitions.add_message(
-            "Settings`PygmentsStylesAvailable",
-            Rule(
-                Expression(
-                    SymbolMessageName,
-                    SymbolPygmentsStylesAvailable,
-                    from_python("usage"),
-                ),
-                from_python(
-                    "A list of Pygments style that are valid in Settings`$PygmentsStyle."
-                ),
-            ),
-        )
-        self.definitions.set_attribute(
-            "Settings`PygmentsStylesAvailable",
-            attribute_string_to_number["System`Protected"],
-        )
-        self.definitions.set_attribute(
-            "Settings`PygmentsStylesAvailable",
-            attribute_string_to_number["System`Locked"],
-        )
-        self.definitions.set_attribute(
-            "Settings`$UseUnicode", attribute_string_to_number["System`Locked"]
-        )
         self.completer = MathicsCompleter(self.definitions) if want_completion else None
 
     def bottom_toolbar(self):
@@ -193,20 +102,16 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             app.group_autocomplete = True
             self.definitions.set_ownvalue("Settings`$GroupAutocomplete", SymbolTrue)
 
-        if hasattr(app, "pygments_style"):
-            self.definitions.set_ownvalue(
-                "Settings`$PygmentsStyle", String(app.pygments_style)
-            )
-        elif self.definitions.get_ownvalue("Settings`$PygmentsStyle") is not SymbolNull:
-            app.pygments_style = self.definitions.get_ownvalue(
+        app.pygments_style = self.pygments_style
+        if self.definitions.get_ownvalue("Settings`$PygmentsStyle") is not SymbolNull:
+            value = self.definitions.get_ownvalue(
                 "Settings`$PygmentsStyle"
-            )
+            ).get_string_value()
+            if value is not None and len(value) and value[0] == value[-1] == '"':
+                value = value[1:-1]
+            app.pygments_style = value
         else:
-            # First time around and there is no value set via
             app.pygments_style = self.pygments_style
-            self.definitions.set_ownvalue(
-                "Settings`$PygmentsStyle", String(app.pygments_style)
-            )
 
         edit_mode = "Vi" if app.editing_mode == EditingMode.VI else "Emacs"
         return HTML(
@@ -214,7 +119,10 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         )
 
     def errmsg(self, message: str):
-        print_formatted_text(HTML(f"<ansired><b>{message}</b></ansired>"))
+        if self.is_styled:
+            print_formatted_text(HTML(f"<ansired><b>{message}</b></ansired>"))
+        else:
+            print_formatted_text(HTML(f"<b>{message}</b>"))
 
     def get_out_prompt(self, form: str) -> Union[str, HTML]:
         """
@@ -223,7 +131,10 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         default form.
         """
         line_number = self.last_line_number
-        return HTML(f"<ansigreen>Out[<b>{line_number}</b>]</ansigreen>{form}= ")
+        if self.is_styled:
+            return HTML(f"<ansigreen>Out[<b>{line_number}</b>]</ansigreen>{form}= ")
+        else:
+            return HTML(f"Out[<b>{line_number}</b>]= ")
 
     @property
     def in_prompt(self) -> Union[str, HTML]:
@@ -231,7 +142,10 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
         if self.lineno > 0:
             return " " * len(f"In[{next_line_number}]:= ")
         else:
-            return HTML(f"<ansired>In[<b>{next_line_number}</b>]:=</ansired> ")
+            if self.is_styled:
+                return HTML(f"<ansired>In[<b>{next_line_number}</b>]:=</ansired> ")
+            else:
+                return HTML(f"In[<b>{next_line_number}</b>]:= ")
 
     def print_result(
         self, result, prompt: bool, output_style="", strict_wl_output=False
@@ -263,25 +177,29 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
                     use_highlight = False
                 else:
                     out_str = '"' + out_str.replace('"', r"\"") + '"'
+
+            show_pygments_tokens = self.definitions.get_ownvalue(
+                "Settings`$PygmentsShowTokens"
+            ).to_python()
+            pygments_style = self.definitions.get_ownvalue(
+                "Settings`$PygmentsStyle"
+            ).get_string_value()
+            if pygments_style != self.pygments_style:
+                if not self.change_pygments_style(pygments_style):
+                    self.definitions.set_ownvalue(
+                        "Settings`$PygmentsStyle", String(self.pygments_style)
+                    )
+
             if eval_type == "System`Graph":
                 out_str = "-Graph-"
             elif self.terminal_formatter:  # pygmentize
-                show_pygments_tokens = self.definitions.get_ownvalue(
-                    "Settings`$PygmentsShowTokens"
-                ).to_python()
-                pygments_style = self.definitions.get_ownvalue(
-                    "Settings`$PygmentsStyle"
-                ).get_string_value()
-                if pygments_style != self.pygments_style:
-                    if not self.change_pygments_style(pygments_style):
-                        self.definitions.set_ownvalue(
-                            "Settings`$PygmentsStyle", String(self.pygments_style)
-                        )
 
                 if show_pygments_tokens:
                     print(list(lex(out_str, mma_lexer)))
                 if use_highlight:
-                    out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
+                    if self.terminal_formatter is not None:
+                        out_str = highlight(out_str, mma_lexer, self.terminal_formatter)
+
             output = self.to_output(out_str, form="")
             if output_style == "text" or not prompt:
                 print(output)
@@ -294,12 +212,19 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
                 print_formatted_text(self.get_out_prompt(form=form), end="")
                 print(output + "\n")
             else:
-                print(self.get_out_prompt() + output + "\n")
+                print(str(self.get_out_prompt(form="")) + output + "\n")
 
     def read_line(self, prompt, completer=None, use_html: bool = False):
         # FIXME set and update inside self.
 
-        style = style_from_pygments_cls(get_style_by_name(self.pygments_style))
+        style = (
+            style_from_pygments_cls(get_style_by_name(self.pygments_style))
+            if self.pygments_style != "None"
+            else None
+        )
+        app = get_app()
+        app.pygments_style = self.pygments_style
+
         if completer is None:
             completer = self.completer
 

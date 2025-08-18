@@ -15,7 +15,6 @@ def test_completion_gnu():
     definitions = Definitions(add_builtin=True, extension_modules=[])
     term = TerminalShellGNUReadline(
         definitions=definitions,
-        style=None,
         want_readline=True,
         want_completion=True,
         use_unicode=False,
