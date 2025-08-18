@@ -79,9 +79,7 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             app.help_mode = False
 
         if app.help_mode:
-            return HTML(
-                "f1: help, f3: toggle autocomplete, f4: toggle edit mode, f5: next style, f6: previous style"
-            )
+            return HTML("f1: help, f3: toggle autocomplete, f4: toggle edit mode")
 
         # The first time around, app.group_autocomplete has not been set,
         # so use the value from Settings`GroupAutocomplete.
@@ -102,20 +100,19 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             app.group_autocomplete = True
             self.definitions.set_ownvalue("Settings`$GroupAutocomplete", SymbolTrue)
 
-        app.pygments_style = self.pygments_style
         if self.definitions.get_ownvalue("Settings`$PygmentsStyle") is not SymbolNull:
             value = self.definitions.get_ownvalue(
                 "Settings`$PygmentsStyle"
             ).get_string_value()
             if value is not None and len(value) and value[0] == value[-1] == '"':
                 value = value[1:-1]
-            app.pygments_style = value
+            pygments_style = value
         else:
-            app.pygments_style = self.pygments_style
+            pygments_style = self.pygments_style
 
         edit_mode = "Vi" if app.editing_mode == EditingMode.VI else "Emacs"
         return HTML(
-            f" mathicsscript: {__version__}, Style: {app.pygments_style}, Mode: {edit_mode}, Autobrace: {app.group_autocomplete}"
+            f" mathicsscript: {__version__}, Style: {pygments_style}, Mode: {edit_mode}, Autobrace: {app.group_autocomplete}, f1: Help"
         )
 
     def errmsg(self, message: str):
@@ -222,8 +219,6 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             if self.pygments_style != "None"
             else None
         )
-        app = get_app()
-        app.pygments_style = self.pygments_style
 
         if completer is None:
             completer = self.completer
