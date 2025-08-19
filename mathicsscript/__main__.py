@@ -27,7 +27,7 @@ from mathics.core.attributes import attribute_string_to_number
 from mathics.core.evaluation import Evaluation, Output
 from mathics.core.expression import from_python
 from mathics.core.parser import MathicsFileLineFeeder
-from mathics.core.symbols import Symbol, SymbolFalse, SymbolTrue
+from mathics.core.symbols import Symbol, SymbolNull, SymbolFalse, SymbolTrue
 from mathics.core.systemsymbols import SymbolTeXForm
 from mathics.session import autoload_files
 
@@ -113,7 +113,10 @@ def ensure_settings():
     return settings_file
 
 
-def load_settings(shell):
+def load_settings_file(shell):
+    """
+    Read in or "autoload" Mathics3 code to initialize some settings.
+    """
     autoload_files(shell.definitions, get_srcdir(), "autoload")
     settings_file = ensure_settings()
     if settings_file == "":
@@ -182,6 +185,7 @@ def interactive_eval_loop(
                 style = style.get_string_value()
                 if shell.terminal_formatter:
                     fmt = fmt_fun
+            shell.pygments_style = style or "None"
 
             evaluation = Evaluation(shell.definitions, output=TerminalOutput(shell))
 
@@ -200,7 +204,10 @@ def interactive_eval_loop(
             ):
                 current_pos = GNU_readline.get_current_history_length()
                 for pos in range(last_pos, current_pos - 1):
-                    GNU_readline.remove_history_item(pos)
+                    try:
+                        GNU_readline.remove_history_item(pos)
+                    except ValueError:
+                        pass
                 wl_input = source_code.rstrip()
                 if unicode:
                     wl_input = replace_wl_with_plain_text(wl_input)
@@ -434,6 +441,10 @@ def main(
             f"Settings`{setting_name}", from_python(True if setting_value else False)
         )
 
+    if os.environ.get("NO_COLOR", False) and style not in (None, "None"):
+        print('Environment variable NO_COLOR set when "style" option given.')
+        print("NO_COLOR setting ignored.")
+
     if post_mortem:
         try:
             from trepan.post_mortem import post_mortem_excepthook
@@ -448,15 +459,20 @@ def main(
     readline = "none" if (code or file and not persist) else readline.lower()
     if readline == "prompt":
         shell = TerminalShellPromptToolKit(
-            definitions, style, completion, charset, prompt, edit_mode
+            definitions, completion, charset, prompt, edit_mode
         )
     else:
         want_readline = readline == "gnu"
         shell = TerminalShellGNUReadline(
-            definitions, style, want_readline, completion, charset, prompt
+            definitions, want_readline, completion, charset, prompt
         )
 
-    load_settings(shell)
+    load_settings_file(shell)
+    style_from_settings_file = definitions.get_ownvalue("Settings`$PygmentsStyle")
+    if style_from_settings_file is SymbolNull and style is None:
+        style = style_from_settings_file
+    shell.setup_pygments_style(style)
+
     if file:
         with open(file, "r") as ifile:
             feeder = MathicsFileLineFeeder(ifile)

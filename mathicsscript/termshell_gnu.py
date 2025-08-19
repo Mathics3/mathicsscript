@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2020-2022 Rocky Bernstein <rb@dustyfeet.com>
+#   Copyright (C) 2020-2022, 2025 Rocky Bernstein <rb@dustyfeet.com>
 
 import atexit
 import os
@@ -59,15 +59,12 @@ class TerminalShellGNUReadline(TerminalShellCommon):
     def __init__(
         self,
         definitions,
-        style: str,
         want_readline: bool,
         want_completion: bool,
         use_unicode: bool,
         prompt: bool,
     ):
-        super(TerminalShellGNUReadline, self).__init__(
-            definitions, style, want_completion, use_unicode, prompt
-        )
+        super().__init__(definitions, want_completion, use_unicode, prompt)
 
         # Try importing readline to enable arrow keys support etc.
         self.using_readline = False
