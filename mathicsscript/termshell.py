@@ -10,7 +10,7 @@ from typing import Any, Union
 import mathics_scanner.location
 
 from columnize import columnize
-from mathics.core.atoms import Symbol
+from mathics.core.atoms import String, Symbol
 from mathics.core.attributes import attribute_string_to_number
 from mathics.core.expression import Expression, from_python  # strip_context,
 from mathics.core.rules import Rule
@@ -238,7 +238,8 @@ class TerminalShellCommon(MathicsLineFeeder):
             out_str = str(result.result)
             use_highlight = True
             if eval_type == "System`String":
-                if strict_wl_output:  # exact-wl-compatibility
+                # Use exact-wl-compatibility?
+                if strict_wl_output:
                     out_str = (
                         format(
                             [(MToken.STRING, out_str.rstrip())], self.terminal_formatter
@@ -263,6 +264,7 @@ class TerminalShellCommon(MathicsLineFeeder):
 
             if eval_type == "System`Graph":
                 out_str = "-Graph-"
+
             elif self.terminal_formatter:  # pygmentize
                 show_pygments_tokens = get_settings_value(
                     self.definitions, "Settings`$PygmentsShowTokens"

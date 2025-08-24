@@ -164,7 +164,8 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
             out_str = str(result.result)
             use_highlight = True
             if eval_type == "System`String":
-                if strict_wl_output:  # exact-wl-compatibility
+                # Use exact-wl-compatibility?
+                if strict_wl_output:
                     out_str = (
                         format(
                             [(MToken.STRING, out_str.rstrip())], self.terminal_formatter
@@ -189,8 +190,8 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
 
             if eval_type == "System`Graph":
                 out_str = "-Graph-"
-            elif self.terminal_formatter:  # pygmentize
 
+            elif self.terminal_formatter:  # pygmentize
                 if show_pygments_tokens:
                     print(list(lex(out_str, mma_lexer)))
                 if use_highlight:
