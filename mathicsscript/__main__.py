@@ -469,29 +469,40 @@ def main(
 
     load_settings_file(shell)
     style_from_settings_file = definitions.get_ownvalue("Settings`$PygmentsStyle")
-    if style_from_settings_file is SymbolNull and style is None:
+    if style_from_settings_file is not SymbolNull and style is None:
         style = style_from_settings_file
     shell.setup_pygments_style(style)
 
     if file:
-        with open(file, "r") as ifile:
-            feeder = MathicsFileLineFeeder(ifile)
+        if not os.path.exists(file):
+            print(f"\nFile {file} does not exist; skipping reading.")
+            file = None
+        elif os.path.isdir(file):
+            print(f"\nFile {file} does is a directory; skipping reading.")
+            file = None
+        else:
             try:
-                while not feeder.empty():
-                    evaluation = Evaluation(
-                        shell.definitions,
-                        output=TerminalOutput(shell),
-                        catch_interrupt=False,
-                        format="text",
-                    )
-                    query = evaluation.parse_feeder(feeder)
-                    if query is None:
-                        continue
-                    evaluation.evaluate(query, timeout=settings.TIMEOUT)
-            except KeyboardInterrupt:
-                print("\nKeyboardInterrupt")
-
-        definitions.set_line_no(0)
+                with open(file, "r") as ifile:
+                    feeder = MathicsFileLineFeeder(ifile)
+                    try:
+                        while not feeder.empty():
+                            evaluation = Evaluation(
+                                shell.definitions,
+                                output=TerminalOutput(shell),
+                                catch_interrupt=False,
+                                format="text",
+                            )
+                            query = evaluation.parse_feeder(feeder)
+                            if query is None:
+                                continue
+                            evaluation.evaluate(query, timeout=settings.TIMEOUT)
+                    except KeyboardInterrupt:
+                        print("\nKeyboardInterrupt")
+            except Exception as e:
+                print(f"\nError reading {file}: {e}; skipping reading.")
+                file = None
+            else:
+                definitions.set_line_no(0)
 
     if code:
         for expr in code:

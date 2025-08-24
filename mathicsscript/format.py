@@ -168,15 +168,18 @@ def format_output(obj, expr, format=None):
         obj.last_eval = SymbolAborted
         return "$Aborted"
     if format == "text":
-        if expr_head is SymbolStringForm:
-            return expr.elements[0].value
-        elif isinstance(expr, String):
+        if isinstance(expr, String):
             return expr.value
         result = expr.format(obj, SymbolOutputForm)
     elif format == "xml":
         result = Expression(SymbolStandardForm, expr).format(obj, SymbolMathMLForm)
     elif format == "tex":
         result = Expression(SymbolStandardForm, expr).format(obj, SymbolTeXForm)
+    elif format == "error":
+        # We may do fancier things in the future.
+        if isinstance(expr, String):
+            return expr.value
+        result = expr.format(obj, SymbolOutputForm)
     elif format == "unformatted":
         if expr_head is PyMathicsGraph and hasattr(expr, "G"):
             return format_graph(expr.G)
