@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [windows]
-        python-version: ['3.11', '3.12']
+        python-version: ['3.11', '3.13']
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
@@ -25,11 +25,11 @@ jobs:
         python3 -m pip install wheel
         set LLVM_DIR="C:\Program Files\LLVM"
         # We can comment out when next Mathics core and Mathics-scanner are released
-        git clone https://github.com/Mathics3/mathics-scanner
-        bash -c '(cd mathics-scanner && python -m pip install -e . && bash ./admin-tools/make-JSON-tables.sh)'
-        git clone https://github.com/Mathics3/mathics-core
-        bash -c '(cd mathics-core && ./admin-tools/make-JSON-tables.sh && python -m pip install -e .)'
-        python -m pip install -e .
+        # git clone https://github.com/Mathics3/mathics-scanner
+        # bash -c '(cd mathics-scanner && python -m pip install -e . && bash ./admin-tools/make-JSON-tables.sh)'
+        # git clone https://github.com/Mathics3/mathics-core
+        # bash -c '(cd mathics-core && ./admin-tools/make-JSON-tables.sh && python -m pip install -e .)'
+        # python -m pip install -e .
     - name: Install mathicsscript
       run: |
         make
