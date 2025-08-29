@@ -33,12 +33,12 @@ from prompt_toolkit.document import Document
 
 SYMBOLS = rf"[`]?({Regex.IDENTIFIER}|{Regex.NAMED_CHARACTER})(`({Regex.IDENTIFIER}|{Regex.NAMED_CHARACTER}))+[`]?"
 
-if False:  # FIXME reinstate this
-    NAMED_CHARACTER_START = rf"\\\[{Regex.IDENTIFIER}"
-    FIND_MATHICS_WORD_RE = re.compile(
-        rf"({NAMED_CHARACTER_START})|(?:.*[\[\(])?({SYMBOLS}$)"
-    )
+# # The below is a more precise definition for a Mathics3 "word" or
+# # "identifier", but it is wrong somehow.  NAMED_CHARACTER_START =
+# rf"\\\[{Regex.IDENTIFIER}" FIND_MATHICS_WORD_RE = re.compile(
+# rf"({NAMED_CHARACTER_START})|(?:.*[\[\(])?({SYMBOLS}$)" )
 FIND_MATHICS_WORD_RE = re.compile(r"((?:\[)?[^\s\[\(\{]+)")
+
 CHARGROUP_START = frozenset(["(", "[", "{", ","])
 
 
