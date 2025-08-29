@@ -4,7 +4,7 @@ CHANGES
 9.0.0
 -----
 
-Supports Python 3.13. Python 3.8 support dropped.
+Supports Python 3.13. Python 3.8 and 3.9 support dropped.
 
 Track API changes in Mathics3 Scanner 9.0.0
 
@@ -12,16 +12,17 @@ Make CLI options more like wolframscript. This is an incompatible change. Single
 are now accepted. Short option ``-f`` is associated with ``-file`` rather than ``--fullform``; ``-F`` is is now used for Fullform.
 Option ``--read`` with alias ``-r`` is now ``-code`` and short option `-c`.
 
-Toggling Autobrace using f4 was fixed.
+Toggling Autobrace using function key F4 was fixed; Function key F1 gives some rudimentary help in the bottom bar.
 
-You can cycle now through pygments styles up using f5 (next style) and f6 (previous style). f1 (help) now shows function key
-bindings in bottom bar.
-
+Match "\(" with "\)" in prompt-toolkit mode
 
 Bugs
 ++++
 
-Fixed #82
+* #82 Work around a bug giving Set:setraw error
+* #87 Exception 'Rule' object has no attribute 'to_python'
+* #104 Respect environment variable ``NO_COLOR``
+* #105 Pygments-style ``None`` is not disabling pygments style.
 
 
 8.0.0
@@ -37,6 +38,7 @@ This release tracks the API changes in the Mathics3 Kernel, and to support enhan
 * Allow 2D rendering from asymptote
 * Add/update material in README's and screencast
 
+* #85
 
 
 7.0.0
