@@ -10,11 +10,11 @@ from typing import Any, Union
 import mathics_scanner.location
 
 from columnize import columnize
-from mathics.core.atoms import String, Symbol
+from mathics.core.atoms import String
 from mathics.core.attributes import attribute_string_to_number
 from mathics.core.expression import Expression, from_python  # strip_context,
 from mathics.core.rules import Rule
-from mathics.core.symbols import SymbolNull
+from mathics.core.symbols import Symbol, SymbolNull
 from mathics.core.systemsymbols import SymbolMessageName
 from mathics_scanner.location import ContainerKind
 from mathics.session import get_settings_value, set_settings_value
