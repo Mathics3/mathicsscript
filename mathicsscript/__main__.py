@@ -233,6 +233,9 @@ def interactive_eval_loop(
 
         except ShellEscapeException as e:
             source_code = e.line
+            if not settings.ENABLE_SYSTEM_COMMANDS:
+                shell.errmsg("System commands are disabled in sandboxed mode.")
+                continue
             if len(source_code) and source_code[1] == "!":
                 try:
                     print(open(source_code[2:], "r").read())
