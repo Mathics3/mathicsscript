@@ -48,7 +48,7 @@ def yield_sphinx_only_markup(lines):
 
     def clean_line(line):
         try:
-            for (regex, sub) in regex_subs:
+            for regex, sub in regex_subs:
                 line = regex.sub(sub, line)
         except Exception as ex:
             print(f"ERROR: {regex}, (line({sub})")
