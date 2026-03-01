@@ -10,7 +10,7 @@ repos:
       exclude: ChangeLog-spell-corrected.diff
     - id: end-of-file-fixer
       exclude: ChangeLog-spell-corrected.diff
-      stages: [commit]
+      stages: [pre-commit]
     - id: trailing-whitespace
       exclude: ChangeLog-spell-corrected.diff
 -   repo: https://github.com/psf/black
