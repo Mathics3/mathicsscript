@@ -4,7 +4,7 @@ mydir=$(dirname $bs)
 PYTHON=${PYTHON:-python}
 
 cd $mydir/../mathicsscript/data
-mathics3-generate-json-table --field=ascii-operators -o mma-tables.json
+mathics3-make-named-character-json --field=ascii-operators -o mma-tables.json
 
 for file in inputrc-unicode inputrc-no-unicode; do
     echo "# GNU Readline input unicode translations" > $file

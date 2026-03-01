@@ -21,7 +21,7 @@ from pygments import format, highlight, lex
 from pygments.styles import get_style_by_name
 
 from mathicsscript.bindkeys import bindings, read_init_file, read_inputrc
-from mathicsscript.completion import MathicsCompleter
+from mathicsscript.completion import Mathics3Completer
 from mathicsscript.termshell import (
     HISTFILE,
     HISTSIZE,
@@ -68,7 +68,9 @@ class TerminalShellPromptToolKit(TerminalShellCommon):
                     f"Can't read user inputrc file {USER_INPUTRC}; skipping\n"
                 )
 
-        self.completer = MathicsCompleter(self.definitions) if want_completion else None
+        self.completer = (
+            Mathics3Completer(self.definitions) if want_completion else None
+        )
 
     def bottom_toolbar(self):
         """Adds a mode-line toolbar at the bottom"""

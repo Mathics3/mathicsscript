@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#   Copyright (C) 2020-2022, 2025 Rocky Bernstein <rb@dustyfeet.com>
+#   Copyright (C) 2020-2022, 2025-2026 Rocky Bernstein <rb@dustyfeet.com>
 
 import atexit
 import os
@@ -15,8 +15,8 @@ except ImportError:
         return
 
 
+from typing import Final
 from mathicsscript.bindkeys import read_inputrc
-from mathics_scanner import named_characters
 from mathicsscript.termshell import (
     CONFIGDIR,
     HISTSIZE,
@@ -24,6 +24,7 @@ from mathicsscript.termshell import (
     USER_INPUTRC,
 )
 from mathics.core.symbols import strip_context
+from mathicsscript.settings import NAMED_CHARACTERS
 
 try:
     from readline import (
@@ -49,10 +50,10 @@ except ImportError:
     set_completer = set_completer_delims = null_fn
 
 
-RL_COMPLETER_DELIMS_WITH_BRACE = " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
-RL_COMPLETER_DELIMS = " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
+RL_COMPLETER_DELIMS_WITH_BRACE: Final[str] = " \t\n_~!@#%^&*()-=+{]}|;:'\",<>/?"
+RL_COMPLETER_DELIMS: Final[str] = " \t\n_~!@#%^&*()-=+[{]}\\|;:'\",<>/?"
 
-HISTFILE = osp.join(CONFIGDIR, "history-gnu")
+HISTFILE: Final[str] = osp.join(CONFIGDIR, "history-gnu")
 
 
 class TerminalShellGNUReadline(TerminalShellCommon):
@@ -77,7 +78,9 @@ class TerminalShellGNUReadline(TerminalShellCommon):
                     lambda text, state: self.complete_symbol_name(text, state)
                 )
 
-                self.named_character_names = set(named_characters.keys())
+                self.named_character_names = set(
+                    NAMED_CHARACTERS["named-characters"].keys()
+                )
 
                 # Make _ a delimiter, but not $ or `
                 # set_completer_delims(RL_COMPLETER_DELIMS)

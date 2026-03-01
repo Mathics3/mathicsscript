@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2021-2022, 2024-2025 Rocky Bernstein <rb@dustyfeet.com>
+# Copyright (C) 2021-2022, 2024-2026 Rocky Bernstein <rb@dustyfeet.com>
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
@@ -21,8 +21,9 @@ import re
 from typing import Iterable, List, NamedTuple, Tuple
 
 from mathics.core.symbols import strip_context
-from mathics_scanner import named_characters
 from mathics_pygments.lexer import Regex
+from mathicsscript.settings import NAMED_CHARACTERS
+
 from prompt_toolkit.completion import (
     CompleteEvent,
     Completer,
@@ -82,11 +83,11 @@ class InterruptCompleter(Completer):
                 yield Completion(cmd, -len(word))
 
 
-class MathicsCompleter(WordCompleter):
+class Mathics3Completer(WordCompleter):
     def __init__(self, definitions):
         self.definitions = definitions
         self.completer = WordCompleter([])
-        self.named_characters = sorted(named_characters.keys())
+        self.named_characters = sorted(NAMED_CHARACTERS["named-characters"].keys())
 
         # From WordCompleter, adjusted with default values
         self.ignore_case = True

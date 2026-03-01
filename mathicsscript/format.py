@@ -1,5 +1,5 @@
 """
-Format Mathics objects
+Format Mathics3 objects
 """
 
 import math
@@ -22,10 +22,10 @@ from mathics.core.systemsymbols import (
     SymbolOutputForm,
     SymbolPlot,
     SymbolStandardForm,
-    SymbolStringForm,
     SymbolTeXForm,
 )
 from mathics.session import get_settings_value
+from mathicsscript.asymptote import Asy, write_asy_and_view
 
 PyMathicsGraph = Symbol("Pymathics`Graph")
 
@@ -48,8 +48,6 @@ try:
     from cairosvg import svg2png
 except ImportError:
     svg2png = None
-
-from mathicsscript.asymptote import Asy, write_asy_and_view
 
 have_asymptote = False
 try:
