@@ -24,12 +24,14 @@ jobs:
         python3 -m pip install --upgrade pip
         python3 -m pip install wheel
         set LLVM_DIR="C:\Program Files\LLVM"
-        # We can comment out when next Mathics core and Mathics-scanner are released
-        # git clone https://github.com/Mathics3/mathics-scanner
-        # bash -c '(cd mathics-scanner && python -m pip install -e . && bash ./admin-tools/make-JSON-tables.sh)'
-        # git clone https://github.com/Mathics3/mathics-core
-        # bash -c '(cd mathics-core && ./admin-tools/make-JSON-tables.sh && python -m pip install -e .)'
-        # python -m pip install -e .
+        # We can comment out after next Mathics-Scanner release
+        python -m pip install -e "Mathics-Scanner[full] @ git+https://github.com/Mathics3/mathics-scanner"
+        pip install -e .
+        git clone --depth 1 https://github.com/Mathics3/mathics-scanner.git
+        cd mathics-scanner/
+        pip install -e .
+        bash -x admin-tools/make-JSON-tables.sh
+        cd ..
     - name: Install mathicsscript
       run: |
         make

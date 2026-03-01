@@ -2,7 +2,12 @@
 
 from mathics.core.definitions import Definitions
 from mathics.core.load_builtin import import_and_load_builtins
+from mathics_scanner.load import load_mathics3_named_characters_json
 from mathics.settings import default_pymathics_modules
+from typing import Final
+
+NAMED_CHARACTERS: Final[dict] = load_mathics3_named_characters_json()
+
 
 # Initialize definitions
 extension_modules = default_pymathics_modules
