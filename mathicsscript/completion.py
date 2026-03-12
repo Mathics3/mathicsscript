@@ -108,9 +108,9 @@ class Mathics3Completer(WordCompleter):
 
         # @ is not really an operator
         self.ascii_operators = frozenset(_data["ascii-operators"])
-        from mathics_scanner.characters import aliased_characters
+        from mathics_scanner.characters import ALIASED_CHARACTERS
 
-        self.escape_sequences = aliased_characters.keys()
+        self.escape_sequences = ALIASED_CHARACTERS.keys()
 
     def _is_space_before_cursor(self, text_before_cursor: str) -> bool:
         """Space before or no text before cursor."""
