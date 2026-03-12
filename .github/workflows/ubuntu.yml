@@ -29,6 +29,11 @@ jobs:
         pip install -e .
         bash -x admin-tools/make-JSON-tables.sh
         cd ..
+        git clone --depth 1 https://github.com/Mathics3/mathics-core.git
+        cd mathics-core/
+        pip install -e .
+        bash -x admin-tools/make-JSON-tables.sh
+        cd ..
     - name: Install mathicsscript
       run: |
         make
