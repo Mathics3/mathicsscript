@@ -14,7 +14,7 @@ jobs:
         os: [macOS]
         python-version: ['3.10', '3.11', '3.12']
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
@@ -27,6 +27,11 @@ jobs:
         # python -m pip install -e git+https://github.com/Mathics3/mathics-scanner#egg=Mathics-Scanner[full]
         git clone --depth 1 https://github.com/Mathics3/mathics-scanner.git
         cd mathics-scanner/
+        pip install -e .
+        bash -x admin-tools/make-JSON-tables.sh
+        cd ..
+        git clone --depth 1 https://github.com/Mathics3/mathics-core.git
+        cd mathics-core/
         pip install -e .
         bash -x admin-tools/make-JSON-tables.sh
         cd ..
