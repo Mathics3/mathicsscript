@@ -11,7 +11,7 @@ build-backend = "setuptools.build_meta"
 name = "mathicsscript"
 description = "Command-line interface to Mathics3"
 dependencies = [
-    "Mathics_Scanner>=2.0.0",
+    "Mathics_Scanner>2.0.0",
     "Mathics3 >= 9.0.0",
     "click >= 8.0.0",
     "colorama",
