@@ -11,18 +11,18 @@ build-backend = "setuptools.build_meta"
 name = "mathicsscript"
 description = "Command-line interface to Mathics3"
 dependencies = [
-    "Mathics_Scanner>2.0.0",
-    "Mathics3 >= 9.0.0",
+    "Mathics3_Scanner>9.0.0",
+    "Mathics3 > 9.0.0",
     "click >= 8.0.0",
     "colorama",
     "columnize",
     "networkx",
     "prompt_toolkit>=3.0.18",
     "Pygments>=2.9.0",  # Want something late enough that has the "inkpot" style
-    "mathics_pygments>=1.0.2",
+    "Mathics3_pygments>9.0.0",
     "term-background >= 1.0.1",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 readme = "README.rst"
 license = "GPL-3.0-or-later"
 keywords = ["Mathematica", "Wolfram", "Interpreter", "Shell", "Math", "CAS"]
@@ -33,10 +33,10 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Scientific/Engineering",
