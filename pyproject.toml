@@ -19,7 +19,7 @@ dependencies = [
     "networkx",
     "prompt_toolkit>=3.0.18",
     "Pygments>=2.9.0",  # Want something late enough that has the "inkpot" style
-    "mathics_pygments>=1.0.2",
+    "Mathics3_pygments>9.0.0",
     "term-background >= 1.0.1",
 ]
 requires-python = ">=3.11"
