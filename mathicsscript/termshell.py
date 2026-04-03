@@ -13,6 +13,7 @@ from columnize import columnize
 from mathics.core.atoms import String
 from mathics.core.attributes import attribute_string_to_number
 from mathics.core.expression import Expression, from_python  # strip_context,
+from mathics.core.parser import MathicsLineFeeder
 from mathics.core.rules import Rule
 from mathics.core.symbols import Symbol, SymbolNull
 from mathics.core.systemsymbols import SymbolMessageName
@@ -27,6 +28,7 @@ from pygments.util import ClassNotFound
 
 # FIXME: __main__ shouldn't be needed. Fix term_background
 from term_background.__main__ import is_dark_background
+
 
 mma_lexer = MathematicaLexer()
 
@@ -54,8 +56,6 @@ USER_INPUTRC = os.environ.get("MATHICS3_INPUTRC", osp.join(CONFIGDIR, "inputrc")
 # Create HISTFILE if it doesn't exist already
 if not osp.isfile(HISTFILE):
     pathlib.Path(HISTFILE).touch()
-
-from mathics.core.parser import MathicsLineFeeder
 
 SymbolPygmentsStylesAvailable = Symbol("Settings`PygmentsStylesAvailable")
 
