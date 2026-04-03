@@ -14,6 +14,7 @@ from mathics.core.systemsymbols import (
     SymbolAborted,
     SymbolExport,
     SymbolExportString,
+    SymbolFailed,
     SymbolFullForm,
     SymbolGraphics,
     SymbolGraphics3D,
@@ -165,6 +166,10 @@ def format_output(obj, expr, format=None):
         obj.out = ["$Aborted"]
         obj.last_eval = SymbolAborted
         return "$Aborted"
+    elif expr is SymbolFailed:
+        obj.out = ["$Failed"]
+        obj.last_eval = SymbolFailed
+        return "$Failed"
     if format == "text":
         if isinstance(expr, String):
             return expr.value
