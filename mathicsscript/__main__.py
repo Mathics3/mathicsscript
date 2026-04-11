@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#   Copyright (C) 2025 Rocky Bernstein <rb@dustyfeet.com>
+#   Copyright (C) 2025-2026 Rocky Bernstein <rb@dustyfeet.com>
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
@@ -278,13 +278,13 @@ case_sensitive = {"case_sensitive": False}
 )
 @click.version_option(version=__version__)
 @click.option(
-    "--full-form",
+    "--full-form/--no-full-form",
     "-F",
-    "full_form",
-    flag_value="full_form",
     default=False,
     required=False,
-    help="Show how input was parsed to FullForm",
+    show_default=True,
+    is_flag=True,
+    help="If true, show how input was parsed to FullForm",
 )
 @click.option(
     "--persist",
