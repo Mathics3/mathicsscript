@@ -45,3 +45,6 @@ System`$Notebooks = False
 
 Settings`$GroupAutocomplete::usage = "This Boolean variable sets whether mathicsscript should automatically close braces."
 Settings`$GroupAutocomplete = True
+
+Settings`$RenderTeXForm::usage = "If this Boolean variable is set True, TeXForm output is rendered via Matplotlib.";
+Settings`$RenderTeXForm = True
