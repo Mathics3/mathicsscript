@@ -1,6 +1,24 @@
---- ChangeLog	2025-08-29 05:28:29.545046534 -0400
-+++ ChangeLog-spell-corrected	2025-08-29 05:31:47.748145274 -0400
-@@ -32,7 +32,7 @@
+--- ChangeLog	2026-04-17 13:08:56.535096309 -0400
++++ ChangeLog-spell-corrected	2026-04-17 13:10:48.233242983 -0400
+@@ -20,7 +20,7 @@
+ 
+ 	* .github/workflows/isort-and-black-checks.yml,
+ 	.github/workflows/macos.yaml, .github/workflows/ubuntu.yml,
+-	.github/workflows/windows.yml, pyproject.toml: Project adminstration
++	.github/workflows/windows.yml, pyproject.toml: Project administration
+ 	stuff (#112) Repo is now Mathics3-scanner Use @v6 in CI. Bump min scanner version
+ 
+ 2026-03-13  rocky <rb@dustyfeet.com>
+@@ -99,7 +99,7 @@
+ 2025-08-24  R. Bernstein <rocky@users.noreply.github.com>
+ 
+ 	* mathicsscript/__main__.py, mathicsscript/format.py,
+-	mathicsscript/termshell.py, mathicsscript/termshell_prompt.py: 
++	mathicsscript/termshell.py, mathicsscript/termshell_prompt.py:
+ 	Miscellaneous small fixes... (#107) * Syntax Errors showing more properly by removing weird SymbolForm   handling. Also get ready for an "error" kind of format * Remove GNU Readline termshell style error when no style given * Better error checking on giving a file argument for an invalid
+ 	file
+ 
+@@ -137,7 +137,7 @@
  2025-07-22  R. Bernstein <rocky@users.noreply.github.com>
  
  	* NEWS.md => CHANGES.rst, mathicsscript/bindkeys.py,
@@ -9,7 +27,7 @@
  
  2025-07-22  rocky <rb@dustyfeet.com>
  
-@@ -233,7 +233,7 @@
+@@ -338,7 +338,7 @@
  2023-02-25  rocky <rb@dustyfeet.com>
  
  	* mathicsscript/__main__.py, mathicsscript/asymptote.py,
@@ -18,7 +36,7 @@
  	flake8 things
  
  2023-02-25  rocky <rb@dustyfeet.com>
-@@ -263,7 +263,7 @@
+@@ -368,7 +368,7 @@
  
  2022-12-10  rocky <rb@dustyfeet.com>
  
@@ -27,7 +45,7 @@
  	black
  
  2022-11-28  rocky <rb@dustyfeet.com>
-@@ -369,7 +369,7 @@
+@@ -474,7 +474,7 @@
  2022-02-15  rocky <rb@dustyfeet.com>
  
  	* NEWS.md, mathicsscript/bindkeys.py,
@@ -36,7 +54,7 @@
  	Handle keybindings in GNU Readline
  
  2022-02-15  R. Bernstein <rocky@users.noreply.github.com>
-@@ -407,7 +407,7 @@
+@@ -512,7 +512,7 @@
  
  2022-02-06  rocky <rb@dustyfeet.com>
  
@@ -45,7 +63,7 @@
  	Imports in core have changed Specifically where strip_context is located
  
  2021-12-19  rocky <rb@dustyfeet.com>
-@@ -433,7 +433,7 @@
+@@ -538,7 +538,7 @@
  2021-09-04  rocky <rb@dustyfeet.com>
  
  	* mathicsscript/data/inputrc-no-unicode,
@@ -54,7 +72,7 @@
  	GNU readline was reading inputrc from wrong place Update readline tables.  Warning: input-no-unicode is probably wrong
  
  2021-09-04  rocky <rb@dustyfeet.com>
-@@ -595,7 +595,7 @@
+@@ -700,7 +700,7 @@
  
  2021-06-30  rocky <rb@dustyfeet.com>
  
@@ -63,7 +81,7 @@
  	Start using Asymptote
  
  2021-06-30  rocky <rb@dustyfeet.com>
-@@ -680,7 +680,7 @@
+@@ -785,7 +785,7 @@
  
  2021-06-15  rocky <rb@dustyfeet.com>
  
@@ -72,7 +90,7 @@
  	PyQT5: extra module for matplotlib
  
  2021-06-15  rocky <rb@dustyfeet.com>
-@@ -801,7 +801,7 @@
+@@ -906,7 +906,7 @@
  
  2021-05-27  rocky <rb@dustyfeet.com>
  
@@ -81,7 +99,7 @@
  	WIP start using prompt-toolkit
  
  2021-05-15  R. Bernstein <rocky@users.noreply.github.com>
-@@ -1139,7 +1139,7 @@
+@@ -1244,7 +1244,7 @@
  
  2021-01-09  rocky <rb@dustyfeet.com>
  
@@ -90,7 +108,7 @@
  	`-e` `--execute` is better suited for embedded use This options adds `--quiet` and shows just evaluation output as
  	text--execute
  
-@@ -1168,7 +1168,7 @@
+@@ -1273,7 +1273,7 @@
  
  2021-01-03  rocky <rb@dustyfeet.com>
  
@@ -99,7 +117,7 @@
  
  2021-01-02  rocky <rb@dustyfeet.com>
  
-@@ -1251,7 +1251,7 @@
+@@ -1356,7 +1356,7 @@
  
  2020-12-22  R. Bernstein <rocky@users.noreply.github.com>
  
@@ -108,7 +126,7 @@
  
  2020-12-22  rocky <rb@dustyfeet.com>
  
-@@ -1268,13 +1268,13 @@
+@@ -1373,13 +1373,13 @@
  	* mathicsscript/__main__.py, mathicsscript/format.py,
  	mathicsscript/inputrc, mathicsscript/inputrc-no-unicode,
  	mathicsscript/inputrc-unicode, mathicsscript/termshell.py,
@@ -124,7 +142,7 @@
  
  2020-12-12  rocky <rb@dustyfeet.com>
  
-@@ -1292,7 +1292,7 @@
+@@ -1397,7 +1397,7 @@
  
  2020-12-08  rocky <rb@dustyfeet.com>
  
@@ -133,7 +151,7 @@
  
  2020-12-07  rocky <rb@dustyfeet.com>
  
-@@ -1300,7 +1300,7 @@
+@@ -1405,7 +1405,7 @@
  
  2020-12-07  rocky <rb@dustyfeet.com>
  
@@ -142,7 +160,7 @@
  	FindSpannngTree: use layout style of parent graph
  
  2020-12-07  rocky <rb@dustyfeet.com>
-@@ -1334,7 +1334,7 @@
+@@ -1439,7 +1439,7 @@
  
  2020-12-04  rocky <rb@dustyfeet.com>
  
@@ -151,7 +169,7 @@
  
  2020-12-04  rocky <rb@dustyfeet.com>
  
-@@ -1406,7 +1406,7 @@
+@@ -1511,7 +1511,7 @@
  
  2020-11-27  rocky <rb@dustyfeet.com>
  
@@ -160,7 +178,7 @@
  	Can't use mathematica.lexer for now..  Sigh. It has promise. But recent Python gives now gives these...      FutureWarning: Possible nested set at position ...
  
  2020-11-27  rocky <rb@dustyfeet.com>
-@@ -1489,7 +1489,7 @@
+@@ -1594,7 +1594,7 @@
  2020-11-18  rocky <rb@dustyfeet.com>
  
  	* mathicsscript/__main__.py, mathicsscript/settings.m,
@@ -169,7 +187,7 @@
  	Miscellaneous changes Settings`$ShowFullForm -> Settings`$ShowFullFormInput The old name has already caused too much confusion.  Check Pygments style and give a columnized list when the name is
  	invalid. Also make sure to reset the Mathics variable to a the last
  	valid value when an invalid one is set.
-@@ -1581,7 +1581,7 @@
+@@ -1686,7 +1686,7 @@
  
  	* NEWS.md, admin-tools/git2cl, admin-tools/make-dist.sh,
  	admin-tools/pyenv-versions, mathicsscript/term_background.py,
@@ -178,7 +196,7 @@
  	Get ready for release 1.1.0rc1
  
  2020-10-21  R. Bernstein <rocky@users.noreply.github.com>
-@@ -1672,4 +1672,3 @@
+@@ -1777,4 +1777,3 @@
  
  	* Cull code from Mathics/main and revise ...  colorama is no longer optional.  We'll be using click soon.  Start
  	to pull in my better terminal-detection script.
