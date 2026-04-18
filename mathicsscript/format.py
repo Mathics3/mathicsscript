@@ -19,12 +19,15 @@ from mathics.core.systemsymbols import (
     SymbolGraphics,
     SymbolGraphics3D,
     SymbolImage,
+    SymbolInterpretationBox,
     SymbolMathMLForm,
     SymbolOutputForm,
+    SymbolPaneBox,
     SymbolPlot,
     SymbolStandardForm,
     SymbolTeXForm,
 )
+from mathics.format.box import format_element
 from mathics.session import get_settings_value
 from mathicsscript.asymptote import Asy, write_asy_and_view
 
@@ -68,11 +71,11 @@ def format_output(obj, expr, format=None):
     it can't make use of a front-ends specific capabilities.
     """
 
-    def eval_boxes(result, fn: Callable, obj, **options):
+    def eval_boxed(result, fn: Callable, obj, **options):
         try:
-            boxes = fn(evaluation=obj, **options)
+            boxed = fn(evaluation=obj, **options)
         except BoxError:
-            boxes = None
+            boxed = None
             if not hasattr(obj, "seen_box_error"):
                 obj.seen_box_error = True
                 obj.message(
@@ -81,7 +84,7 @@ def format_output(obj, expr, format=None):
                     Expression(SymbolFullForm, result).evaluate(obj),
                 )
 
-        return boxes
+        return boxed
 
     if format is None:
         format = obj.format
@@ -104,6 +107,35 @@ def format_output(obj, expr, format=None):
         elements = expr.elements
         if len(elements) == 1:
             expr = elements[0]
+        render_TeXForm = get_settings_value(
+            obj.definitions, "Settings`$UseMatplotlib"
+        ) and get_settings_value(obj.definitions, "Settings`$RenderTeXForm")
+        if render_TeXForm:
+            boxed = format_element(expr, obj, SymbolTeXForm)
+            if hasattr(boxed, "head") and boxed.head is SymbolInterpretationBox:
+                inner_box = boxed.elements[0]
+                box_str_sans_quotes = inner_box.value[1:-1]
+                box_str_display_math = rf"${box_str_sans_quotes}$"
+                try:
+                    # Create a figure and axis with no visible borders
+                    fig, ax = plt.subplots(figsize=(3, 2))
+                    ax.axis("off")
+                    # Render the LaTeX string in the center
+                    # 'transform=ax.transAxes' ensures 0.5 is the exact middle of the window
+                    ax.text(
+                        0.5,
+                        0.5,
+                        box_str_display_math,
+                        size=50,
+                        ha="center",
+                        va="center",
+                        transform=ax.transAxes,
+                    )
+                    plt.show()
+                    return String(box_str_sans_quotes)
+                except:  # noqa
+                    pass
+
     elif (
         expr_head is SymbolImage
         and get_settings_value(obj.definitions, "Settings`$UseMatplotlib")
