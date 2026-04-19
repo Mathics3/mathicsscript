@@ -1,6 +1,21 @@
 CHANGES
 =======
 
+10.0.0
+------
+
+Supports Python 3.14. Python 3.10 support dropped. (Python 3.10 may still work, but it's not supported.)
+
+Track API changes in mathics-core and Mathics3-scanner.
+
+Fix bug in ``--full-form`` handling.
+
+Bugs
+++++
+
+#. `PR 108  <https://github.com/Mathics3/mathics-core/pull/108>`_ Restrict shell escape (!) when sandboxed
+
+
 9.0.0
 -----
 
