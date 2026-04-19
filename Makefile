@@ -9,7 +9,11 @@ PYTHON ?= python3
 PIP ?= pip3
 RM  ?= rm
 
-.PHONY: all build check clean inputrc develop dist doc pytest sdist test rmChangeLog
+.PHONY: all build \
+       ChangeLog-without-corrections \
+       check clean inputrc develop dist doc \
+       pytest sdist test \
+       rmChangeLog runner
 
 #: Default target - same as "develop"
 all: develop
@@ -52,15 +56,18 @@ clean:
 	@find . -name "*.pyc" -type f -delete
 	@rm mathicsscript/inputrc-no-unicode mathicsscript/inputrc-unicode || true
 
-#: Remove ChangeLog
-rmChangeLog:
-	$(RM) ChangeLog || true
-
 #: Create source tarball
 sdist: check-rst
 	$(PYTHON) ./setup.py sdist
 
+#: Remove ChangeLog
+rmChangeLog:
+	$(RM) ChangeLog || true
+
+#: Create ChangeLog from version control without corrections
+ChangeLog-without-corrections:
+	git log --pretty --numstat --summary | $(GIT2CL) >ChangeLog
+
 #: Create a ChangeLog from git via git log and git2cl
 ChangeLog: rmChangeLog ChangeLog-without-corrections
-	git log --pretty --numstat --summary | $(GIT2CL) >$@
 	patch ChangeLog < ChangeLog-spell-corrected.diff

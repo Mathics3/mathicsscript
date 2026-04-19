@@ -11,16 +11,16 @@ build-backend = "setuptools.build_meta"
 name = "mathicsscript"
 description = "Command-line interface to Mathics3"
 dependencies = [
-    "Mathics3_Scanner>9.0.0",
-    "Mathics3 > 9.0.0",
+    "Mathics3_Scanner>=10.0.0",
+    "Mathics3 >= 10.0.0",
     "click >= 8.0.0",
     "colorama",
     "columnize",
     "networkx",
     "prompt_toolkit>=3.0.18",
     "Pygments>=2.9.0",  # Want something late enough that has the "inkpot" style
-    "Mathics3_pygments>9.0.0",
-    "term-background >= 1.0.1",
+    "Mathics3_pygments>=10.0.0",
+    "term-background >= 1.0.5",
 ]
 requires-python = ">=3.11"
 readme = "README.rst"
@@ -63,6 +63,11 @@ full = [
 
 [project.urls]
 Homepage = "https://mathics.org/"
+
+[tool.setuptools]
+packages = [
+    "mathicsscript",
+]
 
 [tool.setuptools.package-data]
 "mathics_scanner" = [

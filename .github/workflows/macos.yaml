@@ -25,19 +25,19 @@ jobs:
         python3 -m pip install --upgrade pip
         python3 -m pip install setuptools
         # We can comment out after next Mathics3-Scanner release
-        git clone --depth 1 https://github.com/Mathics3/Mathics3-scanner.git
-        cd Mathics3-scanner/
-        pip install --no-build-isolation -e .
-        bash -x admin-tools/make-JSON-tables.sh
-        cd ..
+        # git clone --depth 1 https://github.com/Mathics3/Mathics3-scanner.git
+        # cd Mathics3-scanner/
+        # pip install --no-build-isolation -e .
+        # bash -x admin-tools/make-JSON-tables.sh
+        # cd ..
         # We can comment out after next Mathics3-pygments release
-        python -m pip install -e git+https://github.com/Mathics3/Mathics3-pygments#egg=Mathics3-pygments
+        # python -m pip install -e git+https://github.com/Mathics3/Mathics3-pygments#egg=Mathics3-pygments
         # We can comment out after next mathics-core release
-        git clone --depth 1 https://github.com/Mathics3/mathics-core.git
-        cd mathics-core/
-        pip install --no-build-isolation -e .
-        bash -x admin-tools/make-JSON-tables.sh
-        cd ..
+        # git clone --depth 1 https://github.com/Mathics3/mathics-core.git
+        # cd mathics-core/
+        # pip install --no-build-isolation -e .
+        # bash -x admin-tools/make-JSON-tables.sh
+        # cd ..
     - name: Install mathicsscript
       run: |
         make

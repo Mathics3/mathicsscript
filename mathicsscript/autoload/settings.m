@@ -40,7 +40,7 @@ If set, and $UseAsymptote is also set, matplotlib will take precedence for 2D gr
 
 Settings`MathicsScriptVersion::usage = "This string is the version of MathicsScript we are running."
 
-System`$Notebooks::usage = "Set True if the Mathics is being used with a notebook-based front end."
+System`$Notebooks::usage = "Set True if the Mathics3 is being used with a notebook-based front end."
 System`$Notebooks = False
 
 Settings`$GroupAutocomplete::usage = "This Boolean variable sets whether mathicsscript should automatically close braces."
