@@ -4,11 +4,15 @@ CHANGES
 10.0.0
 ------
 
-Supports Python 3.14. Python 3.10 support dropped. (Python 3.10 may still work, but it's not supported.)
+April 19, 2026
+
+Supports Python 3.14. Python 3.10 support dropped. Python 3.10 may still work, but it's not supported.
 
 Track API changes in mathics-core and Mathics3-scanner.
 
 Fix bug in ``--full-form`` handling.
+
+Allow matplotlib to render ``TeXForm`` output. This is done if Settings`$RenderTeXForm is True and matplotlib is installed.  ``Settings`$RenderTeXForm`` is set to ``True`` by default.
 
 Bugs
 ++++
@@ -18,6 +22,8 @@ Bugs
 
 9.0.0
 -----
+
+August 29, 2025
 
 Supports Python 3.13. Python 3.8 and 3.9 support dropped.
 
@@ -94,7 +100,7 @@ Aug 10, 2025
 * Handle images via PNG and matplotlib
 * Packaging: include matplotlib in full install
 * Customize Asymptote configuration and add a psviewer that removes eps trash
-* Bump minimum Mathics core version to 4.0.0
+* Bump minimum Mathics3 core version to 4.0.0
 * Bug fix: Check if ``self`` has ``session`` attribute in ``asy.__del__``
 
 3.3.1
@@ -200,13 +206,13 @@ the GNU Readline inputrc files from getting created properly.
 -----
 
 * All escape sequence for unicode and letter names added for GNU Readline
-* Use Mathics Scanner package
+* Use Mathics3 Scanner package
 * Support XDG-style configuration files
 
 1.1.2
 -----
 
-* Fix ```Settings`$ShowFullForm``` now that we use Mathics supports Booleans better
+* Fix ```Settings`$ShowFullForm``` now that we use Mathics3 supports Booleans better
 * Show mathicsscript version on startup
 * Add ```Settings`MathicsScriptVersion``
 * Add all of the WL escape sequences
