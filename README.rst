@@ -2,11 +2,11 @@
 
 |Packaging status|
 
-mathicsscript is a command-line interface to `Mathics3 <https://mathics.org>`_.
+mathics3-script is a command-line interface to `Mathics3 <https://mathics.org>`_.
 
 |screenshot|
 
-See the `screenshot directory <https://github.com/Mathics3/mathicsscript/tree/master/screenshots>`_ for a description and another example.
+See the `screenshot directory <https://github.com/Mathics3/mathics3-script/tree/master/screenshots>`_ for a description and another example.
 
 
 Features
@@ -41,13 +41,13 @@ To install from git sources, so that you run from the git source tree:
 Running
 -------
 
-Once installed, run using ``mathicsscript``:
+Once installed, run using ``mathics3-script``:
 
 ::
 
 
-   $ mathicsscript
-   Mathicscript: 10.0.0, Mathics3 10.0.0
+   $ mathics3-script
+   Mathics3-script: 10.0.0, Mathics3 10.0.0
    on CPython 3.14.3 (main, Mar 30 2026, 06:42:16) [GCC 13.3.0]
 
    Using:
@@ -69,7 +69,7 @@ Once installed, run using ``mathicsscript``:
 For batch use:
 ::
 
-   $ mathicsscript -c "N[Pi]"
+   $ mathics3-script -c "N[Pi]"
    3.14159
 
 To read from a file, in file ``/tmp/test.m``:
@@ -80,18 +80,18 @@ To read from a file, in file ``/tmp/test.m``:
    integral=Integrate[1,x]
    Print["Results: ",{sum,integral}]
 
-Feeding this into ``mathicsscript``:
+Feeding this into ``mathics3-script``:
 
 ::
 
-    $ mathicsscript --no-prompt </tmp/test.m
+    $ mathics3-script --no-prompt </tmp/test.m
     4
     x
     Results: {4, x}
     None
 
 
-For a full list of options, type ``mathicsscript --help``.
+For a full list of options, type ``mathics3-script --help``.
 
 
 Asymptote key bindings
