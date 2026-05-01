@@ -22,7 +22,6 @@ from mathics.core.systemsymbols import (
     SymbolInterpretationBox,
     SymbolMathMLForm,
     SymbolOutputForm,
-    SymbolPaneBox,
     SymbolPlot,
     SymbolStandardForm,
     SymbolTeXForm,
@@ -148,7 +147,7 @@ def format_output(obj, expr, format=None):
             png_expr = Expression(
                 SymbolExport, String(temp_png.name), expr, String("PNG")
             )
-            result = png_expr.evaluate(obj)
+            png_expr.evaluate(obj)
             plt.axes().set_axis_off()
             img = mpimg.imread(temp_png)
             cmap = "gray" if expr.color_space == "Grayscale" else None
@@ -224,7 +223,7 @@ def format_output(obj, expr, format=None):
         raise ValueError
 
     try:
-        boxes = result.boxes_to_text(evaluation=obj)
+        boxes = result.to_text(evaluation=obj)
     except BoxError:
         boxes = None
         if not hasattr(obj, "seen_box_error"):

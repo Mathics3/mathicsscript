@@ -64,6 +64,17 @@ full = [
 [project.urls]
 Homepage = "https://mathics.org/"
 
+[tool.pyright]
+include = ["mathicsscript"]
+exclude = [
+    "**/.pyodide*",
+    "**/node_modules",
+    "**/__pycache__"
+]
+
+reportMissingImports = true
+typeCheckingMode = "basic"
+
 [tool.setuptools]
 packages = [
     "mathicsscript",
