@@ -41,7 +41,7 @@ To install from git sources, so that you run from the git source tree:
 Running
 -------
 
-Once installed, run using ``mathics3-script``:
+Once installed, run using ``mathicsscript``:
 
 ::
 
