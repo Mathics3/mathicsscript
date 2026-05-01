@@ -91,7 +91,7 @@ Feeding this into ``mathics3-script``:
     None
 
 
-For a full list of options, type ``mathics3-script --help``.
+For a full list of options, type ``mathicsscript --help``.
 
 
 Asymptote key bindings
