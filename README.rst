@@ -80,7 +80,7 @@ To read from a file, in file ``/tmp/test.m``:
    integral=Integrate[1,x]
    Print["Results: ",{sum,integral}]
 
-Feeding this into ``mathics3-script``:
+Feeding this into ``Mathics3-script``:
 
 ::
 
