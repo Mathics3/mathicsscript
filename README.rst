@@ -46,7 +46,7 @@ Once installed, run using ``mathics3-script``:
 ::
 
 
-   $ mathics3-script
+   $ mathicsscript
    Mathics3-script: 10.0.0, Mathics3 10.0.0
    on CPython 3.14.3 (main, Mar 30 2026, 06:42:16) [GCC 13.3.0]
 
@@ -69,7 +69,7 @@ Once installed, run using ``mathics3-script``:
 For batch use:
 ::
 
-   $ mathics3-script -c "N[Pi]"
+   $ mathicsscript -c "N[Pi]"
    3.14159
 
 To read from a file, in file ``/tmp/test.m``:
@@ -84,7 +84,7 @@ Feeding this into ``mathics3-script``:
 
 ::
 
-    $ mathics3-script --no-prompt </tmp/test.m
+    $ mathicsscript --no-prompt </tmp/test.m
     4
     x
     Results: {4, x}
